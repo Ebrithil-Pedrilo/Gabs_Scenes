@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#17130f">
+<title>Age of Guthology — O Estandarte Roubado</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<style>
+:root{
+  --ink:#f4ead5;
+  --muted:#b9aa92;
+  --gold:#e4bd68;
+  --gold-soft:#8f6b31;
+  --red:#d86355;
+  --red-deep:#6e2726;
+  --blue:#6ba6c9;
+  --blue-deep:#203f55;
+  --green:#7fc28a;
+  --panel:#1b1815;
+  --panel-2:#27211b;
+  --panel-3:#100e0c;
+  --line:#514536;
+  --paper:#d9c397;
+  --shadow:0 18px 46px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{
+  margin:0;color:var(--ink);font-family:"Segoe UI",Tahoma,sans-serif;
+  background:
+    radial-gradient(circle at 50% -15%,rgba(214,170,86,.18),transparent 38%),
+    radial-gradient(circle at 12% 55%,rgba(105,55,37,.26),transparent 34%),
+    linear-gradient(135deg,#0d0c0b,#18130f 48%,#0b0a09);
+  background-attachment:fixed;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;z-index:-1;
+  background-image:repeating-linear-gradient(93deg,transparent 0 34px,rgba(255,255,255,.035) 35px,transparent 36px 71px);
+}
+button,select,input{font:inherit}
+button{color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid rgba(228,189,104,.6);outline-offset:2px}
+.hidden{display:none!important}
+
+/* ---------- Setup ---------- */
+.setup-shell{max-width:1180px;margin:0 auto;padding:36px 18px 56px}
+.setup-hero{text-align:center;margin-bottom:28px}
+.eyebrow{text-transform:uppercase;letter-spacing:.22em;color:var(--gold);font-size:12px;font-weight:900}
+.setup-hero h1,.brand-name{font-family:Georgia,"Times New Roman",serif;text-transform:uppercase}
+.setup-hero h1{font-size:clamp(38px,7vw,72px);line-height:.94;letter-spacing:.08em;margin:10px 0;color:#f3dfac;text-shadow:0 3px 0 #4f3518,0 12px 35px #000}
+.setup-hero h1 span{display:block;font-size:.29em;letter-spacing:.32em;color:#bdad8f;margin-top:14px;text-shadow:none}
+.setup-hero p{max-width:720px;margin:18px auto 0;color:#c7bba7;font-size:16px;line-height:1.65}
+.setup-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}
+.setup-stack{display:grid;gap:18px}
+.panel,.setup-card{
+  border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(39,33,27,.96),rgba(18,16,13,.97));
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.panel:before,.setup-card:before{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid rgba(255,255,255,.035);border-radius:inherit}
+.setup-card{padding:20px}
+.setup-card h2{font:700 22px Georgia,serif;color:#f0d79e;margin:0 0 6px}
+.setup-card>p{color:var(--muted);margin:0 0 16px;line-height:1.5}
+.player-config{display:grid;grid-template-columns:52px 1fr 1fr;gap:10px;align-items:end;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}
+.player-config:first-of-type{border-top:0}
+.crest{width:48px;height:56px;display:grid;place-items:center;font-size:24px;font-weight:900;color:#f9e7c0;clip-path:polygon(50% 0,95% 18%,88% 78%,50% 100%,12% 78%,5% 18%);background:linear-gradient(180deg,#8a3c35,#481d1c)}
+.crest.blue{background:linear-gradient(180deg,#457693,#1e3b4d)}
+label{font-size:12px;font-weight:800;color:#bcae98;display:grid;gap:5px}
+input,select{width:100%;min-width:0;border:1px solid #5c4f40;border-radius:9px;background:#100e0c;color:var(--ink);padding:10px 11px}
+.deck-showcase{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.deck-tile{padding:14px;border:1px solid #5a4936;border-radius:12px;background:linear-gradient(145deg,#2c241c,#16120f);min-height:136px}
+.deck-tile.raven{background:linear-gradient(145deg,#282232,#121017)}
+.deck-tile .deck-icon{font-size:30px}
+.deck-tile b{display:block;color:#f1dcaa;font-family:Georgia,serif;font-size:16px;margin:8px 0 5px}
+.deck-tile span{color:#b7aa96;font-size:12px;line-height:1.45;display:block}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{
+  border:1px solid #735c36;border-radius:10px;background:linear-gradient(180deg,#3a2d1e,#211a13);padding:10px 15px;
+  font-weight:900;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25);transition:.15s transform,.15s filter,.15s border-color;
+}
+.btn:hover{filter:brightness(1.18);border-color:var(--gold);transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(180deg,#c68b35,#7d4e1c);border-color:#e5bd71;color:#fff7df}
+.btn.secondary{background:linear-gradient(180deg,#29465a,#172b38);border-color:#4f829f}
+.btn.danger{background:linear-gradient(180deg,#61302b,#351a18);border-color:#8c4a42}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none;filter:none}
+.rules-timeline{display:grid;gap:10px;margin-top:14px}
+.rule-step{display:grid;grid-template-columns:38px 1fr;gap:11px;align-items:center;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:10px;background:rgba(0,0,0,.15)}
+.rule-step strong{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#5f4422;color:#ffe4a8}
+.rule-step b{display:block;color:#ead29d;font-size:13px}.rule-step span{color:#aa9e8d;font-size:12px;line-height:1.4}
+.online-box{display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:12px}
+#statusLobby{min-height:22px;margin-top:12px;color:#cfc2aa;line-height:1.45}
+#statusLobby .room-code{display:block;font-size:30px;letter-spacing:.22em;color:#f3d485;font-weight:900;margin:6px 0}
+.micro{color:#938775;font-size:11px;line-height:1.45}
+
+/* ---------- Game shell ---------- */
+.game-shell{width:min(1600px,100%);margin:0 auto;min-height:100vh;padding:10px;display:grid;gap:10px;grid-template-rows:auto 1fr}
+.topbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:13px;background:rgba(20,17,14,.95);padding:8px 11px;box-shadow:0 8px 24px rgba(0,0,0,.26)}
+.brand-name{font-weight:900;color:#efd69d;letter-spacing:.13em;font-size:17px;margin-right:4px}
+.status-pill{border:1px solid #4e4437;border-radius:999px;background:#0e0d0b;padding:5px 9px;color:#ac9f8b;font-size:11px;white-space:nowrap}
+.status-pill b{color:#f0e3cb}.status-pill.ready{border-color:#42774d;color:#8fc89a}.status-pill.ready b{color:#a9e2b3}
+.top-grow{flex:1}
+.battle-layout{display:grid;grid-template-columns:218px minmax(650px,1fr) 270px;gap:10px;min-height:0;align-items:start}
+.side-column{display:grid;gap:10px;position:sticky;top:10px}
+.panel-title{font:700 15px Georgia,serif;color:#efd69d;padding:12px 13px 8px;letter-spacing:.04em}
+.panel-body{padding:0 13px 13px}
+.war-score{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center}
+.score-side{text-align:center}.score-side .score-name{font-size:11px;color:#b8aa96;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.score-num{font:900 34px Georgia,serif;color:#f2db9d;line-height:1;margin:5px}.score-goal{font-size:10px;color:#8f8373}.score-vs{color:#725f46;font:700 16px Georgia,serif}
+.score-track{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:11px}
+.score-pip{height:7px;border-radius:99px;background:#383027}.score-pip.p0{background:#b34e43}.score-pip.p1{background:#5184a1}
+.reveal-steps{display:grid;gap:7px}
+.reveal-step{display:grid;grid-template-columns:28px 1fr;gap:8px;padding:8px;border-radius:9px;border:1px solid rgba(255,255,255,.065);opacity:.48}
+.reveal-step.live{opacity:1;border-color:#8a6b35;background:rgba(124,89,35,.17)}
+.reveal-step.done{opacity:.82}.reveal-step .step-num{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#3b3024;color:#e8ca8b;font-weight:900;font-size:12px}
+.reveal-step b{font-size:11px;color:#dfcfb0;display:block}.reveal-step span{font-size:10px;color:#a79985;line-height:1.35;display:block;margin-top:2px}
+.tips{font-size:11px;color:#ac9f8c;line-height:1.55}.tips b{color:#e0c98f}
+
+.battle-center{display:grid;gap:8px;min-width:0}
+.player-ribbon{border:1px solid var(--line);border-radius:12px;background:linear-gradient(90deg,rgba(35,26,21,.98),rgba(20,17,14,.96));padding:8px 10px;display:flex;align-items:center;gap:9px}
+.player-ribbon.enemy{background:linear-gradient(90deg,rgba(20,17,14,.96),rgba(32,29,36,.98))}
+.ribbon-crest{width:37px;height:42px;display:grid;place-items:center;clip-path:polygon(50% 0,95% 18%,88% 78%,50% 100%,12% 78%,5% 18%);background:#7b332e;font-size:18px}.ribbon-crest.p1{background:#315d77}
+.player-meta{min-width:0}.player-meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}.player-meta span{font-size:10px;color:#a99b87}
+.ribbon-stat{border-left:1px solid rgba(255,255,255,.08);padding-left:9px;font-size:11px;color:#c8baa3;white-space:nowrap}.ribbon-stat strong{color:#f2d990;font-size:15px}
+.ribbon-actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.ribbon-actions .btn{padding:7px 9px;font-size:10px}
+.hand-mini{display:flex;gap:4px;overflow:hidden;margin-left:5px}.mini-back{width:25px;height:34px;border-radius:4px;border:1px solid #65563f;background:repeating-linear-gradient(135deg,#422c1f 0 4px,#211710 4px 8px);box-shadow:2px 2px 5px #000}
+
+.board-scroll{overflow-x:auto;border-radius:15px}
+.board{min-width:650px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:2px}
+.location-column{min-height:438px;border:1px solid #4d4235;border-radius:15px;background:linear-gradient(180deg,rgba(27,23,20,.95),rgba(12,11,10,.96));display:grid;grid-template-rows:1fr auto 1fr;gap:6px;padding:7px;position:relative;overflow:hidden}
+.location-column.control-p0{box-shadow:inset 0 0 0 1px rgba(216,99,85,.48)}.location-column.control-p1{box-shadow:inset 0 0 0 1px rgba(107,166,201,.48)}
+.location-column.fog{background:radial-gradient(circle at 50% 45%,rgba(125,112,90,.13),transparent 32%),linear-gradient(180deg,#151411,#0c0b0a)}
+.lane{display:flex;flex-direction:column;gap:5px;min-height:104px}
+.lane-head{display:flex;justify-content:space-between;gap:6px;color:#8f8372;font-size:9px;text-transform:uppercase;letter-spacing:.1em;padding:0 2px}.lane-head strong{font-size:12px;color:#dfccaa;letter-spacing:0}
+.unit-chip{width:100%;border:1px solid #554839;border-radius:9px;background:linear-gradient(90deg,#241d17,#15120f);padding:5px;display:grid;grid-template-columns:31px 1fr auto;gap:6px;text-align:left;align-items:center;cursor:pointer;color:var(--ink);min-height:48px;position:relative;overflow:hidden}
+.unit-chip:hover{border-color:#9f7c43}.unit-chip.p1{background:linear-gradient(90deg,#171b21,#202b33)}.unit-chip.carrier{border-color:#e8c264;box-shadow:0 0 15px rgba(232,194,100,.19)}.unit-chip.ward{box-shadow:inset 0 0 0 1px rgba(115,187,210,.55)}
+.unit-icon{width:31px;height:36px;border-radius:6px;display:grid;place-items:center;background:#3a2c1f;font-size:19px}.p1 .unit-icon{background:#233b4a}
+.unit-copy{min-width:0}.unit-copy b{font:700 11px Georgia,serif;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.unit-copy span{font-size:8px;color:#9e917e;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.unit-power{font:900 15px Georgia,serif;color:#f4d689}.unit-power small{display:block;color:#8e816f;font:700 7px Segoe UI,sans-serif;text-transform:uppercase}
+.staged-card{border:1px dashed #8a6b42;border-radius:8px;min-height:43px;background:repeating-linear-gradient(135deg,#3d2a1c 0 6px,#21170f 6px 12px);display:grid;place-items:center;color:#be9a61;font-size:17px;letter-spacing:.2em;animation:stageIn .16s ease-out}.staged-card.mine{display:grid;grid-template-columns:26px 1fr auto;letter-spacing:0;text-align:left;padding:5px;background:linear-gradient(90deg,#38291d,#1d1711);font-size:10px}.staged-card.mine span:first-child{font-size:16px}.staged-card.mine b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lane-empty{display:grid;place-items:center;min-height:45px;color:#5f5548;font-size:10px;border:1px dashed rgba(255,255,255,.055);border-radius:8px}
+@keyframes stageIn{from{transform:translateY(7px);opacity:0}to{transform:none;opacity:1}}
+
+.location-card{border:1px solid #7b633b;border-radius:12px;background:radial-gradient(circle at 50% 0,rgba(226,185,100,.2),transparent 45%),linear-gradient(160deg,#302619,#17130e);padding:8px;text-align:center;position:relative;min-height:124px;cursor:default;color:var(--ink)}
+button.location-card{width:100%;cursor:pointer}.location-card.targetable{border-color:#f2c66b;box-shadow:0 0 0 2px rgba(242,198,107,.27),0 0 25px rgba(242,198,107,.16);animation:targetPulse 1.2s infinite}.location-card.targetable:hover{filter:brightness(1.14)}
+@keyframes targetPulse{50%{box-shadow:0 0 0 4px rgba(242,198,107,.08),0 0 32px rgba(242,198,107,.25)}}
+.loc-kicker{text-transform:uppercase;letter-spacing:.17em;color:#937f5d;font-size:8px}.loc-icon{font-size:25px;line-height:1.1;margin:2px}.loc-name{font:700 14px Georgia,serif;color:#f0d79b}.loc-effect{font-size:9px;color:#b8aa92;line-height:1.3;min-height:25px;margin:4px auto;max-width:190px}.loc-score{display:flex;justify-content:center;gap:12px;font:900 15px Georgia,serif}.loc-score .red{color:#e0776b}.loc-score .blue{color:#7eb7d7}.loc-result{font-size:9px;color:#cdbb97;margin-top:4px}.resistance{display:flex;justify-content:center;gap:4px;margin-top:4px}.res-token{border:1px solid #7c6543;border-radius:999px;color:#e7c988;font-size:8px;padding:2px 5px;background:#2a2118}
+.flag-marker{position:absolute;top:-11px;left:50%;transform:translateX(-50%);border:1px solid #e2b95e;border-radius:999px;background:#392914;color:#ffe5a6;padding:4px 8px;font-size:10px;font-weight:900;white-space:nowrap;box-shadow:0 5px 13px rgba(0,0,0,.4)}
+.fog-card{align-self:center;margin:auto;border:1px solid #50483d;border-radius:12px;width:calc(100% - 12px);min-height:124px;display:grid;place-items:center;text-align:center;color:#756b5d;background:repeating-linear-gradient(135deg,#171511 0 9px,#100f0d 9px 18px);font:700 12px Georgia,serif;letter-spacing:.08em;padding:12px}
+
+.hand-panel{border:1px solid var(--line);border-radius:13px;background:linear-gradient(180deg,rgba(35,29,23,.98),rgba(16,14,12,.98));padding:8px;min-width:0}
+.hand-header{display:flex;gap:8px;align-items:center;margin-bottom:6px}.hand-header b{font:700 13px Georgia,serif;color:#ecd59e}.hand-header span{font-size:10px;color:#9e927f}.hand-scroll{display:flex;gap:7px;overflow-x:auto;padding:8px 4px 7px;min-height:154px;align-items:stretch;scrollbar-color:#69543a #17130f}
+.hand-card{flex:0 0 112px;min-height:139px;border:1px solid #67543d;border-radius:10px;background:linear-gradient(160deg,#34271c,#17120e 72%);padding:7px;color:var(--ink);cursor:pointer;position:relative;text-align:left;display:flex;flex-direction:column;gap:4px;transition:.14s transform,.14s border-color,.14s filter;overflow:hidden}
+.hand-card.raven{background:linear-gradient(160deg,#302739,#141118 72%);border-color:#5b4d68}.hand-card:hover:not(:disabled){transform:translateY(-5px);border-color:#e2bd70}.hand-card.selected{transform:translateY(-7px);border-color:#ffd77f;box-shadow:0 0 0 2px rgba(255,215,127,.28)}.hand-card:disabled{opacity:.42;cursor:not-allowed}
+.card-cost{position:absolute;top:5px;left:5px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#142b3b;border:1px solid #77afd0;color:#c8ecff;font-weight:900;z-index:2}
+.card-art{height:58px;border-radius:7px;background:radial-gradient(circle at 50% 30%,rgba(255,224,157,.24),transparent 35%),linear-gradient(145deg,#67482b,#21170f);display:grid;place-items:center;font-size:31px;border:1px solid rgba(255,255,255,.09)}.raven .card-art{background:radial-gradient(circle at 50% 30%,rgba(201,176,255,.17),transparent 35%),linear-gradient(145deg,#493b5c,#19141e)}
+.card-type{text-transform:uppercase;letter-spacing:.14em;color:#9c8b71;font-size:7px}.card-name{font:700 11px Georgia,serif;color:#f2dcaa;line-height:1.1;min-height:24px}.card-text{font-size:8px;color:#b7aa95;line-height:1.25;flex:1}.card-power{position:absolute;right:5px;top:42px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#6c2d2a;border:1px solid #d97b6d;color:#fff3d7;font-weight:900}.raven .card-power{background:#2b5067;border-color:#76afd0}.tactic .card-power{background:#55426d;border-color:#9b82ba;font-size:12px}
+.hand-back-row{display:flex;gap:5px;align-items:center;min-height:52px}.hand-back{width:34px;height:48px;border:1px solid #6d593d;border-radius:6px;background:repeating-linear-gradient(135deg,#442e1e 0 5px,#22170f 5px 10px);box-shadow:2px 3px 7px #000}.hand-hidden-note{font-size:10px;color:#8f8372;margin-left:6px}
+
+/* ---------- Mission / inspector / log ---------- */
+.mission-sealed{text-align:center;padding:14px 6px 8px}.mission-sealed .seal{width:66px;height:66px;margin:0 auto 11px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 38% 30%,#b85749,#6b211d 70%);border:3px double #dc8271;color:#f5c6a9;font-size:28px;box-shadow:0 8px 20px #000}.mission-sealed b{font:700 16px Georgia,serif;color:#e3c995}.mission-sealed span{display:block;color:#9e917f;font-size:10px;line-height:1.45;margin-top:5px}
+.role-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}.role-card{border:1px solid #674332;border-radius:9px;padding:7px;background:rgba(103,45,37,.16)}.role-card.defend{border-color:#3f6577;background:rgba(45,82,102,.15)}.role-card small{display:block;color:#9f917e;font-size:7px;text-transform:uppercase;letter-spacing:.12em}.role-card b{font-size:10px;color:#efcf91;display:block;margin:2px 0}.role-card span{font-size:8px;color:#ac9f8d;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mission-copy{font-size:10px;line-height:1.45;color:#b9aa94}.mission-copy b{color:#efd18d}.mission-progress{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin:10px 0}.mission-step{border:1px solid #4f4436;border-radius:7px;padding:5px 2px;text-align:center;font-size:7px;color:#837867;background:#15120f}.mission-step.done{border-color:#9e7938;background:#352817;color:#f1d89c}.mission-step.live{border-color:#e0b75f;box-shadow:0 0 12px rgba(224,183,95,.2);color:#ffe4a4}.mission-step strong{display:block;font-size:14px;margin-bottom:2px}
+.mission-alert{border:1px solid #806431;border-radius:8px;background:rgba(118,81,29,.2);padding:7px;color:#e6cc91;font-size:9px;line-height:1.4}
+.inspect{min-height:120px}.inspect-head{display:grid;grid-template-columns:48px 1fr;gap:9px;align-items:center}.inspect-icon{width:48px;height:55px;border-radius:8px;display:grid;place-items:center;background:#3a2b1e;font-size:27px;border:1px solid #624f37}.inspect-head b{font:700 13px Georgia,serif;color:#eed59c}.inspect-head span{font-size:9px;color:#9b8f7e;display:block;margin-top:2px}.inspect-text{font-size:10px;color:#bcae99;line-height:1.45;margin-top:9px}.inspect-empty{color:#8c8171;font-size:10px;line-height:1.5;text-align:center;padding:15px 6px}
+.log{max-height:178px;overflow:auto;padding:0 12px 11px}.log-entry{font-size:9px;color:#aea18e;line-height:1.4;border-top:1px solid rgba(255,255,255,.055);padding:6px 0}.log-entry:first-child{border-top:0}.log-entry b{color:#ddc58e}
+
+.selection-bar{border:1px solid #a47d3d;border-radius:11px;background:rgba(71,51,25,.94);padding:8px 10px;display:flex;gap:9px;align-items:center;color:#f2d9a1;font-size:11px}.selection-bar b{color:#fff0c6}.selection-bar .btn{margin-left:auto;padding:6px 8px;font-size:9px}
+.review-banner{border:1px solid #6e5a39;border-radius:10px;background:linear-gradient(90deg,rgba(76,53,24,.35),rgba(25,20,15,.8));padding:8px 10px;display:flex;align-items:center;gap:9px;color:#d9c397;font-size:10px}.review-banner strong{color:#f5d797}.review-banner .btn{margin-left:auto;padding:7px 10px;font-size:10px}
+
+.overlay{position:fixed;inset:0;z-index:80;background:rgba(5,4,3,.84);backdrop-filter:blur(7px);display:grid;place-items:center;padding:20px}.overlay-card{width:min(480px,100%);border:1px solid #9b7a40;border-radius:18px;background:radial-gradient(circle at 50% 0,rgba(218,172,83,.16),transparent 38%),linear-gradient(145deg,#2b231a,#12100d);padding:26px;text-align:center;box-shadow:0 30px 80px #000}.overlay-emblem{font-size:54px}.overlay-card h2{font:700 30px Georgia,serif;color:#f2d79b;margin:8px 0}.overlay-card p{color:#b9ab96;line-height:1.55;font-size:13px}.overlay-card .btn-row{justify-content:center}
+
+/* ---------- Ações alternadas / combate ---------- */
+.action-queue{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,rgba(31,26,21,.98),rgba(15,13,11,.98));padding:8px;min-width:0}
+.queue-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}.queue-head b{font:700 12px Georgia,serif;color:#ecd39a}.queue-head span{font-size:9px;color:#998d7b}.queue-head .turn-now{margin-left:auto;border:1px solid #8d6d38;border-radius:999px;background:#342718;color:#f2d596;padding:3px 7px;font-weight:900}
+.queue-scroll{display:flex;gap:6px;overflow-x:auto;min-height:55px;padding:2px;scrollbar-color:#69543a #17130f}
+.queue-empty{display:grid;place-items:center;width:100%;min-height:49px;border:1px dashed rgba(255,255,255,.07);border-radius:8px;color:#776c5e;font-size:9px}
+.queue-item{flex:0 0 142px;border:1px solid #574a3a;border-radius:8px;background:#191510;padding:6px;display:grid;grid-template-columns:22px 1fr;gap:6px;align-items:start;position:relative}.queue-item.p0{border-left:3px solid var(--red)}.queue-item.p1{border-left:3px solid var(--blue)}.queue-icon{font-size:17px}.queue-copy{min-width:0}.queue-copy b{display:block;color:#e8d4aa;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.queue-copy span{display:block;color:#9d907c;font-size:8px;line-height:1.25;margin-top:2px}.queue-number{position:absolute;right:4px;top:3px;color:#6f6353;font-size:7px;font-weight:900}
+.unit-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px;align-items:stretch}.unit-actions{display:grid;gap:3px;width:43px}.unit-action{border:1px solid #635039;border-radius:6px;background:#211a13;color:#d9c399;font-size:8px;font-weight:900;cursor:pointer;padding:2px}.unit-action:hover:not(:disabled){border-color:var(--gold);color:#fff}.unit-action:disabled{opacity:.28;cursor:not-allowed}
+.unit-chip.targetable{border-color:#f0bf61;box-shadow:0 0 0 2px rgba(240,191,97,.24),0 0 18px rgba(240,191,97,.17);animation:targetPulse 1.2s infinite}.unit-chip.exhausted{opacity:.72}.unit-chip.new-unit:after{content:"NOVA";position:absolute;right:3px;bottom:2px;color:#8e816d;font-size:6px;font-weight:900;letter-spacing:.08em}
+.combat-stats{display:grid;gap:2px;text-align:right;min-width:38px}.combat-stats b{font:900 11px Georgia,serif;white-space:nowrap}.combat-stats .atk{color:#ed9a83}.combat-stats .def{color:#8fc7df}.combat-stats small{font:700 6px Segoe UI,sans-serif;color:#776c5d;text-transform:uppercase}
+.card-power{display:none!important}.card-stats{position:absolute;right:5px;top:38px;display:grid;gap:2px}.card-stats b{min-width:33px;border-radius:999px;padding:2px 4px;font-size:8px;text-align:center;color:#fff3dc;box-shadow:0 2px 5px rgba(0,0,0,.3)}.card-stats .atk{background:#6c2d2a;border:1px solid #d97b6d}.card-stats .def{background:#244f68;border:1px solid #76afd0}.card-stats .magic{background:#55426d;border:1px solid #9b82ba;font-size:12px;padding:5px}
+.selection-bar.attack-mode{border-color:#9d453d;background:rgba(82,35,31,.95)}.selection-bar.move-mode{border-color:#46748b;background:rgba(29,58,73,.95)}.attack-preview{display:block;margin-top:3px;font-size:8px;color:#e6c887}.active-ribbon{border-color:#b88c45!important;box-shadow:0 0 0 1px rgba(228,189,104,.19),0 8px 22px rgba(0,0,0,.25)}
+.flag-choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.flag-choice{border:1px solid #725a37;border-radius:11px;background:linear-gradient(180deg,#342718,#19130e);color:#eed49b;padding:14px 7px;cursor:pointer;font-weight:900}.flag-choice span{display:block;font-size:24px;margin-bottom:5px}.flag-choice small{display:block;color:#a99a83;font-weight:600;margin-top:4px}.flag-choice:hover:not(:disabled){border-color:#e5bd71;filter:brightness(1.13)}.flag-choice:disabled{opacity:.38;cursor:not-allowed}.chosen-home{border:1px solid #7c6134;border-radius:8px;background:#2b2115;padding:7px;margin:8px 0;font-size:9px;color:#d9c18d;line-height:1.4}.chosen-home b{color:#ffe0a1}
+
+@media(max-width:1180px){
+  .battle-layout{grid-template-columns:190px minmax(620px,1fr)}
+  .side-column.right{grid-column:1/-1;position:static;grid-template-columns:1fr 1fr 1fr}.side-column.right .panel{min-height:0}
+}
+@media(max-width:880px){
+  .setup-grid{grid-template-columns:1fr}.battle-layout{grid-template-columns:1fr}.side-column{position:static;grid-template-columns:1fr 1fr}.side-column.right{grid-template-columns:1fr}.game-shell{padding:6px}.brand-name{width:100%}.top-grow{display:none}
+}
+@media(max-width:620px){
+  .setup-shell{padding:24px 10px}.player-config{grid-template-columns:44px 1fr}.player-config label:last-child{grid-column:2}.deck-showcase{grid-template-columns:1fr}.side-column{grid-template-columns:1fr}.board{min-width:610px}.battle-layout{gap:7px}.hand-card{flex-basis:105px}.topbar .btn{padding:7px 9px;font-size:10px}.player-ribbon{align-items:flex-start;flex-wrap:wrap}.ribbon-actions{width:100%;margin-left:0}.ribbon-stat{border:0;padding-left:0}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const $ = selector => document.querySelector(selector);
+const PROTOCOL_VERSION = 5;
+const ROOM_PREFIX = 'ageguthology-banner-v5-';
+const MAX_ROUNDS = 8;
+const KILL_GOAL = 10;
+const LOCATION_CAP = 3;
+
+const DECKS = {
+  vale: {
+    name:'Bastião de Valebruma', short:'Valebruma', icon:'♜', color:'vale',
+    style:'Defesa flexível, formação e respostas quando está atrás.',
+    cards:['vale_page','vale_scout','vale_shield','vale_spear','vale_guard','vale_sister','vale_knight','vale_marshal','vale_rally','vale_march','vale_barricade','vale_laststand']
+  },
+  raven: {
+    name:'Companhia do Corvo', short:'Corvo', icon:'♞', color:'raven',
+    style:'Mobilidade, sabotagem e explosões de poder no local da bandeira.',
+    cards:['raven_rat','raven_spy','raven_blade','raven_saboteur','raven_rider','raven_duelist','raven_knight','raven_chief','raven_feint','raven_path','raven_smoke','raven_allin']
+  }
+};
+
+const CARDS = {
+  vale_page:{deck:'vale',name:'Pajem do Portão',type:'unit',cost:1,attack:1,defense:3,icon:'🛡️',effect:'first',text:'Ao entrar como seu primeiro aliado aqui, recebe +1 DEF permanente.'},
+  vale_scout:{deck:'vale',name:'Batedora da Muralha',type:'unit',cost:1,attack:1,defense:2,icon:'🦅',effect:'draw',text:'Ao entrar: compre 1 carta.'},
+  vale_shield:{deck:'vale',name:'Porta-Escudo',type:'unit',cost:2,attack:1,defense:5,icon:'🔰',effect:'flagGuard',text:'Ao entrar no local da Bandeira, recebe +2 DEF nesta rodada.'},
+  vale_spear:{deck:'vale',name:'Lanceiro do Fosso',type:'unit',cost:2,attack:3,defense:3,icon:'🔱',effect:'chip',text:'Ao entrar: a maior unidade inimiga aqui recebe −1 DEF nesta rodada.'},
+  vale_guard:{deck:'vale',name:'Guarda do Portão',type:'unit',cost:3,attack:3,defense:5,icon:'⚔️',effect:'behind',text:'Ao entrar com menos aliados que inimigos, recebe +1 ATQ e +1 DEF nesta rodada.'},
+  vale_sister:{deck:'vale',name:'Irmã da Capela',type:'unit',cost:3,attack:1,defense:4,icon:'🕯️',effect:'bless',text:'Ao entrar: seu outro aliado mais frágil aqui recebe +2 DEF nesta rodada.'},
+  vale_knight:{deck:'vale',name:'Cavaleiro da Torre',type:'unit',cost:4,attack:5,defense:5,icon:'♜',effect:'none',text:'Um combatente equilibrado, sem efeito adicional.'},
+  vale_marshal:{deck:'vale',name:'Marechal de Valebruma',type:'unit',cost:5,attack:4,defense:7,icon:'👑',effect:'marshal',text:'Ao entrar: seus outros aliados aqui recebem +1 DEF nesta rodada.'},
+  vale_rally:{deck:'vale',name:'Reagrupar!',type:'tactic',cost:1,icon:'📯',effect:'rally',text:'Seu aliado com menor ATQ aqui recebe +2 ATQ nesta rodada.'},
+  vale_march:{deck:'vale',name:'Marcha Forçada',type:'tactic',cost:2,icon:'🥾',effect:'march',text:'Mova seu aliado mais fraco de outro local para cá. Ele recebe +1 ATQ.'},
+  vale_barricade:{deck:'vale',name:'Erguer Barricadas',type:'tactic',cost:2,icon:'🪵',effect:'barricade',text:'Seus aliados aqui recebem +2 DEF e não podem ser reduzidos ou movidos nesta rodada.'},
+  vale_laststand:{deck:'vale',name:'Segurar a Linha',type:'tactic',cost:3,icon:'🏰',effect:'laststand',text:'Seu aliado com menor DEF aqui recebe +4 DEF se estiver em desvantagem numérica; senão, +2.'},
+
+  raven_rat:{deck:'raven',name:'Rato de Estrada',type:'unit',cost:1,attack:2,defense:2,icon:'🗡️',effect:'emptyRaid',text:'Ao entrar sem inimigos aqui, recebe +1 ATQ permanente.'},
+  raven_spy:{deck:'raven',name:'Espião do Corvo',type:'unit',cost:1,attack:1,defense:2,icon:'🐦‍⬛',effect:'draw',text:'Ao entrar: compre 1 carta.'},
+  raven_blade:{deck:'raven',name:'Lâmina Mercenária',type:'unit',cost:2,attack:3,defense:3,icon:'⚔️',effect:'none',text:'Ataque e defesa diretos por um preço justo.'},
+  raven_saboteur:{deck:'raven',name:'Sabotadora da Ponte',type:'unit',cost:2,attack:2,defense:3,icon:'💣',effect:'sabotage',text:'Ao entrar: a maior unidade inimiga aqui recebe −2 DEF nesta rodada.'},
+  raven_rider:{deck:'raven',name:'Cavaleiro do Corvo',type:'unit',cost:3,attack:4,defense:3,icon:'🐎',effect:'ride',text:'Investida: se a Bandeira estiver adjacente, mova-se até ela e possa atacar nesta rodada.'},
+  raven_duelist:{deck:'raven',name:'Duelista Rubra',type:'unit',cost:3,attack:4,defense:3,icon:'🤺',effect:'duel',text:'Ao entrar com exatamente 1 inimigo aqui, recebe +2 ATQ nesta rodada.'},
+  raven_knight:{deck:'raven',name:'Cavaleiro Negro',type:'unit',cost:4,attack:6,defense:5,icon:'♞',effect:'none',text:'Uma ameaça ofensiva pesada, sem efeito adicional.'},
+  raven_chief:{deck:'raven',name:'Chefe da Companhia',type:'unit',cost:5,attack:5,defense:6,icon:'🪶',effect:'chief',text:'Ao entrar: seu outro aliado com maior ATQ aqui recebe +2 ATQ nesta rodada.'},
+  raven_feint:{deck:'raven',name:'Finta Cruel',type:'tactic',cost:1,icon:'🩸',effect:'feint',text:'A unidade inimiga com maior ATQ aqui recebe −2 DEF nesta rodada.'},
+  raven_path:{deck:'raven',name:'Passagem Secreta',type:'tactic',cost:2,icon:'🗝️',effect:'path',text:'Mova seu aliado com maior ATQ de outro local para cá. Ele recebe +2 ATQ.'},
+  raven_smoke:{deck:'raven',name:'Bomba de Fumaça',type:'tactic',cost:2,icon:'🌫️',effect:'smoke',text:'Mova a unidade inimiga mais frágil daqui para o outro local com menos inimigos.'},
+  raven_allin:{deck:'raven',name:'Tudo ou Nada',type:'tactic',cost:3,icon:'🔥',effect:'allin',text:'Seus aliados aqui recebem +1 ATQ; no local da Bandeira, recebem +2.'}
+};
+
+const LOCATIONS = {
+  bridge:{name:'Ponte dos Juramentos',icon:'🌉',effect:'A primeira unidade de cada lado que entrar por rodada recebe +1 ATQ.'},
+  chapel:{name:'Capela da Última Luz',icon:'⛪',effect:'A unidade com menor DEF de cada lado recebe +1 DEF.'},
+  market:{name:'Praça do Mercado',icon:'🏘️',effect:'Com exatamente 1 unidade aqui, ela recebe +1 ATQ e +1 DEF.'},
+  tower:{name:'Torre de Vigia',icon:'🗼',effect:'O lado com menos unidades recebe +1 DEF em cada uma.'},
+  forest:{name:'Estrada da Floresta',icon:'🌲',effect:'Unidades movidas para cá nesta rodada recebem +1 ATQ.'},
+  mire:{name:'Charco das Lanças',icon:'🌫️',effect:'Unidades com ATQ impresso 5 ou mais recebem −1 ATQ.'}
+};
+
+let state = null;
+let mode = 'local';
+let myIndex = null;
+let peer = null;
+let conn = null;
+let conns = [];
+let lobbyStatus = '';
+let selection = null;
+let inspect = null;
+let uidSeq = 1;
+
+function esc(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));}
+function cleanName(value,fallback){const out=String(value||'').replace(/[<>&"']/g,'').trim().slice(0,18);return out||fallback;}
+function shuffle(list){const a=list.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function online(){return mode==='host'||mode==='guest';}
+function other(pi){return 1-pi;}
+function log(message){if(!state)return;state.log.unshift({round:state.turno,text:message});state.log=state.log.slice(0,120);}
+function draw(player,count=1){for(let i=0;i<count;i++){if(player.deck.length)player.hand.push(player.deck.pop());}}
+function makeDeck(deckId){return shuffle(DECKS[deckId].cards.flatMap(id=>[id,id]));}
+function makePlayer(name,deckId){
+  const player={name,deckId,role:'',mana:0,maxMana:0,deck:makeDeck(deckId),hand:[],discard:[],units:[],kills:0};
+  draw(player,4);
+  if(!player.hand.some(id=>CARDS[id].type==='unit'&&CARDS[id].cost===1)){
+    const index=player.deck.findIndex(id=>CARDS[id].type==='unit'&&CARDS[id].cost===1);
+    if(index>=0){const vanguard=player.deck.splice(index,1)[0];player.deck.unshift(player.hand.pop());player.hand.push(vanguard);}
+  }
+  return player;
+}
+
+function createState(deck0,deck1,name0,name1,hideHands,roleMode='random'){
+  const ids=shuffle(Object.keys(LOCATIONS));
+  const attacker=roleMode==='p1'?0:roleMode==='p2'?1:Math.floor(Math.random()*2);
+  const players=[makePlayer(name0,deck0),makePlayer(name1,deck1)];
+  players[attacker].role='Ladrão';players[other(attacker)].role='Guardião';
+  return {
+    turno:0,phase:'setup',priority:0,activePlayer:0,consecutivePasses:0,vezLocal:0,hideHands:!!hideHands,passPending:false,
+    revision:0,nextUid:1,actionSeq:0,actionQueue:[],actionHistory:[],overtime:false,
+    players,
+    locations:[{id:ids.shift(),revealed:false},{id:ids.shift(),revealed:true},{id:ids.shift(),revealed:false}],
+    mission:{id:'stolen-banner',revealed:false,active:false,attacker,defender:other(attacker),home:null,extraction:null,flag:{status:'sealed',loc:null,carrierUid:null}},
+    log:[],gameOver:null
+  };
+}
+
+function startLocalGame(){
+  closeNetwork();mode='local';myIndex=null;selection=null;inspect=null;
+  state=createState($('#p1Deck').value,$('#p2Deck').value,cleanName($('#p1Name').value,'Jogador 1'),cleanName($('#p2Name').value,'Jogador 2'),$('#hideHands').value==='yes',$('#roleMode').value);
+  log('A campanha começou. Os jogadores agora alternam uma ação de cada vez.');startRound(1);render();
+}
+
+function startRound(round){
+  state.turno=round;state.phase='actions';state.priority=(round-1)%2;state.activePlayer=state.priority;state.consecutivePasses=0;state.vezLocal=state.activePlayer;state.passPending=false;state.actionQueue=[];selection=null;
+  for(const player of state.players){
+    player.maxMana=Math.min(round,8);player.mana=player.maxMana;if(round>1)draw(player,round>=3?2:1);
+    for(const unit of player.units){unit.attackTemp=0;unit.shield=0;unit.ward=false;unit.reinforced=false;unit.charge=false;}
+  }
+  if(round===2&&!state.mission.revealed){
+    state.mission.revealed=true;state.phase='flag-choice';state.activePlayer=state.mission.defender;state.vezLocal=state.activePlayer;
+    log('📜 Missão revelada. O Guardião deve escolher publicamente onde proteger a Bandeira.');
+  }
+  if(round===3&&!state.mission.active){
+    state.locations[0].revealed=true;state.locations[2].revealed=true;state.mission.active=true;state.mission.flag.status='ground';state.mission.flag.loc=state.mission.home??1;
+    state.priority=state.mission.attacker;state.activePlayer=state.priority;state.vezLocal=state.activePlayer;
+    log('⚑ Os flancos foram revelados. A Bandeira está ativa e o Ladrão recebe a primeira ação desta rodada.');
+  }
+  if(round>MAX_ROUNDS){state.overtime=true;log('⏳ Prorrogação: a partida segue até Extração, Recuperação segura ou 10 Baixas.');}
+  log('Rodada '+round+': mana recarregada para '+Math.min(round,8)+'. '+state.players[state.activePlayer].name+' começa.');
+}
+
+function slotLabel(loc,names=true){if(names&&state.locations[loc]?.revealed)return LOCATIONS[state.locations[loc].id].name;return loc===0?'Flanco esquerdo':loc===1?'Local central':'Flanco direito';}
+function chooseFlag(pi,loc){
+  if(!state||state.phase!=='flag-choice'||pi!==state.mission.defender||!canChooseFlag(pi)||![0,1,2].includes(loc))return;
+  const mission=state.mission;mission.home=loc;mission.extraction=loc===0?2:loc===2?0:(mission.attacker===0?0:2);mission.flag.loc=loc;mission.flag.status='sealed';
+  recordAction(pi,'flag','⚑','Bandeira posicionada',slotLabel(loc,false)+' · fuga pelo '+slotLabel(mission.extraction,false));
+  log('⚑ '+state.players[pi].name+' escolheu '+slotLabel(loc,false)+' para proteger a Bandeira. A rota de fuga será '+slotLabel(mission.extraction,false)+'.');
+  state.phase='actions';state.activePlayer=state.priority;state.vezLocal=state.activePlayer;state.passPending=state.hideHands&&state.activePlayer!==pi;commitAndSync();
+}
+function canChooseFlag(pi){if(!state||state.gameOver||state.phase!=='flag-choice'||pi!==state.mission.defender)return false;if(online())return pi===myIndex;return !state.passPending;}
+
+function unitsAt(pi,loc){return state.players[pi].units.filter(unit=>unit.loc===loc);}
+function maxDefense(unit){return CARDS[unit.id].defense+(unit.defPerm||0);}
+function attackValue(pi,unit){let value=CARDS[unit.id].attack+(unit.attackPerm||0)+(unit.attackTemp||0);if(state.mission.flag.carrierUid===unit.uid)value-=1;return Math.max(0,value);}
+function defenseValue(unit){return Math.max(0,(unit.hp||0)+(unit.shield||0));}
+function weakest(list){return list.slice().sort((a,b)=>(CARDS[a.id].attack+(a.attackPerm||0))-(CARDS[b.id].attack+(b.attackPerm||0))||a.uid-b.uid)[0]||null;}
+function strongest(list){return list.slice().sort((a,b)=>(CARDS[b.id].attack+(b.attackPerm||0))-(CARDS[a.id].attack+(a.attackPerm||0))||a.uid-b.uid)[0]||null;}
+function mostFragile(list){return list.slice().sort((a,b)=>defenseValue(a)-defenseValue(b)||a.uid-b.uid)[0]||null;}
+function flagAt(loc){return state.mission.revealed&&Number.isInteger(state.mission.flag.loc)&&state.mission.flag.loc===loc;}
+function locationPower(pi,loc){return unitsAt(pi,loc).reduce((sum,unit)=>sum+attackValue(pi,unit),0);}
+function totalPower(pi){return state.players[pi].units.reduce((sum,unit)=>sum+attackValue(pi,unit)+defenseValue(unit),0);}
+function unitReady(unit){return (unit.enteredTurn<state.turno||unit.charge)&&unit.actedTurn!==state.turno;}
+
+function canAct(pi){
+  if(!state||state.gameOver||state.phase!=='actions'||state.activePlayer!==pi)return false;
+  if(online())return pi===myIndex;
+  if(state.hideHands)return pi===state.vezLocal&&!state.passPending;
+  return true;
+}
+function canSeeHand(pi){
+  if(!state)return false;if(state.gameOver)return true;if(online())return pi===myIndex;if(!state.hideHands)return true;
+  return state.phase==='actions'&&pi===state.vezLocal&&!state.passPending;
+}
+function selectCard(pi,index){
+  if(!canAct(pi))return;const id=state.players[pi].hand[index];if(!id||state.players[pi].mana<CARDS[id].cost)return;
+  selection=selection&&selection.type==='card'&&selection.pi===pi&&selection.index===index?null:{type:'card',pi,index};inspect={type:'card',id};render();
+}
+function legalPlayLocation(pi,id,loc){const card=CARDS[id];return !!(card&&state.locations[loc]?.revealed&&(card.type!=='unit'||unitsAt(pi,loc).length<LOCATION_CAP));}
+function handleLocationClick(loc){
+  if(!selection)return;
+  if(selection.type==='card')playSelected(loc);
+  else if(selection.type==='move')executeMove(selection.pi,selection.uid,loc);
+}
+function playSelected(loc){
+  if(!selection||selection.type!=='card'||!canAct(selection.pi))return;
+  const pi=selection.pi,player=state.players[pi],id=player.hand[selection.index],card=CARDS[id];if(!card||player.mana<card.cost||!legalPlayLocation(pi,id,loc))return;
+  player.hand.splice(selection.index,1);player.mana-=card.cost;
+  recordAction(pi,'card',card.icon,card.name,slotLabel(loc));resolveCard(pi,{id,slot:loc});selection=null;finishAction(pi);
+}
+function confirmPass(){state.passPending=false;selection=null;render();}
+
+function recordAction(pi,kind,icon,title,detail,cardId=null){
+  const event={seq:++state.actionSeq,round:state.turno,pi,kind,icon,title,detail,cardId};state.actionQueue.push(event);state.actionHistory.push(event);state.actionHistory=state.actionHistory.slice(-80);
+}
+function commitAndSync(){state.revision=(state.revision||0)+1;sync();}
+function handoffTo(pi){state.activePlayer=pi;state.vezLocal=pi;if(!online()&&state.hideHands)state.passPending=true;commitAndSync();}
+function finishAction(pi){state.consecutivePasses=0;selection=null;handoffTo(other(pi));}
+function passAction(pi){
+  if(!canAct(pi))return;selection=null;recordAction(pi,'pass','✋','Passou','Sem realizar ação');log('✋ '+state.players[pi].name+' passou.');state.consecutivePasses++;
+  if(state.consecutivePasses>=2){finishRound();return;}handoffTo(other(pi));
+}
+
+function addAttack(unit,value){if(unit)unit.attackTemp=(unit.attackTemp||0)+value;}
+function addShield(unit,value){if(unit)unit.shield=(unit.shield||0)+value;}
+function weakenDefense(unit,value){
+  if(!unit)return false;if(unit.ward){log(CARDS[unit.id].name+' resistiu ao enfraquecimento.');return false;}
+  let remaining=value;const absorbed=Math.min(unit.shield||0,remaining);unit.shield-=absorbed;remaining-=absorbed;if(remaining>0)unit.hp=Math.max(1,unit.hp-remaining);return true;
+}
+function applyLocationEntry(pi,unit,loc){
+  const id=state.locations[loc].id,allies=unitsAt(pi,loc),enemies=unitsAt(other(pi),loc),arrivals=allies.filter(u=>u.enteredTurn===state.turno);
+  if(id==='bridge'&&arrivals.length===1)addAttack(unit,1);
+  if(id==='chapel'&&arrivals.length===1)addShield(unit,1);
+  if(id==='market'&&allies.length===1){addAttack(unit,1);addShield(unit,1);}
+  if(id==='tower'&&allies.length<=enemies.length)addShield(unit,1);
+  if(id==='mire'&&CARDS[unit.id].attack>=5)addAttack(unit,-1);
+}
+function moveUnit(pi,unit,destination,enemyEffect=false,adjacentOnly=false){
+  if(!unit||unit.loc===destination||!state.locations[destination]?.revealed)return false;if(adjacentOnly&&Math.abs(unit.loc-destination)!==1)return false;
+  if(enemyEffect&&unit.ward){log(CARDS[unit.id].name+' não pôde ser movido.');return false;}if(unitsAt(pi,destination).length>=LOCATION_CAP)return false;
+  unit.loc=destination;unit.movedTurn=state.turno;if(state.locations[destination].id==='forest')addAttack(unit,1);if(state.mission.flag.carrierUid===unit.uid)state.mission.flag.loc=destination;return true;
+}
+function otherOpenLocationWithFewest(pi,from){return state.locations.map((loc,index)=>({loc,index,count:unitsAt(pi,index).length})).filter(x=>x.loc.revealed&&x.index!==from&&x.count<LOCATION_CAP).sort((a,b)=>a.count-b.count||Math.abs(a.index-from)-Math.abs(b.index-from))[0]?.index;}
+
+function resolveCard(pi,item){
+  const player=state.players[pi],card=CARDS[item.id],loc=item.slot;
+  if(card.type==='unit'){
+    const beforeAllies=unitsAt(pi,loc).length,beforeEnemies=unitsAt(other(pi),loc).length;
+    const unit={uid:state.nextUid++,id:item.id,loc,attackPerm:0,attackTemp:0,defPerm:0,hp:card.defense,shield:0,ward:false,reinforced:false,enteredTurn:state.turno,actedTurn:state.turno,movedTurn:null,charge:false};
+    player.units.push(unit);if(beforeEnemies>beforeAllies){unit.shield+=1;unit.reinforced=true;log('✦ Reforço: '+card.name+' ganhou 1 Escudo ao entrar em desvantagem numérica.');}applyLocationEntry(pi,unit,loc);
+    if(card.effect==='first'&&beforeAllies===0){unit.defPerm+=1;unit.hp+=1;}
+    if(card.effect==='draw')draw(player,1);
+    if(card.effect==='flagGuard'&&flagAt(loc))addShield(unit,2);
+    if(card.effect==='chip'){const target=strongest(unitsAt(other(pi),loc));if(weakenDefense(target,1))log(card.name+' reduziu a DEF de '+CARDS[target.id].name+'.');}
+    if(card.effect==='behind'&&beforeAllies<beforeEnemies){addAttack(unit,1);addShield(unit,1);}
+    if(card.effect==='bless')addShield(mostFragile(unitsAt(pi,loc).filter(u=>u.uid!==unit.uid)),2);
+    if(card.effect==='marshal')for(const ally of unitsAt(pi,loc))if(ally.uid!==unit.uid)addShield(ally,1);
+    if(card.effect==='emptyRaid'&&beforeEnemies===0)unit.attackPerm+=1;
+    if(card.effect==='sabotage'){const target=strongest(unitsAt(other(pi),loc));if(weakenDefense(target,2))log(card.name+' sabotou a DEF de '+CARDS[target.id].name+'.');}
+    if(card.effect==='ride'&&state.mission.active&&Number.isInteger(state.mission.flag.loc)&&Math.abs(state.mission.flag.loc-loc)===1&&moveUnit(pi,unit,state.mission.flag.loc)){unit.charge=true;unit.actedTurn=null;addAttack(unit,1);}
+    if(card.effect==='duel'&&unitsAt(other(pi),unit.loc).length===1)addAttack(unit,2);
+    if(card.effect==='chief')addAttack(strongest(unitsAt(pi,unit.loc).filter(u=>u.uid!==unit.uid)),2);
+    log(player.name+' jogou '+card.name+' em '+slotLabel(unit.loc)+'.');return;
+  }
+  const allies=()=>unitsAt(pi,loc),enemies=()=>unitsAt(other(pi),loc);
+  if(card.effect==='rally')addAttack(weakest(allies()),2);
+  if(card.effect==='march'){const source=weakest(player.units.filter(u=>u.loc!==loc&&state.locations[u.loc].revealed));if(moveUnit(pi,source,loc)){addAttack(source,1);log(card.name+' trouxe '+CARDS[source.id].name+'.');}}
+  if(card.effect==='barricade')for(const unit of allies()){addShield(unit,2);unit.ward=true;}
+  if(card.effect==='laststand'){const target=mostFragile(allies());addShield(target,allies().length<enemies().length?4:2);}
+  if(card.effect==='feint'){const target=strongest(enemies());if(weakenDefense(target,2))log(card.name+' abriu a guarda de '+CARDS[target.id].name+'.');}
+  if(card.effect==='path'){const source=strongest(player.units.filter(u=>u.loc!==loc&&state.locations[u.loc].revealed));if(moveUnit(pi,source,loc)){addAttack(source,2);log(card.name+' trouxe '+CARDS[source.id].name+'.');}}
+  if(card.effect==='smoke'){const target=mostFragile(enemies()),destination=otherOpenLocationWithFewest(other(pi),loc);if(target&&destination!=null&&moveUnit(other(pi),target,destination,true))log(card.name+' expulsou '+CARDS[target.id].name+'.');}
+  if(card.effect==='allin')for(const unit of allies())addAttack(unit,flagAt(loc)?2:1);
+  player.discard.push(item.id);log(player.name+' jogou a tática '+card.name+' em '+slotLabel(loc)+'.');
+}
+
+function findUnit(pi,uid){return state.players[pi].units.find(unit=>unit.uid===uid)||null;}
+function legalAttackTargets(pi,uid){const attacker=findUnit(pi,uid);if(!attacker||!unitReady(attacker))return [];return unitsAt(other(pi),attacker.loc);}
+function startAttack(pi,uid){if(!canAct(pi))return;const unit=findUnit(pi,uid);if(!unit||!unitReady(unit)||!legalAttackTargets(pi,uid).length)return;selection={type:'attack',pi,uid};inspect={type:'unit',id:unit.id,pi,uid};render();}
+function applyDamage(unit,damage){let remaining=damage,shieldHit=Math.min(unit.shield||0,remaining);unit.shield-=shieldHit;remaining-=shieldHit;unit.hp-=remaining;return unit.hp<=0;}
+function defeatUnit(ownerPi,unit,killerPi){
+  if(!unit)return;const loc=unit.loc,card=CARDS[unit.id],owner=state.players[ownerPi],killer=state.players[killerPi];owner.units=owner.units.filter(candidate=>candidate.uid!==unit.uid);owner.discard.push(unit.id);killer.kills++;
+  recordAction(killerPi,'death','💀',card.name+' eliminado',killer.name+' marcou a Baixa em '+slotLabel(loc),unit.id);log('💀 '+killer.name+' derrotou '+card.name+' de '+owner.name+'. Total: '+killer.kills+' Baixas.');
+  if(state.mission.flag.carrierUid===unit.uid){state.mission.flag.status='ground';state.mission.flag.loc=loc;state.mission.flag.carrierUid=null;recordAction(ownerPi,'flag','⚑','Bandeira derrubada',slotLabel(loc));log('⚑ O portador caiu e a Bandeira ficou em '+slotLabel(loc)+'.');}
+}
+function checkKillVictory(){
+  const reached=[0,1].filter(pi=>state.players[pi].kills>=KILL_GOAL);if(!reached.length)return false;
+  if(reached.length===2){state.gameOver={winner:null,title:'Empate sangrento',reason:'Os dois exércitos alcançaram 10 Baixas no mesmo duelo.'};}
+  else{const winner=reached[0];state.gameOver={winner,title:'Vitória por Deathmatch',reason:state.players[winner].name+' causou 10 Baixas inimigas.'};}
+  state.phase='ended';return true;
+}
+function executeAttack(pi,attackerUid,targetUid){
+  if(!canAct(pi)||!selection||selection.type!=='attack'||selection.uid!==attackerUid)return;const attacker=findUnit(pi,attackerUid),target=findUnit(other(pi),targetUid);if(!attacker||!target||target.loc!==attacker.loc||!unitReady(attacker))return;
+  const attackDamage=attackValue(pi,attacker),counterDamage=attackValue(other(pi),target),targetBefore=defenseValue(target),attackerBefore=defenseValue(attacker);attacker.actedTurn=state.turno;
+  const targetDies=applyDamage(target,attackDamage),attackerDies=applyDamage(attacker,counterDamage);
+  recordAction(pi,'attack','⚔️',CARDS[attacker.id].name+' atacou '+CARDS[target.id].name,attackDamage+' dano ↔ '+counterDamage+' contra-ataque · '+slotLabel(attacker.loc),attacker.id);
+  log('⚔️ '+CARDS[attacker.id].name+' causou '+attackDamage+'; '+CARDS[target.id].name+' revidou '+counterDamage+'.');
+  if(targetDies)defeatUnit(other(pi),target,pi);if(attackerDies)defeatUnit(pi,attacker,other(pi));selection=null;
+  if(checkKillVictory()){commitAndSync();return;}finishAction(pi);
+}
+
+function startMove(pi,uid){if(!canAct(pi))return;const unit=findUnit(pi,uid);if(!unit||!unitReady(unit))return;selection={type:'move',pi,uid};inspect={type:'unit',id:unit.id,pi,uid};render();}
+function legalMoveDestination(pi,unit,loc){return !!(unit&&state.locations[loc]?.revealed&&Math.abs(unit.loc-loc)===1&&unitsAt(pi,loc).length<LOCATION_CAP);}
+function executeMove(pi,uid,loc){
+  if(!canAct(pi)||!selection||selection.type!=='move'||selection.uid!==uid)return;const unit=findUnit(pi,uid);if(!legalMoveDestination(pi,unit,loc))return;const from=unit.loc;unit.actedTurn=state.turno;if(!moveUnit(pi,unit,loc,false,true))return;
+  recordAction(pi,'move','🥾',CARDS[unit.id].name+' marchou',slotLabel(from)+' → '+slotLabel(loc),unit.id);log('🥾 '+CARDS[unit.id].name+' moveu para '+slotLabel(loc)+'.');selection=null;finishAction(pi);
+}
+
+function flagActionFor(pi,unit){
+  if(!state.mission.active||!unitReady(unit))return null;const mission=state.mission,flag=mission.flag;
+  if(pi===mission.attacker&&flag.status==='ground'&&unit.loc===flag.loc)return 'steal';
+  if(pi===mission.attacker&&flag.status==='carried'&&flag.carrierUid===unit.uid&&unit.loc===mission.extraction)return 'extract';
+  if(pi===mission.defender&&flag.status==='ground'&&flag.loc!==mission.home&&unit.loc===flag.loc)return 'recover';
+  return null;
+}
+function executeFlagAction(pi,uid){
+  if(!canAct(pi))return;const unit=findUnit(pi,uid),action=unit?flagActionFor(pi,unit):null;if(!action)return;unit.actedTurn=state.turno;const flag=state.mission.flag;
+  if(action==='steal'){flag.status='carried';flag.carrierUid=unit.uid;recordAction(pi,'flag','⚑',CARDS[unit.id].name+' roubou a Bandeira',slotLabel(unit.loc));log('⚑ '+CARDS[unit.id].name+' agora carrega a Bandeira.');}
+  if(action==='recover'){
+    flag.status='ground';flag.loc=state.mission.home;flag.carrierUid=null;recordAction(pi,'flag','🛡️','Bandeira recuperada','Voltou para '+slotLabel(flag.loc));log('🛡️ O Guardião devolveu a Bandeira ao ponto inicial.');
+    if(state.overtime){state.gameOver={winner:pi,title:'Bandeira recuperada',reason:state.players[pi].name+' recuperou o Estandarte durante a Prorrogação.'};state.phase='ended';selection=null;commitAndSync();return;}
+  }
+  if(action==='extract'){recordAction(pi,'flag','🏁','Bandeira extraída',slotLabel(unit.loc));state.gameOver={winner:pi,title:'Bandeira capturada',reason:state.players[pi].name+' sobreviveu à rota e gastou uma ação para Extrair.'};state.phase='ended';selection=null;commitAndSync();return;}
+  finishAction(pi);
+}
+
+function finishRound(){
+  selection=null;state.passPending=false;state.activePlayer=null;
+  if(state.turno>=MAX_ROUNDS){const flag=state.mission.flag,safe=flag.status==='ground'&&flag.loc===state.mission.home;
+    if(safe){const winner=state.mission.defender;state.gameOver={winner,title:'O Estandarte resistiu',reason:state.players[winner].name+' manteve a Bandeira segura até o fim da rodada 8.'};state.phase='ended';commitAndSync();return;}
+    if(!state.overtime){state.overtime=true;recordAction(state.mission.attacker,'system','⏳','Prorrogação','A Bandeira ainda está em disputa');log('⏳ A Bandeira não está segura: a partida entra em Prorrogação.');}
+  }
+  state.phase='review';commitAndSync();
+}
+function nextRound(){if(!state||state.gameOver||state.phase!=='review')return;if(online()&&mode!=='host')return;startRound(state.turno+1);commitAndSync();}
+
+function inspectCard(id){inspect={type:'card',id};render();}
+function inspectUnit(pi,uid){const unit=state.players[pi].units.find(u=>u.uid===uid);if(unit){inspect={type:'unit',id:unit.id,pi,uid};render();}}
+
+/* ---------- PeerJS ---------- */
+function roomCode(){const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let out='';for(let i=0;i<5;i++)out+=alphabet[Math.floor(Math.random()*alphabet.length)];return out;}
+function setLobbyStatus(html){lobbyStatus=html;const el=$('#statusLobby');if(el)el.innerHTML=html;}
+function hasPeer(){if(typeof Peer==='undefined'){setLobbyStatus('O modo online precisa de internet para carregar o PeerJS.');return false;}return true;}
+function closeNetwork(){try{if(conn)conn.close();}catch{}try{for(const c of conns)c.close();}catch{}try{if(peer)peer.destroy();}catch{}peer=null;conn=null;conns=[];}
+function sendNetwork(message,except=null){if(mode==='host'){for(const c of conns)if(c!==except&&c.open)c.send(message);}else if(mode==='guest'&&conn?.open)conn.send(message);}
+function sync(except=null){if(online())sendNetwork({t:'state',protocol:PROTOCOL_VERSION,state},except);render();}
+function applyRemoteState(remote){
+  if(!remote||typeof remote!=='object')return;if(state&&(remote.revision||0)<(state.revision||0))return;
+  state=remote;selection=null;inspect=null;render();
+}
+function createRoom(){
+  if(!hasPeer())return;closeNetwork();const code=roomCode();setLobbyStatus('Erguendo a sala...');
+  peer=new Peer(ROOM_PREFIX+code,{debug:0});
+  peer.on('open',()=>{mode='host';myIndex=0;setLobbyStatus('Sala criada. Envie este código:<span class="room-code">'+code+'</span>Aguardando o segundo jogador...');});
+  peer.on('connection',c=>{
+    if(state||conns.length>=1){c.on('open',()=>c.close());return;}conns=[c];
+    c.on('data',message=>receiveGuest(c,message));c.on('close',()=>disconnected('O segundo jogador se desconectou.'));
+  });
+  peer.on('error',error=>setLobbyStatus('Erro ao criar sala: '+esc(error.type)+'.'));
+}
+function receiveGuest(c,message){
+  if(!message||typeof message!=='object')return;
+  if(message.t==='hello'&&!state){
+    if(message.protocol!==PROTOCOL_VERSION){c.send({t:'version-error'});c.close();return;}
+    const guestDeck=DECKS[message.deckId]?message.deckId:'raven';
+    state=createState($('#p1Deck').value,guestDeck,cleanName($('#p1Name').value,'Jogador 1'),cleanName(message.name,'Jogador 2'),true,$('#roleMode').value);
+    log('A partida online começou. Cada ação será pública e alternada.');startRound(1);
+    c.send({t:'init',protocol:PROTOCOL_VERSION,state,index:1});setLobbyStatus('');render();
+  }else if(message.t==='state'&&state&&message.protocol===PROTOCOL_VERSION){applyRemoteState(message.state);sendNetwork({t:'state',protocol:PROTOCOL_VERSION,state},c);}
+}
+function joinRoom(){
+  if(!hasPeer())return;closeNetwork();const code=($('#roomInput').value||'').trim().toUpperCase();if(code.length!==5){setLobbyStatus('Digite o código de 5 caracteres.');return;}
+  const name=cleanName($('#p2Name').value,'Jogador 2'),deckId=$('#p2Deck').value;setLobbyStatus('Procurando a sala...');peer=new Peer({debug:0});
+  peer.on('open',()=>{
+    conn=peer.connect(ROOM_PREFIX+code,{reliable:true});
+    conn.on('open',()=>{mode='guest';myIndex=1;conn.send({t:'hello',protocol:PROTOCOL_VERSION,name,deckId});setLobbyStatus('Conectado. Aguardando o anfitrião...');});
+    conn.on('data',message=>{
+      if(!message||typeof message!=='object')return;
+      if(message.t==='init'&&message.protocol===PROTOCOL_VERSION){state=message.state;myIndex=message.index;mode='guest';render();}
+      else if(message.t==='state'&&message.protocol===PROTOCOL_VERSION)applyRemoteState(message.state);
+      else if(message.t==='version-error')setLobbyStatus('A outra pessoa está usando uma versão diferente do protótipo.');
+    });
+    conn.on('close',()=>disconnected('A conexão com o anfitrião foi encerrada.'));
+  });
+  peer.on('error',error=>setLobbyStatus(error.type==='peer-unavailable'?'Sala não encontrada.':'Erro de conexão: '+esc(error.type)+'.'));
+}
+function disconnected(message){if(!state){setLobbyStatus(message);return;}log(message);state.connectionLost=message;state.phase='disconnected';render();}
+function resetGame(){closeNetwork();state=null;mode='local';myIndex=null;lobbyStatus='';selection=null;inspect=null;render();}
+
+/* ---------- Rendering ---------- */
+function render(){if(!state){renderSetup();return;}renderGame();}
+function renderSetup(){
+  $('#app').innerHTML=`<div class="setup-shell"><header class="setup-hero"><div class="eyebrow">Protótipo de combate e missão assimétrica</div><h1>Age of Guthology<span>O Estandarte Roubado</span></h1><p>Uma ação por vez: jogue uma carta, ataque, mova ou passe. ATQ causa dano à DEF e o alvo contra-ataca; a primeira condição concluída — Extração ou 10 Baixas — encerra a batalha.</p></header>
+  <div class="setup-grid"><section class="setup-card"><h2>Preparar os exércitos</h2><p>Dois baralhos básicos, papéis independentes e mana recarregada a cada rodada.</p>
+  <div class="player-config"><div class="crest">I</div><label>Jogador 1<input id="p1Name" maxlength="18" value="Jogador 1"></label><label>Baralho<select id="p1Deck">${deckOptions('vale')}</select></label></div>
+  <div class="player-config"><div class="crest blue">II</div><label>Jogador 2<input id="p2Name" maxlength="18" value="Jogador 2"></label><label>Baralho<select id="p2Deck">${deckOptions('raven')}</select></label></div>
+  <div class="deck-showcase">${deckTile('vale')}${deckTile('raven')}</div>
+  <label>Papéis da missão<select id="roleMode"><option value="random">Sortear Ladrão e Guardião</option><option value="p1">Jogador 1 é o Ladrão</option><option value="p2">Jogador 2 é o Ladrão</option></select></label>
+  <label style="margin-top:10px">Privacidade local<select id="hideHands"><option value="no">Modo bancada — mostrar as duas mãos</option><option value="yes">Passar o dispositivo a cada ação</option></select></label>
+  <div class="btn-row"><button class="btn primary" onclick="startLocalGame()">Iniciar partida local</button></div></section>
+  <div class="setup-stack"><section class="setup-card"><h2>Ritmo da partida</h2><div class="rules-timeline">
+  <div class="rule-step"><strong>1</strong><div><b>O centro desperta</b><span>Somente o local central abre. Unidades entram exaustas e começam a formar as linhas.</span></div></div>
+  <div class="rule-step"><strong>2</strong><div><b>O Guardião escolhe</b><span>A missão revela e o Guardião marca publicamente uma das três posições para a Bandeira.</span></div></div>
+  <div class="rule-step"><strong>3</strong><div><b>O mapa se abre</b><span>Os flancos revelam, a Bandeira ativa e o Ladrão recebe a primeira ação.</span></div></div>
+  <div class="rule-step"><strong>⚔</strong><div><b>Combate ATQ × DEF</b><span>Atacante e alvo causam dano simultaneamente. DEF chega a zero: unidade eliminada e +1 Baixa.</span></div></div>
+  </div></section><section class="setup-card"><h2>Jogar por código</h2><p>O anfitrião usa o Jogador 1. Quem entra usa o nome e o baralho do Jogador 2.</p><div class="btn-row"><button class="btn secondary" onclick="createRoom()">Criar sala PeerJS</button></div><div class="online-box"><input id="roomInput" maxlength="5" placeholder="CÓDIGO" oninput="this.value=this.value.toUpperCase()"><button class="btn" onclick="joinRoom()">Entrar</button></div><div id="statusLobby">${lobbyStatus}</div><div class="micro">As ações são públicas e sincronizadas. Esta versão ainda é um protótipo de confiança, sem servidor antifraude.</div></section></div></div></div>`;
+}
+function deckOptions(selected){return Object.entries(DECKS).map(([id,deck])=>`<option value="${id}" ${id===selected?'selected':''}>${deck.name}</option>`).join('');}
+function deckTile(id){const deck=DECKS[id];return `<div class="deck-tile ${deck.color}"><div class="deck-icon">${deck.icon}</div><b>${deck.name}</b><span>${deck.style}</span></div>`;}
+
+function renderGame(){
+  const bottom=online()?myIndex:(state.hideHands&&Number.isInteger(state.vezLocal)?state.vezLocal:0),top=other(bottom);
+  $('#app').innerHTML=`<div class="game-shell">${renderTopbar()}<div class="battle-layout"><aside class="side-column left">${renderWarPanel()}${renderRevealPanel()}${renderTipsPanel()}</aside><section class="battle-center">${renderPlayerRibbon(top,true)}${renderTopHand(top)}${renderActionQueue()}<div class="board-scroll"><div class="board">${[0,1,2].map(loc=>renderLocation(loc,top,bottom)).join('')}</div></div>${renderSelectionBar()}${renderReviewBar()}${renderPlayerRibbon(bottom,false)}${renderHand(bottom)}</section><aside class="side-column right">${renderMissionPanel()}${renderInspectPanel()}${renderLogPanel()}</aside></div></div>${renderOverlay()}`;
+}
+function renderTopbar(){
+  const active=Number.isInteger(state.activePlayer)?state.players[state.activePlayer]:null,roundText=state.overtime?state.turno+' · Prorrogação':state.turno+'/'+MAX_ROUNDS;
+  return `<header class="topbar" aria-live="polite"><div class="brand-name">Age of Guthology</div><div class="status-pill">Rodada <b>${roundText}</b></div><div class="status-pill">Mana <b>${Math.min(state.turno,8)}</b></div><div class="status-pill">Iniciativa <b>${esc(state.players[state.priority].name)}</b></div><div class="status-pill ${active?'ready':''}">${state.phase==='flag-choice'?'Escolha do Guardião':state.phase==='review'?'Rodada encerrada':active?'Ação de '+esc(active.name):'Partida encerrada'} <b>${state.consecutivePasses}/2 passes</b></div><div class="top-grow"></div><button class="btn danger" onclick="resetGame()">Novo teste</button></header>`;
+}
+function renderWarPanel(){const p0=state.players[0],p1=state.players[1];return `<section class="panel"><div class="panel-title">Deathmatch · Baixas</div><div class="panel-body"><div class="war-score"><div class="score-side"><div class="score-name">${esc(p0.name)}</div><div class="score-num">${p0.kills}</div><div class="score-goal">de ${KILL_GOAL} 💀</div></div><div class="score-vs">×</div><div class="score-side"><div class="score-name">${esc(p1.name)}</div><div class="score-num">${p1.kills}</div><div class="score-goal">de ${KILL_GOAL} 💀</div></div></div><div class="score-track">${Array.from({length:KILL_GOAL},(_,i)=>`<span class="score-pip ${i<p0.kills?'p0':''} ${i<p1.kills?'p1':''}"></span>`).join('')}</div></div></section>`;}
+function renderRevealPanel(){const steps=[{n:'1',title:'Local central',copy:'Primeiro campo aberto.',active:state.turno===1,done:state.turno>1},{n:'2',title:'Escolha da Bandeira',copy:'Guardião marca uma posição pública.',active:state.turno===2,done:state.turno>2},{n:'3',title:'Flancos e missão',copy:'Bandeira ativa; o Ladrão age primeiro.',active:state.turno===3,done:state.turno>3}];return `<section class="panel"><div class="panel-title">Abertura da partida</div><div class="panel-body reveal-steps">${steps.map(s=>`<div class="reveal-step ${s.active?'live':''} ${s.done?'done':''}"><div class="step-num">${s.done?'✓':s.n}</div><div><b>${s.title}</b><span>${s.copy}</span></div></div>`).join('')}</div></section>`;}
+function renderTipsPanel(){return `<section class="panel"><div class="panel-title">Regras rápidas</div><div class="panel-body tips"><b>Ação:</b> jogue 1 carta, ataque, mova, interaja ou passe.<br><b>Rodada:</b> dois passes consecutivos encerram; qualquer ação zera a contagem.<br><b>Combate:</b> ATQ reduz DEF e o alvo revida ao mesmo tempo.<br><b>Exaustão:</b> unidades novas só agem na próxima rodada.</div></section>`;}
+function renderPlayerRibbon(pi,isEnemy){const p=state.players[pi],deck=DECKS[p.deckId],can=canAct(pi),active=state.activePlayer===pi&&state.phase==='actions';return `<div class="player-ribbon ${isEnemy?'enemy':''} ${active?'active-ribbon':''}"><div class="ribbon-crest p${pi}">${deck.icon}</div><div class="player-meta"><b>${esc(p.name)}</b><span>${deck.name} · ${state.mission.revealed?p.role:'papel oculto'} · ${active?'SUA AÇÃO':'aguardando'}</span></div><div class="ribbon-stat">Mana <strong>${p.mana}/${p.maxMana}</strong></div><div class="ribbon-stat">Deck <strong>${p.deck.length}</strong></div><div class="ribbon-stat">Mão <strong>${p.hand.length}</strong></div>${isEnemy?`<div class="hand-mini">${Array.from({length:Math.min(p.hand.length,7)},()=>'<span class="mini-back"></span>').join('')}</div>`:''}<div class="ribbon-actions"><button class="btn primary" onclick="passAction(${pi})" ${!can?'disabled':''}>Passar ação</button></div></div>`;}
+function renderTopHand(pi){if(!canSeeHand(pi))return '';return `<div class="hand-panel"><div class="hand-header"><b>Mão de ${esc(state.players[pi].name)}</b><span>${canAct(pi)?'Sua ação':'Aguardando resposta'}</span></div>${renderHandCards(pi)}</div>`;}
+function renderHand(pi){const p=state.players[pi];if(!canSeeHand(pi))return `<div class="hand-panel"><div class="hand-header"><b>Mão oculta</b><span>${p.hand.length} carta(s)</span></div><div class="hand-back-row">${Array.from({length:Math.min(p.hand.length,10)},()=>'<span class="hand-back"></span>').join('')}<span class="hand-hidden-note">Somente o dono vê esta mão.</span></div></div>`;return `<div class="hand-panel"><div class="hand-header"><b>${canAct(pi)?'Sua ação — escolha uma carta':'Sua mão'}</b><span>${canAct(pi)?'Depois o oponente responde':'Aguardando o adversário'}</span></div>${renderHandCards(pi)}</div>`;}
+function renderHandCards(pi){const p=state.players[pi],can=canAct(pi);return `<div class="hand-scroll">${p.hand.map((id,index)=>{const c=CARDS[id],selected=selection&&selection.type==='card'&&selection.pi===pi&&selection.index===index,disabled=!can||p.mana<c.cost;return `<button class="hand-card ${c.deck==='raven'?'raven':''} ${c.type==='tactic'?'tactic':''} ${selected?'selected':''}" onclick="selectCard(${pi},${index})" ${disabled?'disabled':''} aria-label="${esc(c.name)}, custo ${c.cost}${c.type==='unit'?', '+c.attack+' ataque, '+c.defense+' defesa':''}"><span class="card-cost">${c.cost}</span><span class="card-art">${c.icon}</span><span class="card-stats">${c.type==='unit'?`<b class="atk">⚔ ${c.attack}</b><b class="def">🛡 ${c.defense}</b>`:'<b class="magic">✦</b>'}</span><span class="card-type">${c.type==='unit'?'Unidade':'Tática'}</span><span class="card-name">${esc(c.name)}</span><span class="card-text">${esc(c.text)}</span></button>`;}).join('')||'<div class="hand-hidden-note">Sem cartas na mão.</div>'}</div>`;}
+
+function renderActionQueue(){const active=Number.isInteger(state.activePlayer)?state.players[state.activePlayer].name:'—';return `<section class="action-queue" aria-live="polite"><div class="queue-head"><b>Linha de Ações · Rodada ${state.turno}</b><span>ordem pública de cartas, ataques e missão</span><span class="turn-now">${state.phase==='actions'?'Vez de '+esc(active):state.phase==='flag-choice'?'Guardião escolhendo':'Revisão'}</span></div><div class="queue-scroll">${state.actionQueue.length?state.actionQueue.map(event=>`<div class="queue-item p${event.pi}"><span class="queue-icon">${event.icon}</span><span class="queue-copy"><b>${esc(event.title)}</b><span>${esc(state.players[event.pi]?.name||'Sistema')} · ${esc(event.detail)}</span></span><span class="queue-number">#${event.seq}</span></div>`).join(''):'<div class="queue-empty">Aguardando a primeira ação desta rodada.</div>'}</div></section>`;}
+function combatPreview(pi,attacker,target){const dealt=attackValue(pi,attacker),returned=attackValue(other(pi),target),targetAfter=defenseValue(target)-dealt,attackerAfter=defenseValue(attacker)-returned;return {dealt,returned,targetAfter,attackerAfter,text:`${dealt} dano → ${targetAfter<=0?'alvo morre':'alvo fica com '+targetAfter+' DEF'}; contra-ataque ${returned} → ${attackerAfter<=0?'atacante morre':'atacante fica com '+attackerAfter+' DEF'}`};}
+function renderLocation(loc,top,bottom){const location=state.locations[loc],flagChosen=state.mission.revealed&&state.mission.flag.loc===loc;if(!location.revealed)return `<article class="location-column fog"><div class="lane"><div class="lane-empty">Névoa</div></div><div class="fog-card">${flagChosen?'⚑ BANDEIRA ESCOLHIDA<br>':''}${slotLabel(loc,false)}<br><small>efeito revelado na rodada 3</small></div><div class="lane"><div class="lane-empty">Inexplorado</div></div></article>`;return `<article class="location-column">${renderLane(top,loc)}${renderLocationCard(loc)}${renderLane(bottom,loc)}</article>`;}
+function renderLane(pi,loc){const p=state.players[pi],units=unitsAt(pi,loc);const unitHtml=units.map(unit=>{const card=CARDS[unit.id],carrier=state.mission.flag.carrierUid===unit.uid,ready=unitReady(unit),attackTarget=selection&&selection.type==='attack'&&selection.pi===other(pi)&&findUnit(selection.pi,selection.uid)?.loc===loc;const click=attackTarget?`executeAttack(${selection.pi},${selection.uid},${unit.uid})`:`inspectUnit(${pi},${unit.uid})`;const canControl=canAct(pi),flagAction=canControl?flagActionFor(pi,unit):null,canMove=canControl&&ready&&state.locations.some((l,i)=>legalMoveDestination(pi,unit,i)),canAttack=canControl&&ready&&unitsAt(other(pi),loc).length>0;let status=carrier?'Portador · ':'';status+=unit.enteredTurn===state.turno&&!unit.charge?'Recém-chegada':ready?'Pronta':'Exausta';if(unit.shield)status+=' · Escudo '+unit.shield;if(unit.reinforced)status+=' · Reforço';const preview=attackTarget?combatPreview(selection.pi,findUnit(selection.pi,selection.uid),unit):null;return `<div class="unit-row"><button class="unit-chip p${pi} ${carrier?'carrier':''} ${unit.ward?'ward':''} ${attackTarget?'targetable':''} ${!ready?'exhausted':''} ${unit.enteredTurn===state.turno?'new-unit':''}" onclick="${click}"><span class="unit-icon">${card.icon}</span><span class="unit-copy"><b>${esc(card.name)} ${carrier?'⚑':''}</b><span>${status}${preview?`<span class="attack-preview">${preview.text}</span>`:''}</span></span><span class="combat-stats"><b class="atk">⚔ ${attackValue(pi,unit)}</b><b class="def">🛡 ${defenseValue(unit)}/${maxDefense(unit)}</b></span></button><span class="unit-actions"><button class="unit-action" onclick="startAttack(${pi},${unit.uid})" ${!canAttack?'disabled':''}>Atacar</button><button class="unit-action" onclick="startMove(${pi},${unit.uid})" ${!canMove?'disabled':''}>Mover</button>${flagAction?`<button class="unit-action" onclick="executeFlagAction(${pi},${unit.uid})">${flagAction==='steal'?'Roubar':flagAction==='recover'?'Recuperar':'Extrair'}</button>`:''}</span></div>`;}).join('');return `<div class="lane"><div class="lane-head"><span>${esc(p.name)}</span><strong>⚔ ${locationPower(pi,loc)}</strong></div>${unitHtml||'<div class="lane-empty">— vazio —</div>'}</div>`;}
+function locationSelectable(loc){if(!selection)return false;if(selection.type==='card'){const id=state.players[selection.pi].hand[selection.index];return canAct(selection.pi)&&legalPlayLocation(selection.pi,id,loc);}if(selection.type==='move')return canAct(selection.pi)&&legalMoveDestination(selection.pi,findUnit(selection.pi,selection.uid),loc);return false;}
+function renderLocationCard(loc){const location=state.locations[loc],data=LOCATIONS[location.id],targetable=locationSelectable(loc),flagHere=state.mission.revealed&&state.mission.flag.loc===loc,home=state.mission.home===loc,escape=state.mission.extraction===loc;const flag=flagHere?`<div class="flag-marker">${state.mission.flag.status==='carried'?'⚑ Com o portador':state.mission.active?'⚑ Bandeira no chão':'⚑ Posição escolhida'}</div>`:'';const tag=targetable?'button':'div';return `<${tag} class="location-card ${targetable?'targetable':''}" ${targetable?`onclick="handleLocationClick(${loc})"`:''}>${flag}<div class="loc-kicker">${loc===1?'Centro':'Flanco'} ${home?'· Bastião':''} ${escape?'· Fuga':''}</div><div class="loc-icon">${data.icon}</div><div class="loc-name">${data.name}</div><div class="loc-effect">${data.effect}</div><div class="loc-score"><span class="red">⚔ ${locationPower(0,loc)}</span><span>×</span><span class="blue">⚔ ${locationPower(1,loc)}</span></div><div class="loc-result">${escape?'🏁 Rota de extração':home?'🏰 Ponto inicial da Bandeira':'Ataques exigem alvo no mesmo local'}</div></${tag}>`;}
+function renderSelectionBar(){if(!selection)return '';if(selection.type==='card'){const id=state.players[selection.pi].hand[selection.index],card=CARDS[id];return `<div class="selection-bar">🎯 <span><b>${esc(card.name)}</b>: escolha um local dourado. A carta resolve agora e o oponente responde.</span><button class="btn" onclick="selection=null;render()">Cancelar</button></div>`;}if(selection.type==='attack'){const unit=findUnit(selection.pi,selection.uid);return `<div class="selection-bar attack-mode">⚔️ <span><b>${esc(CARDS[unit.id].name)}</b>: escolha um inimigo destacado no mesmo local. A prévia mostra dano e contra-ataque.</span><button class="btn" onclick="selection=null;render()">Cancelar</button></div>`;}const unit=findUnit(selection.pi,selection.uid);return `<div class="selection-bar move-mode">🥾 <span><b>${esc(CARDS[unit.id].name)}</b>: escolha um local adjacente dourado. Mover exaure a unidade.</span><button class="btn" onclick="selection=null;render()">Cancelar</button></div>`;}
+function renderReviewBar(){if(state.phase!=='review')return '';const canAdvance=!online()||mode==='host';return `<div class="review-banner">📯 <span><strong>Rodada encerrada por dois passes.</strong> Confira dano, Baixas, Bandeira e Linha de Ações.</span>${canAdvance?`<button class="btn primary" onclick="nextRound()">Iniciar rodada ${state.turno+1}</button>`:'<span style="margin-left:auto">Aguardando o anfitrião…</span>'}</div>`;}
+function missionStage(){const flag=state.mission.flag;if(!state.mission.revealed||state.mission.home==null)return 0;if(!state.mission.active)return 1;if(flag.status==='ground')return 2;if(flag.status==='carried')return 3;return 0;}
+function renderMissionPanel(){const mission=state.mission;if(!mission.revealed)return `<section class="panel"><div class="panel-title">Missão da partida</div><div class="panel-body"><div class="mission-sealed"><div class="seal">?</div><b>Ordem lacrada</b><span>Será revelada na rodada 2. Unidades flexíveis são mais seguras agora.</span></div></div></section>`;const a=mission.attacker,d=mission.defender,stage=missionStage();const steps=[['📜','Revelar'],['🏰','Escolher'],['⚑','Roubar'],['🏁','Extrair']];let alert=mission.home==null?'O Guardião está escolhendo publicamente uma das três posições.':'A Bandeira ativa na rodada 3.';if(mission.active){if(mission.flag.status==='ground'&&mission.flag.loc===mission.home)alert='Uma unidade pronta do Ladrão aqui pode gastar a ação Roubar.';else if(mission.flag.status==='ground')alert='Bandeira caída: o Ladrão pode Roubar; o Guardião pode Recuperar ao ponto inicial.';else if(mission.flag.loc===mission.extraction)alert='O portador chegou à fuga. Quando estiver pronto, precisa gastar a ação Extrair.';else alert='O portador recebe −1 ATQ e deve usar ações de Movimento até a rota de fuga.';}return `<section class="panel"><div class="panel-title">O Estandarte Roubado</div><div class="panel-body"><div class="role-row"><div class="role-card"><small>Ladrão</small><b>${esc(state.players[a].name)}</b><span>Roubar, mover e Extrair</span></div><div class="role-card defend"><small>Guardião</small><b>${esc(state.players[d].name)}</b><span>Recuperar ou proteger até R8</span></div></div>${mission.home!=null?`<div class="chosen-home"><b>🏰 Bandeira:</b> ${esc(slotLabel(mission.home,state.locations[mission.home].revealed))}<br><b>🏁 Fuga:</b> ${esc(slotLabel(mission.extraction,state.locations[mission.extraction].revealed))}${state.overtime?'<br><b>⏳ Prorrogação ativa</b>':''}</div>`:''}<div class="mission-copy"><b>Ações de missão:</b> Roubar exaure; mover o portador exaure; se ele morrer, a Bandeira cai; Extrair exige outra ação quando o portador estiver pronto.</div><div class="mission-progress">${steps.map((s,i)=>`<div class="mission-step ${i<stage?'done':''} ${i===stage?'live':''}"><strong>${s[0]}</strong>${s[1]}</div>`).join('')}</div><div class="mission-alert">${alert}</div></div></section>`;}
+function renderInspectPanel(){if(!inspect)return `<section class="panel"><div class="panel-title">Leitura de carta</div><div class="panel-body inspect"><div class="inspect-empty">Selecione uma carta ou unidade. A interface mostra ATQ, DEF atual/máxima, Escudo e estado.</div></div></section>`;const card=CARDS[inspect.id];let meta=card.type==='unit'?`⚔ ${card.attack} ATQ · 🛡 ${card.defense} DEF máxima · custo ${card.cost}`:`Tática · custo ${card.cost}`;let extra='';if(inspect.type==='unit'){const unit=findUnit(inspect.pi,inspect.uid);if(unit){meta=`⚔ ${attackValue(inspect.pi,unit)} ATQ · 🛡 ${defenseValue(unit)}/${maxDefense(unit)} DEF · ${unitReady(unit)?'Pronta':'Exausta'}`;extra=`<br>Dano persistente: ${maxDefense(unit)-unit.hp}. Escudo temporário: ${unit.shield||0}.`;}}return `<section class="panel"><div class="panel-title">Leitura de carta</div><div class="panel-body inspect"><div class="inspect-head"><div class="inspect-icon">${card.icon}</div><div><b>${esc(card.name)}</b><span>${meta}</span></div></div><div class="inspect-text">${esc(card.text)}${extra}</div></div></section>`;}
+function renderLogPanel(){return `<section class="panel"><div class="panel-title">Crônica completa</div><div class="log">${state.log.map(entry=>`<div class="log-entry"><b>R${entry.round}</b> · ${esc(entry.text)}</div>`).join('')}</div></section>`;}
+function renderOverlay(){
+  if(state.gameOver){const winner=state.gameOver.winner;return `<div class="overlay"><div class="overlay-card"><div class="overlay-emblem">${winner==null?'⚖️':winner===state.mission.attacker?'⚑':'🏰'}</div><h2>${esc(state.gameOver.title)}</h2><p>${esc(state.gameOver.reason)}</p><p>Baixas finais: ${esc(state.players[0].name)} ${state.players[0].kills} × ${state.players[1].kills} ${esc(state.players[1].name)}</p><div class="btn-row"><button class="btn primary" onclick="resetGame()">Preparar novo teste</button></div></div></div>`;}
+  if(state.phase==='disconnected')return `<div class="overlay"><div class="overlay-card"><div class="overlay-emblem">🔌</div><h2>Partida pausada</h2><p>${esc(state.connectionLost||'A conexão foi encerrada.')} O estado foi congelado para evitar versões divergentes.</p><div class="btn-row"><button class="btn" onclick="resetGame()">Voltar ao início</button></div></div></div>`;
+  if(state.phase==='flag-choice'){const d=state.mission.defender,can=canChooseFlag(d);return `<div class="overlay"><div class="overlay-card"><div class="overlay-emblem">⚑</div><h2>Onde proteger a Bandeira?</h2><p><b>${esc(state.players[d].name)}</b>, o Guardião, escolhe publicamente uma posição. Os efeitos dos flancos continuam ocultos até a rodada 3.</p><div class="flag-choice-grid">${[0,1,2].map(loc=>`<button class="flag-choice" onclick="chooseFlag(${d},${loc})" ${!can?'disabled':''}><span>${loc===0?'⬅️':loc===1?'🏰':'➡️'}</span>${slotLabel(loc,false)}<small>${loc===1?'rota curta, centro exposto':'efeito ainda sob névoa'}</small></button>`).join('')}</div><p>${can?'A escolha aparecerá no tabuleiro, na missão e na Linha de Ações.':'Aguardando o Guardião escolher…'}</p></div></div>`;}
+  if(state.passPending)return `<div class="overlay"><div class="overlay-card"><div class="overlay-emblem">🕯️</div><h2>Passe o dispositivo</h2><p>Agora é a ação de <b>${esc(state.players[state.vezLocal].name)}</b>.</p><div class="btn-row"><button class="btn primary" onclick="confirmPass()">Sou eu, continuar</button></div></div></div>`;
+  return '';
+}
+
+render();
+</script>
+</body>
+</html>
