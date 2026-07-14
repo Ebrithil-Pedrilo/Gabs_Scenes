@@ -184,6 +184,33 @@ button.location-card{width:100%;cursor:pointer}.location-card.targetable{border-
 .selection-bar.attack-mode{border-color:#9d453d;background:rgba(82,35,31,.95)}.selection-bar.move-mode{border-color:#46748b;background:rgba(29,58,73,.95)}.attack-preview{display:block;margin-top:3px;font-size:8px;color:#e6c887}.active-ribbon{border-color:#b88c45!important;box-shadow:0 0 0 1px rgba(228,189,104,.19),0 8px 22px rgba(0,0,0,.25)}
 .flag-choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.flag-choice{border:1px solid #725a37;border-radius:11px;background:linear-gradient(180deg,#342718,#19130e);color:#eed49b;padding:14px 7px;cursor:pointer;font-weight:900}.flag-choice span{display:block;font-size:24px;margin-bottom:5px}.flag-choice small{display:block;color:#a99a83;font-weight:600;margin-top:4px}.flag-choice:hover:not(:disabled){border-color:#e5bd71;filter:brightness(1.13)}.flag-choice:disabled{opacity:.38;cursor:not-allowed}.chosen-home{border:1px solid #7c6134;border-radius:8px;background:#2b2115;padding:7px;margin:8px 0;font-size:9px;color:#d9c18d;line-height:1.4}.chosen-home b{color:#ffe0a1}
 
+/* ---------- Camada de efeitos visuais ---------- */
+.vfx-layer{position:fixed;inset:0;z-index:95;pointer-events:none;overflow:hidden;isolation:isolate}
+.vfx-float{position:fixed;z-index:8;max-width:min(240px,65vw);padding:4px 8px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(13,11,10,.9);box-shadow:0 5px 18px rgba(0,0,0,.55);color:#fff;font:900 12px Georgia,serif;letter-spacing:.035em;text-align:center;white-space:nowrap;opacity:0;text-shadow:0 2px 4px #000;animation:vfxFloat .9s cubic-bezier(.2,.75,.25,1) forwards}
+.vfx-float.damage{color:#ff9b88;border-color:#9d453c;background:rgba(63,19,16,.92)}.vfx-float.shield{color:#aee9ff;border-color:#4e99b7;background:rgba(16,48,64,.93)}.vfx-float.defense{color:#b9ebff;border-color:#5e9db7;background:rgba(19,48,61,.93)}.vfx-float.heal{color:#b9f7c5;border-color:#57a866;background:rgba(19,58,29,.93)}.vfx-float.buff{color:#ffe09a;border-color:#b77d31;background:rgba(65,42,14,.93)}.vfx-float.debuff{color:#d9b4ff;border-color:#8660a9;background:rgba(48,29,65,.94)}.vfx-float.flag{color:#ffebad;border-color:#d1a44e;background:rgba(66,47,14,.95)}.vfx-float.death{color:#e3d9e9;border-color:#765b7c;background:rgba(31,22,34,.95)}.vfx-float.summon{color:#f3ddad;border-color:#9c7840;background:rgba(50,37,20,.94)}
+.vfx-ring{position:fixed;z-index:3;border:3px solid #8edcff;border-radius:14px;opacity:0;box-shadow:0 0 20px rgba(92,194,232,.55),inset 0 0 18px rgba(92,194,232,.26);animation:vfxRing .62s ease-out forwards}.vfx-ring.heal{border-color:#77e68f;box-shadow:0 0 22px rgba(82,215,113,.58),inset 0 0 18px rgba(82,215,113,.24)}.vfx-ring.buff{border-color:#ffc85f;box-shadow:0 0 22px rgba(255,183,65,.58),inset 0 0 18px rgba(255,183,65,.22)}.vfx-ring.debuff{border-color:#bc85ee;box-shadow:0 0 22px rgba(174,112,229,.55),inset 0 0 18px rgba(174,112,229,.2)}.vfx-ring.flag{border-color:#ffe291;box-shadow:0 0 30px rgba(255,209,103,.68),inset 0 0 22px rgba(255,209,103,.3)}.vfx-ring.summon{border-color:#e9c774;box-shadow:0 0 24px rgba(229,183,88,.55),inset 0 0 22px rgba(229,183,88,.23)}
+.vfx-slash{position:fixed;z-index:4;height:5px;border-radius:999px;transform-origin:0 50%;opacity:0;background:linear-gradient(90deg,transparent,#ffb36f 18%,#fff5d7 52%,#f05b43 82%,transparent);filter:drop-shadow(0 0 5px #ff7b52);animation:vfxSlash .42s cubic-bezier(.2,.8,.2,1) forwards}.vfx-slash.counter{height:3px;background:linear-gradient(90deg,transparent,#7fc9ed 18%,#e8f8ff 52%,#7099b8 82%,transparent);filter:drop-shadow(0 0 5px #7fc9ed)}.vfx-slash.move{height:3px;background:linear-gradient(90deg,transparent,#d9bf80 30%,#f7e9bf 62%,transparent);filter:drop-shadow(0 0 4px #c29c52)}
+.vfx-particle{position:fixed;z-index:5;width:7px;height:7px;border-radius:50%;background:#ff8d65;box-shadow:0 0 7px currentColor;color:#ff8d65;opacity:0;animation:vfxParticle .62s ease-out forwards}.vfx-particle.shield{background:#86d9ff;color:#86d9ff}.vfx-particle.heal{background:#77e995;color:#77e995}.vfx-particle.buff{background:#ffd06b;color:#ffd06b}.vfx-particle.debuff{background:#bc86ed;color:#bc86ed}.vfx-particle.flag{background:#ffe08b;color:#ffe08b}
+.vfx-death-ghost{position:fixed;z-index:6;display:grid;grid-template-columns:38px 1fr;align-items:center;gap:7px;padding:6px 9px;border:1px solid #806377;border-radius:10px;background:linear-gradient(90deg,rgba(39,28,38,.96),rgba(19,15,20,.94));box-shadow:0 0 26px rgba(137,76,125,.4),0 10px 28px rgba(0,0,0,.62);overflow:hidden;color:#ded2dc;animation:vfxDeath .72s ease-in forwards}.vfx-death-ghost .ghost-icon{font-size:27px;filter:grayscale(.65)}.vfx-death-ghost b{font:700 10px Georgia,serif}.vfx-death-ghost:after{content:"💀";position:absolute;right:8px;font-size:25px;opacity:.7}
+.vfx-banner-toast{position:fixed;z-index:10;top:17%;left:50%;min-width:min(420px,86vw);padding:11px 18px;border:1px solid #d7ad58;border-radius:10px;background:linear-gradient(90deg,rgba(35,24,10,.15),rgba(56,39,13,.96),rgba(35,24,10,.15));color:#ffe7a7;text-align:center;font:900 clamp(14px,2.2vw,22px) Georgia,serif;letter-spacing:.12em;text-shadow:0 3px 7px #000;opacity:0;animation:vfxBanner 1.05s ease-out forwards}
+.vfx-beam{position:fixed;z-index:2;width:5px;border-radius:999px;background:linear-gradient(180deg,transparent,#fff1a5 30%,#e5b94e 75%,transparent);box-shadow:0 0 20px #f4c858;opacity:0;animation:vfxBeam .8s ease-out forwards}
+.unit-chip.vfx-attacking{border-color:#ff9b65;animation:vfxUnitAttack .46s ease-out}.unit-chip.vfx-hit{border-color:#e65f50;animation:vfxUnitHit .42s ease-out}.unit-chip.vfx-defense{border-color:#79cce9;animation:vfxUnitDefense .62s ease-out}.unit-chip.vfx-heal{border-color:#72d888;animation:vfxUnitHeal .7s ease-out}.unit-chip.vfx-buff{border-color:#e8b751;animation:vfxUnitBuff .62s ease-out}.unit-chip.vfx-debuff{border-color:#a976cf;animation:vfxUnitDebuff .56s ease-out}.location-card.vfx-summon,.location-column.vfx-summon{animation:vfxLocation .72s ease-out}.score-side.vfx-score{animation:vfxScore .65s ease-out}
+@keyframes vfxFloat{0%{opacity:0;transform:translate(-50%,-18%) scale(.72)}18%{opacity:1;transform:translate(-50%,-55%) scale(1.08)}72%{opacity:1;transform:translate(-50%,-105%) scale(1)}100%{opacity:0;transform:translate(-50%,-145%) scale(.94)}}
+@keyframes vfxRing{0%{opacity:0;transform:scale(.72)}25%{opacity:1}100%{opacity:0;transform:scale(1.22)}}
+@keyframes vfxSlash{0%{opacity:0;transform:rotate(var(--angle)) scaleX(.05)}22%{opacity:1}68%{opacity:1;transform:rotate(var(--angle)) scaleX(1)}100%{opacity:0;transform:rotate(var(--angle)) scaleX(1.06)}}
+@keyframes vfxParticle{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.25)}}
+@keyframes vfxDeath{0%{opacity:1;transform:scale(1);filter:none}55%{opacity:.85;transform:scale(.97) rotate(-1deg);filter:grayscale(.6)}100%{opacity:0;transform:translateY(22px) scale(.82) rotate(3deg);filter:grayscale(1) blur(2px)}}
+@keyframes vfxBanner{0%{opacity:0;transform:translate(-50%,-18px) scale(.94)}18%,68%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-8px) scale(1.03)}}
+@keyframes vfxBeam{0%{opacity:0;transform:scaleY(.2)}28%{opacity:1}100%{opacity:0;transform:scaleY(1)}}
+@keyframes vfxUnitAttack{0%{transform:translateX(0)}35%{transform:translateX(var(--lunge,10px)) scale(1.03);box-shadow:0 0 20px rgba(255,126,80,.5)}100%{transform:translateX(0)}}
+@keyframes vfxUnitHit{0%,100%{transform:translateX(0)}24%{transform:translateX(-5px);filter:brightness(1.65)}48%{transform:translateX(4px)}72%{transform:translateX(-2px)}}
+@keyframes vfxUnitDefense{0%,100%{box-shadow:inherit}35%{box-shadow:0 0 0 3px rgba(111,207,240,.32),0 0 24px rgba(111,207,240,.55)}}
+@keyframes vfxUnitHeal{35%{filter:brightness(1.35);box-shadow:0 0 25px rgba(94,222,119,.55)}}
+@keyframes vfxUnitBuff{35%{filter:brightness(1.35);box-shadow:0 0 23px rgba(244,181,67,.5)}}
+@keyframes vfxUnitDebuff{35%{filter:saturate(.55) brightness(.8);box-shadow:0 0 22px rgba(169,108,211,.48)}}
+@keyframes vfxLocation{32%{filter:brightness(1.45);box-shadow:0 0 28px rgba(230,183,86,.5)}}
+@keyframes vfxScore{35%{transform:scale(1.13);filter:brightness(1.6)}}
+
 @media(max-width:1180px){
   .battle-layout{grid-template-columns:190px minmax(620px,1fr)}
   .side-column.right{grid-column:1/-1;position:static;grid-template-columns:1fr 1fr 1fr}.side-column.right .panel{min-height:0}
@@ -193,16 +220,18 @@ button.location-card{width:100%;cursor:pointer}.location-card.targetable{border-
 }
 @media(max-width:620px){
   .setup-shell{padding:24px 10px}.player-config{grid-template-columns:44px 1fr}.player-config label:last-child{grid-column:2}.deck-showcase{grid-template-columns:1fr}.side-column{grid-template-columns:1fr}.board{min-width:610px}.battle-layout{gap:7px}.hand-card{flex-basis:105px}.topbar .btn{padding:7px 9px;font-size:10px}.player-ribbon{align-items:flex-start;flex-wrap:wrap}.ribbon-actions{width:100%;margin-left:0}.ribbon-stat{border:0;padding-left:0}
+  .vfx-float{font-size:10px;padding:3px 6px}.vfx-particle:nth-of-type(n+5){display:none}
 }
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}.vfx-slash,.vfx-ring,.vfx-particle,.vfx-beam,.vfx-death-ghost{display:none!important}.vfx-float,.vfx-banner-toast{opacity:1!important;transform:translate(-50%,-90%)!important}}
 </style>
 </head>
 <body>
 <main id="app"></main>
+<div id="vfxLayer" class="vfx-layer" aria-hidden="true"></div>
 <script>
 const $ = selector => document.querySelector(selector);
-const PROTOCOL_VERSION = 6;
-const ROOM_PREFIX = 'ageguthology-banner-v6-';
+const PROTOCOL_VERSION = 7;
+const ROOM_PREFIX = 'ageguthology-banner-v7-';
 const MAX_ROUNDS = 8;
 const KILL_GOAL = 10;
 const LOCATION_CAP = 3;
@@ -267,9 +296,97 @@ let lobbyStatus = '';
 let selection = null;
 let inspect = null;
 let uidSeq = 1;
+let lastPlayedVisualSeq = 0;
+let visualTimers = [];
+const visualAnchors = new Map();
 
 function esc(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));}
 function cleanName(value,fallback){const out=String(value||'').replace(/[<>&"']/g,'').trim().slice(0,18);return out||fallback;}
+function visualReducedMotion(){return !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;}
+function afterVisual(callback,delay=0){const timer=setTimeout(()=>{visualTimers=visualTimers.filter(id=>id!==timer);callback();},Math.max(0,delay));visualTimers.push(timer);return timer;}
+function resetVisualRuntime(mark=0){for(const timer of visualTimers)clearTimeout(timer);visualTimers=[];visualAnchors.clear();lastPlayedVisualSeq=mark||0;const layer=$('#vfxLayer');if(layer){layer.replaceChildren();delete layer.dataset.lastVfxType;delete layer.dataset.lastVfxSeq;layer.dataset.vfxPlayed='0';}}
+function queueVisual(type,data={}){
+  if(!state)return null;state.visualSeq=(state.visualSeq||0)+1;
+  const event={seq:state.visualSeq,type,round:state.turno,...data};state.visualEvents=[...(state.visualEvents||[]),event].slice(-28);return event;
+}
+function unitOwnerRef(unit){if(!state||!unit)return null;for(let pi=0;pi<state.players.length;pi++)if(state.players[pi].units.some(candidate=>candidate===unit||candidate.uid===unit.uid))return {pi,uid:unit.uid,loc:unit.loc};return null;}
+function queueUnitVisual(type,unit,data={}){const ref=unitOwnerRef(unit);return ref?queueVisual(type,{...ref,...data}):null;}
+function unitVisualElement(pi,uid){return Number.isInteger(pi)&&Number.isInteger(uid)?document.querySelector(`[data-unit-key="${pi}:${uid}"]`):null;}
+function locationVisualElement(loc,cardOnly=false){if(!Number.isInteger(loc))return null;return document.querySelector(cardOnly?`[data-location-card="${loc}"]`:`[data-location="${loc}"]`)||document.querySelector(`[data-location-card="${loc}"]`);}
+function plainRect(element){if(!element)return null;const rect=element.getBoundingClientRect();if(rect.width<=0&&rect.height<=0)return null;return {left:rect.left,top:rect.top,right:rect.right,bottom:rect.bottom,width:rect.width,height:rect.height};}
+function capturePendingVisualAnchors(){
+  if(!state)return;for(const event of (state.visualEvents||[]).filter(item=>(item.seq||0)>lastPlayedVisualSeq)){
+    const anchors={};
+    anchors.source=plainRect(unitVisualElement(event.sourcePi,event.sourceUid));anchors.target=plainRect(unitVisualElement(event.targetPi,event.targetUid));anchors.unit=plainRect(unitVisualElement(event.pi,event.uid));
+    anchors.location=plainRect(locationVisualElement(event.loc,true));anchors.from=plainRect(locationVisualElement(event.fromLoc,true));anchors.to=plainRect(locationVisualElement(event.toLoc,true));
+    visualAnchors.set(event.seq,anchors);
+  }
+}
+function resolveVisualRect(event,key='unit'){
+  let element=null;
+  if(key==='source')element=unitVisualElement(event.sourcePi,event.sourceUid);
+  else if(key==='target')element=unitVisualElement(event.targetPi,event.targetUid);
+  else if(key==='unit')element=unitVisualElement(event.pi,event.uid);
+  else if(key==='from')element=locationVisualElement(event.fromLoc,true);
+  else if(key==='to')element=unitVisualElement(event.pi,event.uid)||locationVisualElement(event.toLoc,true);
+  else element=locationVisualElement(event.loc,true);
+  return plainRect(element)||visualAnchors.get(event.seq)?.[key]||plainRect(locationVisualElement(event.loc,true))||visualAnchors.get(event.seq)?.location||null;
+}
+function centerOf(rect){return rect?{x:rect.left+rect.width/2,y:rect.top+rect.height/2}:null;}
+function appendVisual(element,duration=950){const layer=$('#vfxLayer');if(!layer||!element)return;layer.appendChild(element);afterVisual(()=>element.remove(),duration);}
+function floatVisual(rect,textValue,tone='damage',dx=0,dy=0,duration=950){
+  if(!rect)return;const point=centerOf(rect),element=document.createElement('div'),margin=42;element.className='vfx-float '+tone;element.textContent=textValue;
+  element.style.left=Math.min(innerWidth-margin,Math.max(margin,point.x+dx))+'px';element.style.top=Math.min(innerHeight-24,Math.max(32,point.y+dy))+'px';appendVisual(element,visualReducedMotion()?1050:duration);
+}
+function ringVisual(rect,tone='defense',padding=7){
+  if(!rect||visualReducedMotion())return;const element=document.createElement('div');element.className='vfx-ring '+tone;element.style.left=(rect.left-padding)+'px';element.style.top=(rect.top-padding)+'px';element.style.width=(rect.width+padding*2)+'px';element.style.height=(rect.height+padding*2)+'px';appendVisual(element,720);
+}
+function slashVisual(fromRect,toRect,tone='attack'){
+  if(!fromRect||!toRect||visualReducedMotion())return;const from=centerOf(fromRect),to=centerOf(toRect),dx=to.x-from.x,dy=to.y-from.y,length=Math.max(24,Math.hypot(dx,dy)),element=document.createElement('div');element.className='vfx-slash '+(tone==='counter'?'counter':tone==='move'?'move':'');element.style.left=from.x+'px';element.style.top=from.y+'px';element.style.width=length+'px';element.style.setProperty('--angle',Math.atan2(dy,dx)+'rad');appendVisual(element,520);
+}
+function burstVisual(rect,tone='damage',requested=7){
+  if(!rect||visualReducedMotion())return;const point=centerOf(rect),count=innerWidth<=620?Math.min(4,requested):requested;
+  for(let i=0;i<count;i++){const angle=(Math.PI*2*i/count)-Math.PI/2,distance=24+(i%3)*9,element=document.createElement('i');element.className='vfx-particle '+tone;element.style.left=point.x+'px';element.style.top=point.y+'px';element.style.setProperty('--dx',Math.cos(angle)*distance+'px');element.style.setProperty('--dy',Math.sin(angle)*distance+'px');appendVisual(element,700);}
+}
+function beamVisual(rect){if(!rect||visualReducedMotion())return;const point=centerOf(rect),element=document.createElement('div'),top=Math.max(0,rect.top-90),height=Math.min(innerHeight-top,rect.height+150);element.className='vfx-beam';element.style.left=(point.x-2)+'px';element.style.top=top+'px';element.style.height=height+'px';appendVisual(element,900);}
+function pulseElement(element,className,duration=700){if(!element)return;element.classList.remove(className);void element.offsetWidth;element.classList.add(className);afterVisual(()=>element.classList.remove(className),duration);}
+function bannerVisual(textValue){const element=document.createElement('div');element.className='vfx-banner-toast';element.textContent=textValue;appendVisual(element,1150);}
+function deathVisual(event,rect){
+  if(!rect)return;if(!visualReducedMotion()){const ghost=document.createElement('div');ghost.className='vfx-death-ghost';ghost.style.left=Math.max(5,rect.left)+'px';ghost.style.top=Math.max(5,rect.top)+'px';ghost.style.width=Math.max(125,rect.width)+'px';ghost.style.height=Math.max(48,rect.height)+'px';const icon=document.createElement('span'),name=document.createElement('b');icon.className='ghost-icon';icon.textContent=event.icon||'♟';name.textContent=event.name||'Unidade';ghost.append(icon,name);appendVisual(ghost,820);burstVisual(rect,'debuff',8);}
+  floatVisual(rect,'💀 ELIMINADA','death',0,-3,980);pulseElement(document.querySelector(`[data-score-pi="${event.killerPi}"]`),'vfx-score',720);
+}
+function showDamageVisual(rect,result,counter=false){
+  if(!rect||!result)return;if(result.shieldHit>0)floatVisual(rect,'🛡 −'+result.shieldHit+' ESCUDO','shield',-24,-4,970);
+  if(result.hpHit>0)floatVisual(rect,(counter?'↩ ':'')+'−'+result.hpHit+' DEF','damage',result.shieldHit?25:0,result.shieldHit?8:0,980);
+  if(result.total===0)floatVisual(rect,'SEM DANO','shield',0,0,850);
+}
+function playCombatVisual(event){
+  const source=resolveVisualRect(event,'source'),target=resolveVisualRect(event,'target'),sourceElement=unitVisualElement(event.sourcePi,event.sourceUid),targetElement=unitVisualElement(event.targetPi,event.targetUid);
+  if(sourceElement&&source&&target)sourceElement.style.setProperty('--lunge',centerOf(target).x>=centerOf(source).x?'11px':'-11px');pulseElement(sourceElement,'vfx-attacking',560);
+  afterVisual(()=>{slashVisual(source,target,'attack');if(event.sourceDamage?.total>0)slashVisual(target,source,'counter');},45);
+  afterVisual(()=>{pulseElement(targetElement,'vfx-hit',520);if(event.sourceDamage?.total>0)pulseElement(sourceElement,'vfx-hit',520);showDamageVisual(target,event.targetDamage,false);showDamageVisual(source,event.sourceDamage,true);burstVisual(target,'damage',7);if(event.sourceDamage?.total>0)burstVisual(source,'shield',5);},155);
+}
+function playVisualEvent(event){
+  if(!event)return;const layer=$('#vfxLayer');if(layer){layer.dataset.lastVfxType=event.type;layer.dataset.lastVfxSeq=String(event.seq||0);layer.dataset.vfxPlayed=String((Number(layer.dataset.vfxPlayed)||0)+1);}const unitRect=resolveVisualRect(event,'unit'),locRect=resolveVisualRect(event,'location');
+  if(event.type==='combat'){playCombatVisual(event);return;}
+  if(event.type==='death'){deathVisual(event,unitRect);return;}
+  if(event.type==='summon'){const rect=unitRect||locRect;pulseElement(unitVisualElement(event.pi,event.uid),'vfx-buff',650);pulseElement(locationVisualElement(event.loc),'vfx-summon',720);ringVisual(rect,'summon');burstVisual(rect,'buff',6);floatVisual(rect,'✦ '+(event.label||'UNIDADE'),'summon',0,-4,980);return;}
+  if(event.type==='magic'){ringVisual(locRect,'debuff',10);burstVisual(locRect,'debuff',7);floatVisual(locRect,'✦ '+(event.label||'TÁTICA'),'debuff',0,0,980);return;}
+  if(event.type==='defense'){pulseElement(unitVisualElement(event.pi,event.uid),'vfx-defense',700);ringVisual(unitRect,'defense');burstVisual(unitRect,'shield',5);floatVisual(unitRect,'🛡 +'+event.amount+' ESCUDO','defense',0,-2,920);return;}
+  if(event.type==='fortify'){pulseElement(unitVisualElement(event.pi,event.uid),'vfx-defense',700);ringVisual(unitRect,'buff');floatVisual(unitRect,'⬟ +'+event.amount+' DEF MÁX.','buff',0,-2,930);return;}
+  if(event.type==='heal'){pulseElement(unitVisualElement(event.pi,event.uid),'vfx-heal',760);ringVisual(unitRect,'heal');burstVisual(unitRect,'heal',7);floatVisual(unitRect,'✚ +'+event.amount+' DEF','heal',0,-2,960);return;}
+  if(event.type==='buff'){pulseElement(unitVisualElement(event.pi,event.uid),'vfx-buff',680);ringVisual(unitRect,'buff');burstVisual(unitRect,'buff',5);floatVisual(unitRect,event.nextCombat?'🔥 +'+event.amount+' PRÓX. COMBATE':'↑ +'+event.amount+' ATQ','buff',0,-2,970);return;}
+  if(event.type==='debuff'){pulseElement(unitVisualElement(event.pi,event.uid),'vfx-debuff',650);ringVisual(unitRect,'debuff');burstVisual(unitRect,'debuff',5);floatVisual(unitRect,'↓ −'+event.amount+' ATQ','debuff',0,-2,940);return;}
+  if(event.type==='weaken'){pulseElement(unitVisualElement(event.pi,event.uid),'vfx-debuff',650);ringVisual(unitRect,'debuff');burstVisual(unitRect,'debuff',6);floatVisual(unitRect,'⌄ −'+event.amount+' DEF','debuff',0,-2,950);return;}
+  if(event.type==='resist'){ringVisual(unitRect,'defense');floatVisual(unitRect,'✦ RESISTIU','defense',0,-2,880);return;}
+  if(event.type==='move'){const from=resolveVisualRect(event,'from'),to=resolveVisualRect(event,'to');slashVisual(from,to,'move');ringVisual(to,'summon');pulseElement(unitVisualElement(event.pi,event.uid),'vfx-buff',620);floatVisual(to,'🥾 MARCHA','summon',0,0,850);return;}
+  if(event.type==='field'){ringVisual(locRect,'summon',12);beamVisual(locRect);pulseElement(locationVisualElement(event.loc),'vfx-summon',760);floatVisual(locRect,'✦ EFEITO ATIVO','summon',0,4,920);return;}
+  if(event.type==='flag'){const rect=event.locationOnly?locRect:(unitRect||locRect);ringVisual(rect,'flag',11);beamVisual(rect);burstVisual(rect,'flag',8);floatVisual(rect,'⚑ '+(event.label||'BANDEIRA'),'flag',0,4,1030);bannerVisual(event.banner||('BANDEIRA '+(event.label||'ATUALIZADA')));}
+}
+function playPendingVisuals(){
+  if(!state)return;const events=(state.visualEvents||[]).filter(event=>(event.seq||0)>lastPlayedVisualSeq).sort((a,b)=>a.seq-b.seq);if(!events.length)return;
+  lastPlayedVisualSeq=Math.max(lastPlayedVisualSeq,...events.map(event=>event.seq||0));events.forEach((event,index)=>afterVisual(()=>playVisualEvent(event),Math.min(index*75,330)+(event.delay||0)));afterVisual(()=>{for(const event of events)visualAnchors.delete(event.seq);},2100);
+}
 function shuffle(list){const a=list.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function online(){return mode==='host'||mode==='guest';}
 function other(pi){return 1-pi;}
@@ -293,7 +410,7 @@ function createState(deck0,deck1,name0,name1,hideHands,roleMode='random'){
   players[attacker].role='Ladrão';players[other(attacker)].role='Guardião';
   return {
     turno:0,phase:'setup',priority:0,activePlayer:0,consecutivePasses:0,vezLocal:0,hideHands:!!hideHands,passPending:false,
-    revision:0,nextUid:1,actionSeq:0,actionQueue:[],actionHistory:[],overtime:false,
+    revision:0,nextUid:1,actionSeq:0,actionQueue:[],actionHistory:[],visualSeq:0,visualEvents:[],overtime:false,
     players,
     locations:[0,1,2].map(index=>({id:ids.shift(),open:true,revealed:true,activeFromRound:index+1})),
     mission:{id:'stolen-banner',revealed:false,active:false,attacker,defender:other(attacker),home:null,extraction:null,flag:{status:'sealed',loc:null,carrierUid:null}},
@@ -302,7 +419,7 @@ function createState(deck0,deck1,name0,name1,hideHands,roleMode='random'){
 }
 
 function startLocalGame(){
-  closeNetwork();mode='local';myIndex=null;selection=null;inspect=null;
+  closeNetwork();resetVisualRuntime();mode='local';myIndex=null;selection=null;inspect=null;
   state=createState($('#p1Deck').value,$('#p2Deck').value,cleanName($('#p1Name').value,'Jogador 1'),cleanName($('#p2Name').value,'Jogador 2'),$('#hideHands').value==='yes',$('#roleMode').value);
   log('A campanha começou. Os jogadores agora alternam uma ação de cada vez.');startRound(1);render();
 }
@@ -313,7 +430,7 @@ function startRound(round){
     player.maxMana=Math.min(round,8);player.mana=player.maxMana;if(round>1)draw(player,round>=3?2:1);
     for(const unit of player.units){unit.attackTemp=0;unit.shield=0;unit.ward=false;unit.reinforced=false;unit.charge=false;}
   }
-  if(round<=3){const loc=round-1,data=LOCATIONS[state.locations[loc].id];recordAction(null,'system','✦','Efeito do Campo '+round+' ativado',data.name+' · '+data.effect);log('✦ O efeito de '+data.name+' despertou: '+data.effect);}
+  if(round<=3){const loc=round-1,data=LOCATIONS[state.locations[loc].id];recordAction(null,'system','✦','Efeito do Campo '+round+' ativado',data.name+' · '+data.effect);queueVisual('field',{loc,label:data.name});log('✦ O efeito de '+data.name+' despertou: '+data.effect);}
   if(round===2&&!state.mission.revealed){
     state.mission.revealed=true;state.phase='flag-choice';state.activePlayer=state.mission.defender;state.vezLocal=state.activePlayer;
     log('📜 Missão revelada. O Guardião deve escolher publicamente onde proteger a Bandeira.');
@@ -333,6 +450,7 @@ function chooseFlag(pi,loc){
   if(!state||state.phase!=='flag-choice'||pi!==state.mission.defender||!canChooseFlag(pi)||![0,1,2].includes(loc))return;
   const mission=state.mission;mission.home=loc;mission.extraction=loc===0?2:loc===2?0:(mission.attacker===0?0:2);mission.flag.loc=loc;mission.flag.status='sealed';
   recordAction(pi,'flag','⚑','Bandeira posicionada',slotLabel(loc)+' · fuga por '+slotLabel(mission.extraction));
+  queueVisual('flag',{pi,loc,label:'POSICIONADA',banner:'BANDEIRA POSICIONADA'});
   log('⚑ '+state.players[pi].name+' escolheu '+slotLabel(loc)+' para proteger a Bandeira. A rota de fuga será '+slotLabel(mission.extraction)+'.');
   state.phase='actions';state.activePlayer=state.priority;state.vezLocal=state.activePlayer;state.passPending=state.hideHands&&state.activePlayer!==pi;commitAndSync();
 }
@@ -390,11 +508,12 @@ function passAction(pi){
   if(state.consecutivePasses>=2){finishRound();return;}handoffTo(other(pi));
 }
 
-function addAttack(unit,value){if(unit)unit.attackTemp=(unit.attackTemp||0)+value;}
-function addShield(unit,value){if(unit)unit.shield=(unit.shield||0)+value;}
+function addAttack(unit,value){if(!unit||!value)return;unit.attackTemp=(unit.attackTemp||0)+value;queueUnitVisual(value>0?'buff':'debuff',unit,{amount:Math.abs(value)});}
+function addShield(unit,value){if(!unit||value<=0)return;unit.shield=(unit.shield||0)+value;queueUnitVisual('defense',unit,{amount:value});}
+function healUnit(unit,value){if(!unit||value<=0)return 0;const amount=Math.min(value,Math.max(0,maxDefense(unit)-unit.hp));if(!amount)return 0;unit.hp+=amount;queueUnitVisual('heal',unit,{amount});return amount;}
 function weakenDefense(unit,value){
-  if(!unit)return false;if(unit.ward){log(CARDS[unit.id].name+' resistiu ao enfraquecimento.');return false;}
-  let remaining=value;const absorbed=Math.min(unit.shield||0,remaining);unit.shield-=absorbed;remaining-=absorbed;if(remaining>0)unit.hp=Math.max(1,unit.hp-remaining);return true;
+  if(!unit)return false;if(unit.ward){queueUnitVisual('resist',unit);log(CARDS[unit.id].name+' resistiu ao enfraquecimento.');return false;}
+  const before=defenseValue(unit);let remaining=value;const absorbed=Math.min(unit.shield||0,remaining);unit.shield-=absorbed;remaining-=absorbed;if(remaining>0)unit.hp=Math.max(1,unit.hp-remaining);const amount=before-defenseValue(unit);if(amount>0)queueUnitVisual('weaken',unit,{amount,shieldHit:absorbed});return amount>0;
 }
 function applyLocationEntry(pi,unit,loc){
   if(!locationEffectActive(loc))return;
@@ -408,7 +527,7 @@ function applyLocationEntry(pi,unit,loc){
 function moveUnit(pi,unit,destination,enemyEffect=false,adjacentOnly=false,cardMovement=false){
   if(!unit||unit.loc===destination||!locationOpen(destination))return false;if(adjacentOnly&&Math.abs(unit.loc-destination)!==1)return false;if(cardMovement&&state.mission.flag.carrierUid===unit.uid)return false;
   if(enemyEffect&&unit.ward){log(CARDS[unit.id].name+' não pôde ser movido.');return false;}if(unitsAt(pi,destination).length>=LOCATION_CAP)return false;
-  unit.loc=destination;unit.movedTurn=state.turno;if(locationEffectActive(destination)&&state.locations[destination].id==='forest')addAttack(unit,1);if(state.mission.flag.carrierUid===unit.uid)state.mission.flag.loc=destination;return true;
+  const from=unit.loc;unit.loc=destination;unit.movedTurn=state.turno;queueVisual('move',{pi,uid:unit.uid,fromLoc:from,toLoc:destination,loc:destination});if(locationEffectActive(destination)&&state.locations[destination].id==='forest')addAttack(unit,1);if(state.mission.flag.carrierUid===unit.uid)state.mission.flag.loc=destination;return true;
 }
 function otherOpenLocationWithFewest(pi,from,adjacentOnly=false){return state.locations.map((loc,index)=>({loc,index,count:unitsAt(pi,index).length})).filter(x=>locationOpen(x.index)&&x.index!==from&&(!adjacentOnly||Math.abs(x.index-from)===1)&&x.count<LOCATION_CAP).sort((a,b)=>a.count-b.count||Math.abs(a.index-from)-Math.abs(b.index-from))[0]?.index;}
 
@@ -417,15 +536,15 @@ function resolveCard(pi,item){
   if(card.type==='unit'){
     const beforeAllies=unitsAt(pi,loc).length,beforeEnemies=unitsAt(other(pi),loc).length;
     const unit={uid:state.nextUid++,id:item.id,loc,attackPerm:0,attackTemp:0,nextCombatBonus:0,defPerm:0,hp:card.defense,shield:0,ward:false,reinforced:false,enteredTurn:state.turno,actedTurn:state.turno,movedTurn:null,charge:false};
-    player.units.push(unit);if(beforeEnemies>beforeAllies){unit.shield+=1;unit.reinforced=true;log('✦ Reforço: '+card.name+' ganhou 1 Escudo ao entrar em desvantagem numérica.');}applyLocationEntry(pi,unit,loc);
-    if(card.effect==='first'&&beforeAllies===0){unit.defPerm+=1;unit.hp+=1;}
+    player.units.push(unit);queueVisual('summon',{pi,uid:unit.uid,loc,label:card.name,icon:card.icon});if(beforeEnemies>beforeAllies){addShield(unit,1);unit.reinforced=true;log('✦ Reforço: '+card.name+' ganhou 1 Escudo ao entrar em desvantagem numérica.');}applyLocationEntry(pi,unit,loc);
+    if(card.effect==='first'&&beforeAllies===0){unit.defPerm+=1;unit.hp+=1;queueUnitVisual('fortify',unit,{amount:1});}
     if(card.effect==='draw')draw(player,1);
     if(card.effect==='flagGuard'&&flagAt(loc))addShield(unit,2);
     if(card.effect==='chip'){const target=strongest(unitsAt(other(pi),loc));if(weakenDefense(target,1))log(card.name+' reduziu a DEF de '+CARDS[target.id].name+'.');}
     if(card.effect==='behind'&&beforeAllies<beforeEnemies){addAttack(unit,1);addShield(unit,1);}
     if(card.effect==='bless')addShield(mostFragile(unitsAt(pi,loc).filter(u=>u.uid!==unit.uid)),2);
     if(card.effect==='marshal')for(const ally of unitsAt(pi,loc))if(ally.uid!==unit.uid)addShield(ally,1);
-    if(card.effect==='emptyRaid'&&beforeEnemies===0)unit.attackPerm+=1;
+    if(card.effect==='emptyRaid'&&beforeEnemies===0){unit.attackPerm+=1;queueUnitVisual('buff',unit,{amount:1,permanent:true});}
     if(card.effect==='sabotage'){const target=strongest(unitsAt(other(pi),loc));if(weakenDefense(target,2))log(card.name+' sabotou a DEF de '+CARDS[target.id].name+'.');}
     if(card.effect==='ride'&&state.mission.active&&Number.isInteger(state.mission.flag.loc)&&Math.abs(state.mission.flag.loc-loc)===1&&moveUnit(pi,unit,state.mission.flag.loc)){unit.charge=true;unit.actedTurn=null;addAttack(unit,1);}
     if(card.effect==='duel'&&unitsAt(other(pi),unit.loc).length===1)addAttack(unit,2);
@@ -433,25 +552,26 @@ function resolveCard(pi,item){
     log(player.name+' jogou '+card.name+' em '+slotLabel(unit.loc)+'.');return;
   }
   const allies=()=>unitsAt(pi,loc),enemies=()=>unitsAt(other(pi),loc);
+  queueVisual('magic',{pi,loc,label:card.name,icon:card.icon});
   if(card.effect==='rally')addAttack(weakest(allies()),2);
-  if(card.effect==='march'){const source=weakest(player.units.filter(u=>u.loc!==loc&&locationOpen(u.loc)&&u.uid!==state.mission.flag.carrierUid));if(moveUnit(pi,source,loc,false,false,true)){source.actedTurn=state.turno;source.nextCombatBonus=(source.nextCombatBonus||0)+1;log(card.name+' trouxe '+CARDS[source.id].name+', que chegou exausto e preparou +1 ATQ para o próximo combate.');}}
+  if(card.effect==='march'){const source=weakest(player.units.filter(u=>u.loc!==loc&&locationOpen(u.loc)&&u.uid!==state.mission.flag.carrierUid));if(moveUnit(pi,source,loc,false,false,true)){source.actedTurn=state.turno;source.nextCombatBonus=(source.nextCombatBonus||0)+1;queueUnitVisual('buff',source,{amount:1,nextCombat:true});log(card.name+' trouxe '+CARDS[source.id].name+', que chegou exausto e preparou +1 ATQ para o próximo combate.');}}
   if(card.effect==='barricade')for(const unit of allies()){addShield(unit,2);unit.ward=true;}
   if(card.effect==='laststand'){const target=mostFragile(allies());addShield(target,allies().length<enemies().length?4:2);}
   if(card.effect==='feint'){const target=strongest(enemies());if(weakenDefense(target,2))log(card.name+' abriu a guarda de '+CARDS[target.id].name+'.');}
-  if(card.effect==='path'){const source=strongest(player.units.filter(u=>u.loc!==loc&&locationOpen(u.loc)&&u.uid!==state.mission.flag.carrierUid));if(moveUnit(pi,source,loc,false,false,true)){source.actedTurn=state.turno;source.nextCombatBonus=(source.nextCombatBonus||0)+2;log(card.name+' trouxe '+CARDS[source.id].name+', que chegou exausto e preparou +2 ATQ para o próximo combate.');}}
+  if(card.effect==='path'){const source=strongest(player.units.filter(u=>u.loc!==loc&&locationOpen(u.loc)&&u.uid!==state.mission.flag.carrierUid));if(moveUnit(pi,source,loc,false,false,true)){source.actedTurn=state.turno;source.nextCombatBonus=(source.nextCombatBonus||0)+2;queueUnitVisual('buff',source,{amount:2,nextCombat:true});log(card.name+' trouxe '+CARDS[source.id].name+', que chegou exausto e preparou +2 ATQ para o próximo combate.');}}
   if(card.effect==='smoke'){const target=mostFragile(enemies().filter(u=>u.uid!==state.mission.flag.carrierUid)),destination=otherOpenLocationWithFewest(other(pi),loc,true);if(target&&destination!=null&&moveUnit(other(pi),target,destination,true,true,true))log(card.name+' expulsou '+CARDS[target.id].name+' para '+slotLabel(destination)+'.');}
-  if(card.effect==='allin'){const bonus=flagAt(loc)?2:1,targets=allies();for(const unit of targets)unit.nextCombatBonus=(unit.nextCombatBonus||0)+bonus;if(targets.length){recordAction(pi,'effect','🔥','Tudo ou Nada preparou '+targets.length+' unidade(s)','+'+bonus+' ATQ no próximo combate · '+slotLabel(loc));log(card.name+' preparou '+targets.map(unit=>CARDS[unit.id].name+' '+attackValue(pi,unit)+' ATQ').join(', ')+'.');}else log(card.name+' não encontrou aliados em '+slotLabel(loc)+'.');}
+  if(card.effect==='allin'){const bonus=flagAt(loc)?2:1,targets=allies();for(const unit of targets){unit.nextCombatBonus=(unit.nextCombatBonus||0)+bonus;queueUnitVisual('buff',unit,{amount:bonus,nextCombat:true});}if(targets.length){recordAction(pi,'effect','🔥','Tudo ou Nada preparou '+targets.length+' unidade(s)','+'+bonus+' ATQ no próximo combate · '+slotLabel(loc));log(card.name+' preparou '+targets.map(unit=>CARDS[unit.id].name+' '+attackValue(pi,unit)+' ATQ').join(', ')+'.');}else log(card.name+' não encontrou aliados em '+slotLabel(loc)+'.');}
   player.discard.push(item.id);log(player.name+' jogou a tática '+card.name+' em '+slotLabel(loc)+'.');
 }
 
 function findUnit(pi,uid){return state.players[pi].units.find(unit=>unit.uid===uid)||null;}
 function legalAttackTargets(pi,uid){const attacker=findUnit(pi,uid);if(!attacker||!unitReady(attacker))return [];return unitsAt(other(pi),attacker.loc);}
 function startAttack(pi,uid){if(!canAct(pi))return;const unit=findUnit(pi,uid);if(!unit||!unitReady(unit)||!legalAttackTargets(pi,uid).length)return;selection={type:'attack',pi,uid};inspect={type:'unit',id:unit.id,pi,uid};render();}
-function applyDamage(unit,damage){let remaining=damage,shieldHit=Math.min(unit.shield||0,remaining);unit.shield-=shieldHit;remaining-=shieldHit;unit.hp-=remaining;return unit.hp<=0;}
+function applyDamage(unit,damage){let remaining=Math.max(0,damage),shieldHit=Math.min(unit.shield||0,remaining);unit.shield-=shieldHit;remaining-=shieldHit;const hpHit=Math.min(Math.max(0,unit.hp),remaining);unit.hp-=remaining;return {total:Math.max(0,damage),shieldHit,hpHit,dies:unit.hp<=0};}
 function defeatUnit(ownerPi,unit,killerPi){
-  if(!unit)return;const loc=unit.loc,card=CARDS[unit.id],owner=state.players[ownerPi],killer=state.players[killerPi];owner.units=owner.units.filter(candidate=>candidate.uid!==unit.uid);owner.discard.push(unit.id);killer.kills++;
+  if(!unit)return;const loc=unit.loc,card=CARDS[unit.id],owner=state.players[ownerPi],killer=state.players[killerPi];queueVisual('death',{pi:ownerPi,uid:unit.uid,loc,killerPi,icon:card.icon,name:card.name,delay:430});owner.units=owner.units.filter(candidate=>candidate.uid!==unit.uid);owner.discard.push(unit.id);killer.kills++;
   recordAction(killerPi,'death','💀',card.name+' eliminado',killer.name+' marcou a Baixa em '+slotLabel(loc),unit.id);log('💀 '+killer.name+' derrotou '+card.name+' de '+owner.name+'. Total: '+killer.kills+' Baixas.');
-  if(state.mission.flag.carrierUid===unit.uid){state.mission.flag.status='ground';state.mission.flag.loc=loc;state.mission.flag.carrierUid=null;recordAction(ownerPi,'flag','⚑','Bandeira derrubada',slotLabel(loc));log('⚑ O portador caiu e a Bandeira ficou em '+slotLabel(loc)+'.');}
+  if(state.mission.flag.carrierUid===unit.uid){state.mission.flag.status='ground';state.mission.flag.loc=loc;state.mission.flag.carrierUid=null;queueVisual('flag',{loc,label:'DERRUBADA',banner:'BANDEIRA DERRUBADA',delay:650});recordAction(ownerPi,'flag','⚑','Bandeira derrubada',slotLabel(loc));log('⚑ O portador caiu e a Bandeira ficou em '+slotLabel(loc)+'.');}
 }
 function checkKillVictory(){
   const reached=[0,1].filter(pi=>state.players[pi].kills>=KILL_GOAL);if(!reached.length)return false;
@@ -461,12 +581,12 @@ function checkKillVictory(){
 }
 function executeAttack(pi,attackerUid,targetUid){
   if(!canAct(pi)||!selection||selection.type!=='attack'||selection.uid!==attackerUid)return;const attacker=findUnit(pi,attackerUid),target=findUnit(other(pi),targetUid);if(!attacker||!target||target.loc!==attacker.loc||!unitReady(attacker))return;
-  const attackDamage=attackValue(pi,attacker),counterDamage=attackValue(other(pi),target),targetBefore=defenseValue(target),attackerBefore=defenseValue(attacker);attacker.actedTurn=state.turno;
+  const attackDamage=attackValue(pi,attacker),counterDamage=attackValue(other(pi),target);attacker.actedTurn=state.turno;
   attacker.nextCombatBonus=0;target.nextCombatBonus=0;
-  const targetDies=applyDamage(target,attackDamage),attackerDies=applyDamage(attacker,counterDamage);
+  const targetDamage=applyDamage(target,attackDamage),sourceDamage=applyDamage(attacker,counterDamage);queueVisual('combat',{sourcePi:pi,sourceUid:attacker.uid,targetPi:other(pi),targetUid:target.uid,loc:attacker.loc,targetDamage,sourceDamage});
   recordAction(pi,'attack','⚔️',CARDS[attacker.id].name+' atacou '+CARDS[target.id].name,attackDamage+' dano ↔ '+counterDamage+' contra-ataque · '+slotLabel(attacker.loc),attacker.id);
   log('⚔️ '+CARDS[attacker.id].name+' causou '+attackDamage+'; '+CARDS[target.id].name+' revidou '+counterDamage+'.');
-  if(targetDies)defeatUnit(other(pi),target,pi);if(attackerDies)defeatUnit(pi,attacker,other(pi));selection=null;
+  if(targetDamage.dies)defeatUnit(other(pi),target,pi);if(sourceDamage.dies)defeatUnit(pi,attacker,other(pi));selection=null;
   if(checkKillVictory()){commitAndSync();return;}finishAction(pi);
 }
 
@@ -491,12 +611,12 @@ function flagInteractionState(pi,unit){
 function flagActionFor(pi,unit){const interaction=flagInteractionState(pi,unit);return interaction?.allowed?interaction.action:null;}
 function executeFlagAction(pi,uid){
   if(!canAct(pi))return;const unit=findUnit(pi,uid),interaction=unit?flagInteractionState(pi,unit):null;if(!interaction?.allowed)return;const action=interaction.action;unit.actedTurn=state.turno;const flag=state.mission.flag;
-  if(action==='steal'){flag.status='carried';flag.carrierUid=unit.uid;recordAction(pi,'flag','⚑',CARDS[unit.id].name+' roubou a Bandeira',slotLabel(unit.loc));log('⚑ '+CARDS[unit.id].name+' agora carrega a Bandeira.');}
+  if(action==='steal'){flag.status='carried';flag.carrierUid=unit.uid;queueVisual('flag',{pi,uid:unit.uid,loc:unit.loc,label:'ROUBADA',banner:'BANDEIRA ROUBADA'});recordAction(pi,'flag','⚑',CARDS[unit.id].name+' roubou a Bandeira',slotLabel(unit.loc));log('⚑ '+CARDS[unit.id].name+' agora carrega a Bandeira.');}
   if(action==='recover'){
-    flag.status='ground';flag.loc=state.mission.home;flag.carrierUid=null;recordAction(pi,'flag','🛡️','Bandeira recuperada','Voltou para '+slotLabel(flag.loc));log('🛡️ O Guardião devolveu a Bandeira ao ponto inicial.');
+    flag.status='ground';flag.loc=state.mission.home;flag.carrierUid=null;queueVisual('flag',{pi,uid:unit.uid,loc:flag.loc,locationOnly:true,label:'RECUPERADA',banner:'BANDEIRA RECUPERADA'});recordAction(pi,'flag','🛡️','Bandeira recuperada','Voltou para '+slotLabel(flag.loc));log('🛡️ O Guardião devolveu a Bandeira ao ponto inicial.');
     if(state.overtime){state.gameOver={winner:pi,title:'Bandeira recuperada',reason:state.players[pi].name+' recuperou o Estandarte durante a Prorrogação.'};state.phase='ended';selection=null;commitAndSync();return;}
   }
-  if(action==='extract'){recordAction(pi,'flag','🏁','Bandeira extraída',slotLabel(unit.loc));state.gameOver={winner:pi,title:'Bandeira capturada',reason:state.players[pi].name+' sobreviveu à rota e gastou uma ação para Extrair.'};state.phase='ended';selection=null;commitAndSync();return;}
+  if(action==='extract'){queueVisual('flag',{pi,uid:unit.uid,loc:unit.loc,label:'EXTRAÍDA',banner:'BANDEIRA EXTRAÍDA'});recordAction(pi,'flag','🏁','Bandeira extraída',slotLabel(unit.loc));state.gameOver={winner:pi,title:'Bandeira capturada',reason:state.players[pi].name+' sobreviveu à rota e gastou uma ação para Extrair.'};state.phase='ended';selection=null;commitAndSync();return;}
   finishAction(pi);
 }
 
@@ -539,6 +659,7 @@ function receiveGuest(c,message){
   if(message.t==='hello'&&!state){
     if(message.protocol!==PROTOCOL_VERSION){c.send({t:'version-error'});c.close();return;}
     const guestDeck=DECKS[message.deckId]?message.deckId:'raven';
+    resetVisualRuntime();
     state=createState($('#p1Deck').value,guestDeck,cleanName($('#p1Name').value,'Jogador 1'),cleanName(message.name,'Jogador 2'),true,$('#roleMode').value);
     log('A partida online começou. Cada ação será pública e alternada.');startRound(1);
     c.send({t:'init',protocol:PROTOCOL_VERSION,state,index:1});setLobbyStatus('');render();
@@ -552,7 +673,7 @@ function joinRoom(){
     conn.on('open',()=>{mode='guest';myIndex=1;conn.send({t:'hello',protocol:PROTOCOL_VERSION,name,deckId});setLobbyStatus('Conectado. Aguardando o anfitrião...');});
     conn.on('data',message=>{
       if(!message||typeof message!=='object')return;
-      if(message.t==='init'&&message.protocol===PROTOCOL_VERSION){state=message.state;myIndex=message.index;mode='guest';render();}
+      if(message.t==='init'&&message.protocol===PROTOCOL_VERSION){resetVisualRuntime();state=message.state;myIndex=message.index;mode='guest';render();}
       else if(message.t==='state'&&message.protocol===PROTOCOL_VERSION)applyRemoteState(message.state);
       else if(message.t==='version-error')setLobbyStatus('A outra pessoa está usando uma versão diferente do protótipo.');
     });
@@ -561,10 +682,10 @@ function joinRoom(){
   peer.on('error',error=>setLobbyStatus(error.type==='peer-unavailable'?'Sala não encontrada.':'Erro de conexão: '+esc(error.type)+'.'));
 }
 function disconnected(message){if(!state){setLobbyStatus(message);return;}log(message);state.connectionLost=message;state.phase='disconnected';render();}
-function resetGame(){closeNetwork();state=null;mode='local';myIndex=null;lobbyStatus='';selection=null;inspect=null;render();}
+function resetGame(){closeNetwork();resetVisualRuntime();state=null;mode='local';myIndex=null;lobbyStatus='';selection=null;inspect=null;render();}
 
 /* ---------- Rendering ---------- */
-function render(){if(!state){renderSetup();return;}renderGame();}
+function render(){if(!state){renderSetup();return;}capturePendingVisualAnchors();renderGame();requestAnimationFrame(playPendingVisuals);}
 function renderSetup(){
   $('#app').innerHTML=`<div class="setup-shell"><header class="setup-hero"><div class="eyebrow">Protótipo de combate e missão assimétrica</div><h1>Age of Guthology<span>O Estandarte Roubado</span></h1><p>Uma ação por vez: jogue uma carta, ataque, mova ou passe. ATQ causa dano à DEF e o alvo contra-ataca; a primeira condição concluída — Extração ou 10 Baixas — encerra a batalha.</p></header>
   <div class="setup-grid"><section class="setup-card"><h2>Preparar os exércitos</h2><p>Dois baralhos básicos, papéis independentes e mana recarregada a cada rodada.</p>
@@ -592,7 +713,7 @@ function renderTopbar(){
   const active=Number.isInteger(state.activePlayer)?state.players[state.activePlayer]:null,roundText=state.overtime?state.turno+' · Prorrogação':state.turno+'/'+MAX_ROUNDS;
   return `<header class="topbar" aria-live="polite"><div class="brand-name">Age of Guthology</div><div class="status-pill">Rodada <b>${roundText}</b></div><div class="status-pill">Mana <b>${Math.min(state.turno,8)}</b></div><div class="status-pill">Iniciativa <b>${esc(state.players[state.priority].name)}</b></div><div class="status-pill ${active?'ready':''}">${state.phase==='flag-choice'?'Escolha do Guardião':state.phase==='review'?'Rodada encerrada':active?'Ação de '+esc(active.name):'Partida encerrada'} <b>${state.consecutivePasses}/2 passes</b></div><div class="top-grow"></div><button class="btn danger" onclick="resetGame()">Novo teste</button></header>`;
 }
-function renderWarPanel(){const p0=state.players[0],p1=state.players[1];return `<section class="panel"><div class="panel-title">Deathmatch · Baixas</div><div class="panel-body"><div class="war-score"><div class="score-side"><div class="score-name">${esc(p0.name)}</div><div class="score-num">${p0.kills}</div><div class="score-goal">de ${KILL_GOAL} 💀</div></div><div class="score-vs">×</div><div class="score-side"><div class="score-name">${esc(p1.name)}</div><div class="score-num">${p1.kills}</div><div class="score-goal">de ${KILL_GOAL} 💀</div></div></div><div class="score-track">${Array.from({length:KILL_GOAL},(_,i)=>`<span class="score-pip ${i<p0.kills?'p0':''} ${i<p1.kills?'p1':''}"></span>`).join('')}</div></div></section>`;}
+function renderWarPanel(){const p0=state.players[0],p1=state.players[1];return `<section class="panel"><div class="panel-title">Deathmatch · Baixas</div><div class="panel-body"><div class="war-score"><div class="score-side" data-score-pi="0"><div class="score-name">${esc(p0.name)}</div><div class="score-num">${p0.kills}</div><div class="score-goal">de ${KILL_GOAL} 💀</div></div><div class="score-vs">×</div><div class="score-side" data-score-pi="1"><div class="score-name">${esc(p1.name)}</div><div class="score-num">${p1.kills}</div><div class="score-goal">de ${KILL_GOAL} 💀</div></div></div><div class="score-track">${Array.from({length:KILL_GOAL},(_,i)=>`<span class="score-pip ${i<p0.kills?'p0':''} ${i<p1.kills?'p1':''}"></span>`).join('')}</div></div></section>`;}
 function renderRevealPanel(){const steps=[{n:'1',title:'Campo 1 ativo',copy:'Os três campos já aceitam unidades.',active:state.turno===1,done:state.turno>1},{n:'2',title:'Campo 2 + missão',copy:'Centro desperta; Guardião escolhe a Bandeira.',active:state.turno===2,done:state.turno>2},{n:'3',title:'Campo 3 + Bandeira',copy:'Último efeito desperta e a missão ativa.',active:state.turno===3,done:state.turno>3}];return `<section class="panel"><div class="panel-title">Despertar dos campos</div><div class="panel-body reveal-steps">${steps.map(s=>`<div class="reveal-step ${s.active?'live':''} ${s.done?'done':''}"><div class="step-num">${s.done?'✓':s.n}</div><div><b>${s.title}</b><span>${s.copy}</span></div></div>`).join('')}</div></section>`;}
 function renderTipsPanel(){return `<section class="panel"><div class="panel-title">Regras rápidas</div><div class="panel-body tips"><b>Ação:</b> jogue 1 carta, ataque, mova, interaja ou passe.<br><b>Rodada:</b> dois passes consecutivos encerram; qualquer ação zera a contagem.<br><b>Combate:</b> ATQ reduz DEF e o alvo revida ao mesmo tempo.<br><b>Objetivo:</b> Roubar, Recuperar e Extrair exigem o local sem inimigos.<br><b>Interceptação:</b> o portador não pode sair de um local contestado.</div></section>`;}
 function renderPlayerRibbon(pi,isEnemy){const p=state.players[pi],deck=DECKS[p.deckId],can=canAct(pi),active=state.activePlayer===pi&&state.phase==='actions';return `<div class="player-ribbon ${isEnemy?'enemy':''} ${active?'active-ribbon':''}"><div class="ribbon-crest p${pi}">${deck.icon}</div><div class="player-meta"><b>${esc(p.name)}</b><span>${deck.name} · ${state.mission.revealed?p.role:'papel oculto'} · ${active?'SUA AÇÃO':'aguardando'}</span></div><div class="ribbon-stat">Mana <strong>${p.mana}/${p.maxMana}</strong></div><div class="ribbon-stat">Deck <strong>${p.deck.length}</strong></div><div class="ribbon-stat">Mão <strong>${p.hand.length}</strong></div>${isEnemy?`<div class="hand-mini">${Array.from({length:Math.min(p.hand.length,7)},()=>'<span class="mini-back"></span>').join('')}</div>`:''}<div class="ribbon-actions"><button class="btn primary" onclick="passAction(${pi})" ${!can?'disabled':''}>Passar ação</button></div></div>`;}
@@ -602,10 +723,10 @@ function renderHandCards(pi){const p=state.players[pi],can=canAct(pi);return `<d
 
 function renderActionQueue(){const active=Number.isInteger(state.activePlayer)?state.players[state.activePlayer].name:'—';return `<section class="action-queue" aria-live="polite"><div class="queue-head"><b>Linha de Ações · Rodada ${state.turno}</b><span>ordem pública de cartas, ataques, efeitos e missão</span><span class="turn-now">${state.phase==='actions'?'Vez de '+esc(active):state.phase==='flag-choice'?'Guardião escolhendo':'Revisão'}</span></div><div class="queue-scroll">${state.actionQueue.length?state.actionQueue.map(event=>`<div class="queue-item ${Number.isInteger(event.pi)?'p'+event.pi:'system'}"><span class="queue-icon">${event.icon}</span><span class="queue-copy"><b>${esc(event.title)}</b><span>${esc(state.players[event.pi]?.name||'Sistema')} · ${esc(event.detail)}</span></span><span class="queue-number">#${event.seq}</span></div>`).join(''):'<div class="queue-empty">Aguardando a primeira ação desta rodada.</div>'}</div></section>`;}
 function combatPreview(pi,attacker,target){const dealt=attackValue(pi,attacker),returned=attackValue(other(pi),target),targetAfter=defenseValue(target)-dealt,attackerAfter=defenseValue(attacker)-returned;return {dealt,returned,targetAfter,attackerAfter,text:`${dealt} dano → ${targetAfter<=0?'alvo morre':'alvo fica com '+targetAfter+' DEF'}; contra-ataque ${returned} → ${attackerAfter<=0?'atacante morre':'atacante fica com '+attackerAfter+' DEF'}`};}
-function renderLocation(loc,top,bottom){if(!locationOpen(loc))return `<article class="location-column fog"><div class="lane"><div class="lane-empty">Fechado</div></div><div class="fog-card">${slotLabel(loc,false)}<br><small>campo indisponível</small></div><div class="lane"><div class="lane-empty">Fechado</div></div></article>`;return `<article class="location-column">${renderLane(top,loc)}${renderLocationCard(loc)}${renderLane(bottom,loc)}</article>`;}
-function renderLane(pi,loc){const p=state.players[pi],units=unitsAt(pi,loc);const unitHtml=units.map(unit=>{const card=CARDS[unit.id],carrier=isCarrier(unit),blockers=carrierBlockers(pi,unit),ready=unitReady(unit),attackTarget=selection&&selection.type==='attack'&&selection.pi===other(pi)&&findUnit(selection.pi,selection.uid)?.loc===loc;const click=attackTarget?`executeAttack(${selection.pi},${selection.uid},${unit.uid})`:`inspectUnit(${pi},${unit.uid})`;const canControl=canAct(pi),interaction=flagInteractionState(pi,unit),canMove=canControl&&ready&&blockers===0&&state.locations.some((l,i)=>legalMoveDestination(pi,unit,i)),canAttack=canControl&&ready&&unitsAt(other(pi),loc).length>0;let status=carrier?'Portador −1 ATQ · ':'';status+=unit.enteredTurn===state.turno&&!unit.charge?'Recém-chegada':ready?'Pronta':'Exausta';if(unit.nextCombatBonus)status+=' · Ímpeto +'+unit.nextCombatBonus;if(unit.shield)status+=' · Escudo '+unit.shield;if(unit.reinforced)status+=' · Reforço';if(blockers)status+=' · Interceptada por '+blockers;const preview=attackTarget?combatPreview(selection.pi,findUnit(selection.pi,selection.uid),unit):null;const actionLabel=interaction?(interaction.action==='steal'?'Roubar':interaction.action==='recover'?'Recuperar':'Extrair'):'';const objectiveButton=interaction?`<button class="unit-action ${interaction.allowed?'':'objective-blocked'}" onclick="executeFlagAction(${pi},${unit.uid})" ${!canControl||!interaction.allowed?'disabled':''} title="${esc(interaction.allowed?actionLabel:interaction.reason)}" aria-label="${esc(interaction.allowed?actionLabel:actionLabel+' bloqueado: '+interaction.reason)}">${interaction.allowed?actionLabel:'🔒 '+actionLabel}</button>`:'';return `<div class="unit-row"><button class="unit-chip p${pi} ${carrier?'carrier':''} ${unit.ward?'ward':''} ${attackTarget?'targetable':''} ${!ready?'exhausted':''} ${unit.enteredTurn===state.turno?'new-unit':''}" onclick="${click}"><span class="unit-icon">${card.icon}</span><span class="unit-copy"><b>${esc(card.name)} ${carrier?'⚑':''}</b><span>${status}${preview?`<span class="attack-preview">${preview.text}</span>`:''}</span></span><span class="combat-stats"><b class="atk">⚔ ${attackValue(pi,unit)}</b><b class="def">🛡 ${defenseValue(unit)}/${maxDefense(unit)}</b></span></button><span class="unit-actions"><button class="unit-action" onclick="startAttack(${pi},${unit.uid})" ${!canAttack?'disabled':''}>Atacar</button><button class="unit-action" onclick="startMove(${pi},${unit.uid})" ${!canMove?'disabled':''} title="${carrier&&blockers?'Portador interceptado: elimine ou remova os inimigos daqui.':'Mover para um campo adjacente'}">${carrier&&blockers?'🔒 Mover':'Mover'}</button>${objectiveButton}</span></div>`;}).join('');return `<div class="lane"><div class="lane-head"><span>${esc(p.name)}</span><strong>⚔ ${locationPower(pi,loc)}</strong></div>${unitHtml||'<div class="lane-empty">— vazio —</div>'}</div>`;}
+function renderLocation(loc,top,bottom){if(!locationOpen(loc))return `<article class="location-column fog" data-location="${loc}"><div class="lane"><div class="lane-empty">Fechado</div></div><div class="fog-card">${slotLabel(loc,false)}<br><small>campo indisponível</small></div><div class="lane"><div class="lane-empty">Fechado</div></div></article>`;return `<article class="location-column" data-location="${loc}">${renderLane(top,loc)}${renderLocationCard(loc)}${renderLane(bottom,loc)}</article>`;}
+function renderLane(pi,loc){const p=state.players[pi],units=unitsAt(pi,loc);const unitHtml=units.map(unit=>{const card=CARDS[unit.id],carrier=isCarrier(unit),blockers=carrierBlockers(pi,unit),ready=unitReady(unit),attackTarget=selection&&selection.type==='attack'&&selection.pi===other(pi)&&findUnit(selection.pi,selection.uid)?.loc===loc;const click=attackTarget?`executeAttack(${selection.pi},${selection.uid},${unit.uid})`:`inspectUnit(${pi},${unit.uid})`;const canControl=canAct(pi),interaction=flagInteractionState(pi,unit),canMove=canControl&&ready&&blockers===0&&state.locations.some((l,i)=>legalMoveDestination(pi,unit,i)),canAttack=canControl&&ready&&unitsAt(other(pi),loc).length>0;let status=carrier?'Portador −1 ATQ · ':'';status+=unit.enteredTurn===state.turno&&!unit.charge?'Recém-chegada':ready?'Pronta':'Exausta';if(unit.nextCombatBonus)status+=' · Ímpeto +'+unit.nextCombatBonus;if(unit.shield)status+=' · Escudo '+unit.shield;if(unit.reinforced)status+=' · Reforço';if(blockers)status+=' · Interceptada por '+blockers;const preview=attackTarget?combatPreview(selection.pi,findUnit(selection.pi,selection.uid),unit):null;const actionLabel=interaction?(interaction.action==='steal'?'Roubar':interaction.action==='recover'?'Recuperar':'Extrair'):'';const objectiveButton=interaction?`<button class="unit-action ${interaction.allowed?'':'objective-blocked'}" onclick="executeFlagAction(${pi},${unit.uid})" ${!canControl||!interaction.allowed?'disabled':''} title="${esc(interaction.allowed?actionLabel:interaction.reason)}" aria-label="${esc(interaction.allowed?actionLabel:actionLabel+' bloqueado: '+interaction.reason)}">${interaction.allowed?actionLabel:'🔒 '+actionLabel}</button>`:'';return `<div class="unit-row"><button class="unit-chip p${pi} ${carrier?'carrier':''} ${unit.ward?'ward':''} ${attackTarget?'targetable':''} ${!ready?'exhausted':''} ${unit.enteredTurn===state.turno?'new-unit':''}" data-unit-key="${pi}:${unit.uid}" data-player="${pi}" data-unit-uid="${unit.uid}" data-loc="${loc}" onclick="${click}"><span class="unit-icon">${card.icon}</span><span class="unit-copy"><b>${esc(card.name)} ${carrier?'⚑':''}</b><span>${status}${preview?`<span class="attack-preview">${preview.text}</span>`:''}</span></span><span class="combat-stats"><b class="atk">⚔ ${attackValue(pi,unit)}</b><b class="def">🛡 ${defenseValue(unit)}/${maxDefense(unit)}</b></span></button><span class="unit-actions"><button class="unit-action" onclick="startAttack(${pi},${unit.uid})" ${!canAttack?'disabled':''}>Atacar</button><button class="unit-action" onclick="startMove(${pi},${unit.uid})" ${!canMove?'disabled':''} title="${carrier&&blockers?'Portador interceptado: elimine ou remova os inimigos daqui.':'Mover para um campo adjacente'}">${carrier&&blockers?'🔒 Mover':'Mover'}</button>${objectiveButton}</span></div>`;}).join('');return `<div class="lane" data-lane-pi="${pi}" data-loc="${loc}"><div class="lane-head"><span>${esc(p.name)}</span><strong>⚔ ${locationPower(pi,loc)}</strong></div>${unitHtml||'<div class="lane-empty">— vazio —</div>'}</div>`;}
 function locationSelectable(loc){if(!selection)return false;if(selection.type==='card'){const id=state.players[selection.pi].hand[selection.index];return canAct(selection.pi)&&legalPlayLocation(selection.pi,id,loc);}if(selection.type==='move')return canAct(selection.pi)&&legalMoveDestination(selection.pi,findUnit(selection.pi,selection.uid),loc);return false;}
-function renderLocationCard(loc){const location=state.locations[loc],data=LOCATIONS[location.id],active=locationEffectActive(loc),targetable=locationSelectable(loc),flagHere=state.mission.revealed&&state.mission.flag.loc===loc,home=state.mission.home===loc,escape=state.mission.extraction===loc,defenders=escape?unitsAt(state.mission.defender,loc).length:0;const flag=flagHere?`<div class="flag-marker">${state.mission.flag.status==='carried'?'⚑ Com o portador':state.mission.active?'⚑ Bandeira no chão':'⚑ Posição escolhida'}</div>`:'';const tag=targetable?'button':'div',timing=location.activeFromRound??loc+1;let result=home?'🏰 Ponto inicial da Bandeira':'Ataques exigem alvo no mesmo local';if(escape)result=defenders?'🔒 Fuga contestada por '+defenders:'🏁 Fuga livre para extração';return `<${tag} class="location-card ${active?'effect-active':'effect-dormant'} ${targetable?'targetable':''}" ${targetable?`onclick="handleLocationClick(${loc})"`:''}>${flag}<div class="loc-kicker">Campo ${loc+1} ${loc===1?'· Centro':''} ${home?'· Bastião':''} ${escape?'· Fuga':''}</div><div class="effect-state ${active?'':'dormant'}">${active?'Efeito ativo desde R'+timing:'Efeito adormecido · ativa na R'+timing}</div><div class="loc-icon">${data.icon}</div><div class="loc-name">${data.name}</div><div class="loc-effect">${data.effect}</div><div class="loc-score"><span class="red">⚔ ${locationPower(0,loc)}</span><span>×</span><span class="blue">⚔ ${locationPower(1,loc)}</span></div><div class="loc-result">${result}</div></${tag}>`;}
+function renderLocationCard(loc){const location=state.locations[loc],data=LOCATIONS[location.id],active=locationEffectActive(loc),targetable=locationSelectable(loc),flagHere=state.mission.revealed&&state.mission.flag.loc===loc,home=state.mission.home===loc,escape=state.mission.extraction===loc,defenders=escape?unitsAt(state.mission.defender,loc).length:0;const flag=flagHere?`<div class="flag-marker">${state.mission.flag.status==='carried'?'⚑ Com o portador':state.mission.active?'⚑ Bandeira no chão':'⚑ Posição escolhida'}</div>`:'';const tag=targetable?'button':'div',timing=location.activeFromRound??loc+1;let result=home?'🏰 Ponto inicial da Bandeira':'Ataques exigem alvo no mesmo local';if(escape)result=defenders?'🔒 Fuga contestada por '+defenders:'🏁 Fuga livre para extração';return `<${tag} class="location-card ${active?'effect-active':'effect-dormant'} ${targetable?'targetable':''}" data-location-card="${loc}" ${targetable?`onclick="handleLocationClick(${loc})"`:''}>${flag}<div class="loc-kicker">Campo ${loc+1} ${loc===1?'· Centro':''} ${home?'· Bastião':''} ${escape?'· Fuga':''}</div><div class="effect-state ${active?'':'dormant'}">${active?'Efeito ativo desde R'+timing:'Efeito adormecido · ativa na R'+timing}</div><div class="loc-icon">${data.icon}</div><div class="loc-name">${data.name}</div><div class="loc-effect">${data.effect}</div><div class="loc-score"><span class="red">⚔ ${locationPower(0,loc)}</span><span>×</span><span class="blue">⚔ ${locationPower(1,loc)}</span></div><div class="loc-result">${result}</div></${tag}>`;}
 function renderSelectionBar(){if(!selection)return '';if(selection.type==='card'){const id=state.players[selection.pi].hand[selection.index],card=CARDS[id];return `<div class="selection-bar">🎯 <span><b>${esc(card.name)}</b>: escolha um local dourado. A carta resolve agora e o oponente responde.</span><button class="btn" onclick="selection=null;render()">Cancelar</button></div>`;}if(selection.type==='attack'){const unit=findUnit(selection.pi,selection.uid);return `<div class="selection-bar attack-mode">⚔️ <span><b>${esc(CARDS[unit.id].name)}</b>: escolha um inimigo destacado no mesmo local. A prévia mostra dano e contra-ataque.</span><button class="btn" onclick="selection=null;render()">Cancelar</button></div>`;}const unit=findUnit(selection.pi,selection.uid);return `<div class="selection-bar move-mode">🥾 <span><b>${esc(CARDS[unit.id].name)}</b>: escolha um local adjacente dourado. Mover exaure a unidade.</span><button class="btn" onclick="selection=null;render()">Cancelar</button></div>`;}
 function renderReviewBar(){if(state.phase!=='review')return '';const canAdvance=!online()||mode==='host';return `<div class="review-banner">📯 <span><strong>Rodada encerrada por dois passes.</strong> Confira dano, Baixas, Bandeira e Linha de Ações.</span>${canAdvance?`<button class="btn primary" onclick="nextRound()">Iniciar rodada ${state.turno+1}</button>`:'<span style="margin-left:auto">Aguardando o anfitrião…</span>'}</div>`;}
 function missionStage(){const flag=state.mission.flag;if(!state.mission.revealed||state.mission.home==null)return 0;if(!state.mission.active)return 1;if(flag.status==='ground')return 2;if(flag.status==='carried')return 3;return 0;}
