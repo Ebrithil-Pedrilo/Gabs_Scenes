@@ -230,6 +230,15 @@ input.name{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100
 .hand-card .cstats .d{background:#244f68;border:1px solid #76afd0}
 .hand-empty{color:#8c8171;font-size:11px;padding:12px}
 .history{border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.2);padding:7px 10px}.history summary{cursor:pointer;color:#d7bf8c;font-size:11px;font-weight:900}.history-list{max-height:130px;overflow:auto;margin-top:6px;display:grid;gap:4px}.history-item{font-size:10px;color:#b6a994;border-top:1px solid rgba(255,255,255,.05);padding-top:4px}.history-item b{color:#e4cf9d}
+.history-card-ref{display:inline;border:0;border-bottom:1px dotted #d8b96f;background:transparent;color:#f0cf85;padding:0 1px;font:700 inherit;cursor:help}.history-card-ref:hover,.history-card-ref:focus-visible{color:#fff0bd;border-bottom-style:solid;outline:none;text-shadow:0 0 8px rgba(244,202,108,.45)}
+
+/* preview universal de carta: usado por mão, unidades e histórico */
+.card-preview{position:fixed;z-index:120;width:184px;pointer-events:none;opacity:0;visibility:hidden;transform:translateY(5px) scale(.97);transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s;filter:drop-shadow(0 18px 34px rgba(0,0,0,.7))}
+.card-preview.show{opacity:1;visibility:visible;transform:translateY(0) scale(1);transition-delay:0s}
+.card-preview .preview-card{width:184px;min-height:218px;transform:none!important;border-color:#d3ac62;box-shadow:0 0 0 1px rgba(255,224,157,.18);cursor:default;opacity:1!important}
+.card-preview .preview-card .art{height:72px;font-size:38px}.card-preview .preview-card .ctype{font-size:8px}.card-preview .preview-card .cname{font-size:14px;min-height:0}.card-preview .preview-card .ctext{font-size:11px;line-height:1.4;margin-top:3px}
+.preview-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}.preview-tag{border:1px solid #67553e;border-radius:999px;background:rgba(0,0,0,.25);padding:2px 5px;color:#c8b99d;font-size:8px;font-weight:800}
+.preview-live{margin-top:6px;border-top:1px solid rgba(255,255,255,.1);padding-top:5px;color:#bde4f5;font-size:9px;line-height:1.35}
 .waiting-hand{border:1px dashed #594c3b;border-radius:9px;padding:12px;color:#a99d8b;font-size:11px}
 
 /* pass gate + win overlay */
@@ -263,6 +272,7 @@ input.name{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100
   .lobby-grid{grid-template-columns:1fr}
   .selbar{position:sticky;bottom:0;z-index:30}
   .hand-card .ctext{font-size:10px}.hand-card .cname{font-size:12px}.unit .uname b{font-size:11px}.history-item{font-size:11px}
+  .card-preview,.card-preview .preview-card{width:164px}.card-preview .preview-card{min-height:205px}.card-preview .preview-card .art{height:60px}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.vfx-float{opacity:1!important}}
 </style>
@@ -270,6 +280,7 @@ input.name{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100
 <body>
 <main id="app"></main>
 <div id="vfx" aria-hidden="true"></div>
+<div id="card-preview" class="card-preview" role="tooltip" aria-hidden="true"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
 <script>
 /* ===================== MOTOR (idêntico ao testado no node) ===================== */
@@ -278,7 +289,7 @@ input.name{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100
    Ordem de turno alterna os times: [0,2,1,3]
    Vida somada: cada time tem UMA barra = soma do HP dos 2 warlords (o HP do warlord é o
    "custo/alavanca" de deckbuilding, não uma unidade no tabuleiro).
-   Ataque direto: toda unidade pronta pode escolher entre combater uma unidade ou atingir a vida inimiga.
+   Ataque direto: toda unidade pronta pode atingir a vida inimiga, salvo quando houver Provocar.
 ======================================================================================= */
 
 const TURN_ORDER = [0, 2, 1, 3];
@@ -558,6 +569,7 @@ const strongest = list => list.slice().sort((a, b) => atkVal(b) - atkVal(a))[0] 
 const weakestAtk = list => list.slice().sort((a, b) => atkVal(a) - atkVal(b))[0] || null;
 const combatAtk = u => atkVal(u) + (u.rage && u.hp < u.maxHp ? u.rage : 0);
 function legalFightEnemies(g,seat,lane){const enemies=enemiesInLane(g,seat,lane),taunts=enemies.filter(u=>u.passive==='taunt');return taunts.length?taunts:enemies;}
+const describeUnitHit=h=>`${h.hpDamage} na Vida${h.warded?' (Proteção ignorou o restante)':h.absorbed?` + ${h.absorbed} no Escudo`:''}${h.reduced?` + ${h.reduced} reduzido`:''}`;
 function resolveFight(g,seat,fighter,target){
   if(!fighter||!target||fighter.lane!==target.lane||teamOf(fighter.owner)!==teamOf(seat)||teamOf(target.owner)===teamOf(seat))return false;
   if(!legalFightEnemies(g,seat,fighter.lane).some(u=>u.uid===target.uid)||fighter.lastForcedFightRound===g.round)return false;
@@ -566,13 +578,15 @@ function resolveFight(g,seat,fighter,target){
   const hitEnemy=dealToUnit(g,target,toEnemy),hitAlly=dealToUnit(g,fighter,toAlly);
   if(fighter.drain&&hitEnemy.hpDamage>0)healTeamLife(g,teamOf(seat),Math.min(fighter.drain,hitEnemy.hpDamage));
   if(target.drain&&hitAlly.hpDamage>0)healTeamLife(g,teamOf(target.owner),Math.min(target.drain,hitAlly.hpDamage));
-  const describe=h=>`${h.hpDamage} na Vida${h.warded?' (Proteção ignorou o restante)':h.absorbed?` + ${h.absorbed} no Escudo`:''}${h.reduced?` + ${h.reduced} reduzido`:''}`;
-  logMsg(g,`⚔ Briga na ${g.lanes[fighter.lane].name}: ${CARDS[fighter.cardId].name} causou ${describe(hitEnemy)} e recebeu ${describe(hitAlly)}.`);
+  logMsg(g,`⚔ Briga na ${g.lanes[fighter.lane].name}: ${CARDS[fighter.cardId].name} causou ${describeUnitHit(hitEnemy)} e recebeu ${describeUnitHit(hitAlly)}.`,fighter.cardId);
   return {hitEnemy,hitAlly};
 }
 
 function ev(g, e) { g.events.push({ seq: ++g.seq, ...e }); g.events=g.events.slice(-60); }
-function logMsg(g, text) { g.log.unshift({ round: g.round, text }); g.log = g.log.slice(0, 80); }
+function logMsg(g, text, cardId=null) {
+  const row={round:g.round,text};if(cardId&&CARDS[cardId])row.cardId=cardId;
+  g.log.unshift(row);g.log=g.log.slice(0,80);
+}
 function draw(g, seat, n = 1) { const p = g.players[seat]; for (let i = 0; i < n; i++) if (p.deck.length) p.hand.push(p.deck.pop()); }
 
 /* ---------------- dano ---------------- */
@@ -594,7 +608,7 @@ function killUnit(g, u) {
   g.units = g.units.filter(x => x.uid !== u.uid);
   if(!u.drowned){g.graveyard.unshift({cardId:u.cardId,owner:u.owner,lane:u.lane,round:g.round});g.graveyard=g.graveyard.slice(0,30);}
   ev(g, { type: 'death', uid: u.uid, owner: u.owner, lane: u.lane, name: CARDS[u.cardId].name, icon: CARDS[u.cardId].icon });
-  logMsg(g, `☠ ${CARDS[u.cardId].name} caiu.`);
+  logMsg(g, `☠ ${CARDS[u.cardId].name} caiu.`,u.cardId);
   if(!g.suppressDeathrattles&&u.deathSummon&&g.units.filter(x=>x.lane===u.lane&&teamOf(x.owner)===teamOf(u.owner)).length<LANE_CAP)spawnUnit(g,u.owner,u.deathSummon,u.lane,true);
 }
 function dealToTeamLife(g, team, amount, sourceSeat) {
@@ -754,7 +768,7 @@ function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
     g.suppressDeathrattles=true;
     for (const u of doomed) if (g.units.some(x=>x.uid===u.uid)) killUnit(g,u);
     g.suppressDeathrattles=false;
-    logMsg(g,`Ratomanocu limpou a arena (${doomed.length} unidades).`);
+    logMsg(g,`Ratomanocu limpou a arena (${doomed.length} unidades).`,'ratomanocu');
     return;
   }
 }
@@ -802,7 +816,7 @@ function useHeroPower(g, seat, targetRef, choice) {
       summoned=spawnUnit(g,seat,'pirate_drowned_token',targetRef,false);detail=` Consumiu ${CARDS[dead.cardId].name} e invocou um Afogado com Ímpeto.`;
     }
     ev(g,{type:'hero',owner:seat,uid:summoned?.uid,lane:targetRef,name:w.power.name});
-    logMsg(g,`${p.name} usou ${w.power.name} na ${g.lanes[targetRef].name}.${detail}`);
+    logMsg(g,`${p.name} usou ${w.power.name} na ${g.lanes[targetRef].name}.${detail}`,summoned?.cardId||null);
     return {ok:true};
   }
   if (!heroTargetUids(g,seat).includes(targetRef)) return {ok:false,err:'alvo'};
@@ -833,7 +847,7 @@ function useHeroPower(g, seat, targetRef, choice) {
   } else if(w.power.kind==='arenaFight'){
     const target=mostFragile(legalFightEnemies(g,seat,u.lane));if(target)resolveFight(g,seat,u,target);
   }
-  logMsg(g,`${p.name} usou ${w.power.name} em ${CARDS[u.cardId].name}, na ${g.lanes[u.lane].name}.`);
+  logMsg(g,`${p.name} usou ${w.power.name} em ${CARDS[u.cardId].name}, na ${g.lanes[u.lane].name}.`,u.cardId);
   return {ok:true};
 }
 
@@ -902,22 +916,22 @@ function playCard(g, seat, cardRef, lane, targetUid) {
   p.hand.splice(handIndex, 1);
   if (card.type === 'unit') {
     const u=spawnUnit(g,seat,id,lane);
-    logMsg(g, `${p.name} jogou ${card.name} na ${g.lanes[lane].name}.`);
+    logMsg(g, `${p.name} jogou ${card.name} na ${g.lanes[lane].name}.`,id);
     applyEffect(g, seat, lane, u, card.onPlay,explicitTarget);
   } else {
     ev(g, { type: 'tactic', owner: seat, lane, name: card.name });
-    logMsg(g, `${p.name} usou ${card.name}${explicitTarget?' em '+CARDS[explicitTarget.cardId].name:Number.isInteger(lane)?' na '+g.lanes[lane].name:' (efeito global)'}.`);
+    logMsg(g, `${p.name} usou ${card.name}${explicitTarget?' em '+CARDS[explicitTarget.cardId].name:Number.isInteger(lane)?' na '+g.lanes[lane].name:' (efeito global)'}.`,id);
     applyEffect(g, seat, lane, null, card.onPlay,explicitTarget);
   }
   return { ok: true };
 }
 
 function attackTargets(g, u) {
-  // Provocar restringe alvos de unidade, mas a vida da dupla é sempre uma escolha separada.
+  // Inimigos comuns não bloqueiam a vida; Provocar protege unidades e a vida da dupla.
   const enemies = enemiesInLane(g, u.owner, u.lane);
   const taunts = enemies.filter(e => e.passive === 'taunt');
   const list = (taunts.length ? taunts : enemies).map(e => e.uid);
-  return { units: list, face: true };
+  return { units: list, face: taunts.length === 0 };
 }
 function canAttackWith(g, seat, uid) {
   if (g.over || g.active !== seat) return false;
@@ -938,14 +952,16 @@ function attack(g, seat, uid, targetUid /* or null for face */) {
     ev(g, { type: 'attack', uid: u.uid, owner: seat, lane: u.lane, face: true });
     const dealt=dealToTeamLife(g, enemyTeam, dmg, seat);
     if(u.drain&&dealt>0)healTeamLife(g,teamOf(seat),Math.min(u.drain,dealt));
-    logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} ignorou a linha inimiga e atacou diretamente a dupla: ${dealt} de dano${dealt<dmg?' (Couraça de Almas reduziu 1)':''}.`);
+    logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} atacou diretamente a dupla: ${dealt} de dano${dealt<dmg?' (Couraça de Almas reduziu 1)':''}.`,u.cardId);
   } else {
     if (!t.units.includes(targetUid)) return { ok: false, err: 'alvo' };
     const target = g.units.find(x => x.uid === targetUid);
-    ev(g, { type: 'combat', uid: u.uid, owner: seat, lane: u.lane, targetUid, targetOwner: target.owner, amount: dmg });
-    const hit=dealToUnit(g, target, dmg);
+    const counter=combatAtk(target);
+    ev(g, { type: 'combat', uid: u.uid, owner: seat, lane: u.lane, targetUid, targetOwner: target.owner, amount: dmg, counterAmount:counter });
+    const hit=dealToUnit(g,target,dmg),back=dealToUnit(g,u,counter);
     if(u.drain&&hit.hpDamage>0)healTeamLife(g,teamOf(seat),Math.min(u.drain,hit.hpDamage));
-    logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} atacou ${CARDS[target.cardId].name} na ${g.lanes[u.lane].name}: ${hit.hpDamage} na Vida${hit.warded?' e a Proteção da Luz ignorou o restante':hit.absorbed?` e ${hit.absorbed} absorvido pelo Escudo`:''}${hit.reduced?` (${hit.reduced} reduzido)`:''}.`);
+    if(target.drain&&back.hpDamage>0)healTeamLife(g,teamOf(target.owner),Math.min(target.drain,back.hpDamage));
+    logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} enfrentou ${CARDS[target.cardId].name} na ${g.lanes[u.lane].name}: causou ${describeUnitHit(hit)} e recebeu ${describeUnitHit(back)}.`,u.cardId);
   }
   u.exhausted = true;u.hasAttacked=true;
   maybeRoundCap(g);
@@ -1050,6 +1066,43 @@ let lastSeq = 0;              // vfx
 let setupMode = 'local';
 let lobbyMessage = '';
 let soundOn = true, audioContext = null;
+let previewPinned=false,previewCardId=null;
+
+function cardPreviewMarkup(cardId,unitUid){
+  const c=CARDS[cardId];if(!c)return '';
+  const tags=[];
+  if(c.passive==='charge')tags.push('Ímpeto');if(c.passive==='taunt')tags.push('Provocar');
+  if(c.rage)tags.push(`Fúria +${c.rage}`);if(c.drain)tags.push(`Dreno ${c.drain}`);if(c.painAtk)tags.push(`Dor +${c.painAtk} ATQ`);
+  if(c.tribe)tags.push(c.tribe==='beast'?'Fera':c.tribe==='rat'?'Homem-Rato':c.tribe==='drowned'?'Afogado':c.tribe);
+  if(c.token)tags.push('Token');
+  const stats=c.type==='unit'?`<div class="cstats"><b class="a">⚔${c.atk}</b><b class="d">❤${c.hp}</b></div>`:'';
+  const uid=Number(unitUid),u=Number.isFinite(uid)&&G?.units?.find(x=>x.uid===uid);
+  const live=u?`<div class="preview-live"><b>Em campo agora</b> · ⚔ ${atkVal(u)} · ❤ ${u.hp}/${u.maxHp}${u.shield?` · 🛡 ${u.shield}`:''}${u.ward?' · ✨ Proteção':''}${u.damageReduction?` · ↓${u.damageReduction} dano`:''}</div>`:'';
+  return `<div class="hand-card ${c.f} preview-card">
+    <span class="cost">${c.cost}</span><div class="art">${c.icon}</div>${stats}
+    <div class="ctype">${c.type==='unit'?(c.token?'Token':'Unidade'):'Tática / Magia'}</div>
+    <div class="cname">${esc(c.name)}</div><div class="ctext">${esc(c.text||'Sem efeito adicional.')}</div>
+    ${tags.length?`<div class="preview-tags">${tags.map(t=>`<span class="preview-tag">${esc(t)}</span>`).join('')}</div>`:''}${live}
+  </div>`;
+}
+function placeCardPreview(el,anchor){
+  const r=anchor?.getBoundingClientRect?.(),vw=globalThis.innerWidth||1024,vh=globalThis.innerHeight||768,gap=12,w=el.offsetWidth||184,h=el.offsetHeight||230;
+  if(!r){el.style.left=Math.max(8,vw-w-12)+'px';el.style.top='12px';return;}
+  let left=r.right+gap;if(left+w>vw-8)left=r.left-w-gap;left=Math.max(8,Math.min(left,vw-w-8));
+  let top=r.top+(r.height-h)/2;top=Math.max(8,Math.min(top,vh-h-8));el.style.left=left+'px';el.style.top=top+'px';
+}
+function showCardPreview(cardId,anchor,unitUid=null,pinned=false){
+  const el=document.getElementById('card-preview');if(!el?.classList||!CARDS[cardId])return;
+  previewPinned=!!pinned;previewCardId=cardId;el.innerHTML=cardPreviewMarkup(cardId,unitUid);el.setAttribute('aria-hidden','false');el.classList.add('show');
+  placeCardPreview(el,anchor);
+}
+function hideCardPreview(force=false){
+  if(previewPinned&&!force)return;const el=document.getElementById('card-preview');previewPinned=false;previewCardId=null;
+  if(!el?.classList)return;el.classList.remove('show');el.setAttribute('aria-hidden','true');
+}
+function toggleCardPreview(cardId,anchor,unitUid=null){
+  if(previewPinned&&previewCardId===cardId){hideCardPreview(true);return;}showCardPreview(cardId,anchor,unitUid,true);
+}
 
 const setup = {
   warlords: { 0:'raven', 1:'vale', 2:'viking', 3:'miku' },
@@ -1060,7 +1113,7 @@ const setup = {
 const CARRY_OPTS = ['raven','viking','druid','succubus','pirate','bloodlord','rats'];
 const SUPPORT_OPTS = ['vale','miku','priest','enchantress','arena','druid','rats'];
 
-const NET_PROTOCOL='gutho-2v2-v5', BUILD_ID='2026-07-15-j', ROOM_PREFIX='gutho-2v2-v5-';
+const NET_PROTOCOL='gutho-2v2-v5', BUILD_ID='2026-07-15-l', ROOM_PREFIX='gutho-2v2-v5-';
 const NET={mode:'local',phase:'menu',peer:null,hostConn:null,connections:new Map(),roomCode:'',
   clientId:'',resumeToken:'',localSeat:null,status:'offline',revision:0,pending:null,retry:0,retryTimer:null};
 const HOST={lobby:null,game:null,revision:0,requestCache:new Map()};
@@ -1369,6 +1422,7 @@ function seatConfig(seat, roleName, opts){
   </div>`;
 }
 function renderSetup(){
+  hideCardPreview(true);
   const localBody=`<div class="teams-setup">
       <div class="team-card a"><h2>Time A</h2><div class="sub">Vermelho — começa jogando</div>${seatConfig(0,'Carry',CARRY_OPTS)}${seatConfig(1,'Suporte',SUPPORT_OPTS)}</div>
       <div class="team-card b"><h2>Time B</h2><div class="sub">Azul — Carry: 5 cartas${setup.doubleCoin?' + Moeda':''} · Suporte: 4 + Moeda</div>${seatConfig(2,'Carry',CARRY_OPTS)}${seatConfig(3,'Suporte',SUPPORT_OPTS)}</div>
@@ -1405,14 +1459,15 @@ function renderSetup(){
       Sua Mana é renovada e cresce a cada rodada (teto 8; não acumula). Ninguém compra na primeira vez individual; da segunda em diante, compra 1.
       Você pode jogar cartas e atacar com suas próprias unidades prontas; buffs e curas também podem ajudar unidades do parceiro.
       Existe uma única <b>Arena dos Juramentos</b>, compartilhada pelos quatro jogadores, com até <b>8 unidades por time</b>.
-      Unidades entram exaustas (o "Ímpeto" age na hora). Ao atacar, escolha uma unidade inimiga válida ou ataque diretamente a <b>vida somada</b> da dupla, mesmo que existam inimigos na arena.
-      <b>Provocar</b> obriga a mirar naquela unidade apenas quando você escolhe combater uma unidade; não impede o ataque direto à dupla. Neste teste, um ataque comum não gera contra-ataque.
-      <b>Briga</b> é a exceção: os dois causam seu ATQ simultaneamente, Provocar é respeitado, o lutador fica exausto e cada unidade só pode iniciar uma Briga por rodada.
+      Unidades entram exaustas (o "Ímpeto" age na hora). Ao atacar, escolha uma unidade inimiga válida ou ataque diretamente a <b>vida somada</b> da dupla, mesmo que existam inimigos comuns na arena.
+      <b>Provocar</b> obriga a mirar naquela unidade e também impede ataques diretos à dupla enquanto permanecer na arena.
+      No combate entre unidades, atacante e defensor causam seu ATQ <b>simultaneamente</b> e podem cair juntos; apenas o ataque direto à dupla não devolve dano.
+      <b>Briga</b> força esse mesmo combate simultâneo fora do ataque normal: Provocar é respeitado, o lutador fica exausto e cada unidade só pode iniciar uma Briga por rodada.
       <b>Dreno</b> cura a vida da dupla quando o dano atravessa Escudo/Proteção e chega à Vida.
       Cada Warlord tem uma ação heroica, normalmente 1× por própria vez. O Time B compensa a iniciativa:
       seu Carry inicia com <b>5 cartas normais</b> e seu Suporte com <b>4 + A Moeda</b> (+1 Mana temporária, não doável).
       O ajuste de equilíbrio, ligado por padrão, também dá uma Moeda ao B-Carry e pode ser desligado para testar a regra original.
-      Após a rodada ${ROUND_CAP}, vence quem tiver mais vida (empate se for igual). Provocar restringe alvos de unidade na arena, não ataques diretos, táticas ou heroicas.
+      Após a rodada ${ROUND_CAP}, vence quem tiver mais vida (empate se for igual). Provocar bloqueia ataques diretos, mas não táticas ou heroicas.
     </div>
   </div>`;
 }
@@ -1444,6 +1499,7 @@ function lobbySeatCard(seat){
   </div>`;
 }
 function renderLobby(){
+  hideCardPreview(true);
   if(!NET.lobby){renderSetup();return;}
   const L=NET.lobby,occupied=L.seats.filter(Boolean).length,connected=L.connectedCount??occupied,me=L.seats.find(s=>s?.clientId===NET.clientId);
   const canStart=NET.mode==='host'&&lobbyCanStart();
@@ -1484,6 +1540,7 @@ function startGame(){
 
 /* ---------------- RENDER PRINCIPAL ---------------- */
 function render(){
+  hideCardPreview(true);
   if(!G){ if(NET.phase==='lobby')renderLobby();else renderSetup(); return; }
   const oldLane=document.querySelector('.lanes')?.scrollLeft||0,oldHand=document.querySelector('.hand-scroll')?.scrollLeft||0;
   const focusKey=document.activeElement?.dataset?.cardUid||document.activeElement?.dataset?.uid||null;
@@ -1560,7 +1617,9 @@ function unitEl(u){
   const pain = u.painAtk>0 ? `<span class="shield" title="Ao perder Vida e sobreviver: +${u.painAtk} ATQ">🌹</span>` : '';
   const fought = u.lastForcedFightRound===G.round ? `<span class="shield" title="Já iniciou uma Briga nesta rodada">⚔✓</span>` : '';
   const aria=`${c.name}, ${G.players[u.owner].name}, ataque ${av}, vida ${u.hp}${u.shield?', escudo '+u.shield:''}${u.drain?', dreno '+u.drain:''}${u.exhausted?', exausta':', pronta'}`;
-  return `<button class="${cls}" data-uid="${u.uid}" data-lane="${u.lane}" aria-label="${esc(aria)}" onclick="event.stopPropagation();onUnit(${u.uid})">
+  return `<button class="${cls}" data-uid="${u.uid}" data-lane="${u.lane}" aria-label="${esc(aria)}" aria-describedby="card-preview"
+    onmouseenter="showCardPreview('${u.cardId}',this,${u.uid})" onmouseleave="hideCardPreview()" onfocus="showCardPreview('${u.cardId}',this,${u.uid})" onblur="hideCardPreview()"
+    onclick="event.stopPropagation();onUnit(${u.uid})">
     <span class="uic">${c.icon}</span>
     <span class="uname"><b>${esc(c.name)}</b><span class="utag">${esc(G.players[u.owner].name)} · ${roleLabel(G.players[u.owner].role)}</span></span>
     <span class="ustat"><span class="atk">${av}${rage}</span><span class="hp">${u.hp}</span>${shield}${ward}${reduction}${drain}${pain}${fought}</span>
@@ -1615,7 +1674,7 @@ function selBar(){
     const u = G.units.find(x=>x.uid===sel.uid);
     const tg = u ? attackTargets(G,u) : {units:[],face:false};
     const faceBtn = tg.face ? `<button class="face-btn" onclick="onFace()">Atacar a dupla inimiga 💥</button>` : '';
-    return `<div class="selbar attack"><b>${esc(CARDS[u.cardId].name)}</b> vai atacar — toque num alvo destacado${tg.face?' ou bata na vida':''}.
+    return `<div class="selbar attack"><b>${esc(CARDS[u.cardId].name)}</b> vai atacar — toque num alvo destacado${tg.face?' ou bata na vida':''}. Unidades trocam dano; ataque direto não recebe dano de volta.
       <div class="push">${faceBtn}<button class="btn ghost" onclick="clearSel()">Cancelar</button>${endBtn}</div></div>`;
   }
   if(sel&&sel.mode==='heroChoice'){
@@ -1644,7 +1703,9 @@ function handWrap(){
     const affordable=myTurn&&(c.targetUnit?validCardTargetUids(G,p.seat,c).some(uid=>canPlay(G,p.seat,entry.uid,undefined,uid)):c.global?canPlay(G,p.seat,entry.uid):G.lanes.some((_,l)=>canPlay(G,p.seat,entry.uid,l)));
     const isSel = sel && (sel.mode==='card'||sel.mode==='cardTarget') && sel.cardUid===entry.uid;
     const stats = c.type==='unit' ? `<div class="cstats"><b class="a">⚔${c.atk}</b><b class="d">❤${c.hp}</b></div>` : '';
-    return `<button class="hand-card ${c.f} ${isSel?'selected':''} ${affordable?'':'locked'}" data-card-uid="${entry.uid}" aria-disabled="${!affordable}" onclick="onCard('${entry.uid}')" aria-label="${esc(c.name+', custo '+c.cost+'. '+c.text)}">
+    return `<button class="hand-card ${c.f} ${isSel?'selected':''} ${affordable?'':'locked'}" data-card-uid="${entry.uid}" aria-disabled="${!affordable}" aria-describedby="card-preview"
+      onmouseenter="showCardPreview('${cardIdOf(entry)}',this)" onmouseleave="hideCardPreview()" onfocus="showCardPreview('${cardIdOf(entry)}',this)" onblur="hideCardPreview()"
+      onclick="onCard('${entry.uid}')" aria-label="${esc(c.name+', custo '+c.cost+'. '+c.text)}">
       <span class="cost">${c.cost}</span>
       <div class="art">${c.icon}</div>${stats}
       <div class="ctype">${c.type==='unit'?'Unidade':'Tática'}</div>
@@ -1662,8 +1723,22 @@ function handWrap(){
   </div>`;
 }
 
+function historyCardRef(cardId){
+  const c=CARDS[cardId];if(!c)return '';
+  const aria=`Ver carta ${c.name}, custo ${c.cost}. ${c.text}`;
+  return `<button type="button" class="history-card-ref" aria-label="${esc(aria)}" aria-describedby="card-preview"
+    onmouseenter="showCardPreview('${cardId}',this)" onmouseleave="hideCardPreview()" onfocus="showCardPreview('${cardId}',this)" onblur="hideCardPreview()"
+    onclick="event.stopPropagation();toggleCardPreview('${cardId}',this)">${c.icon} ${esc(c.name)}</button>`;
+}
+function historyText(x){
+  const raw=String(x?.text||''),c=CARDS[x?.cardId];if(!c)return esc(raw);
+  // A carta é citada depois do nome do jogador; usar a última ocorrência evita
+  // transformar o apelido em link quando alguém escolhe o nome de uma carta.
+  const at=raw.lastIndexOf(c.name),ref=historyCardRef(x.cardId);
+  return at>=0?esc(raw.slice(0,at))+ref+esc(raw.slice(at+c.name.length)):esc(raw)+` · ${ref}`;
+}
 function historyPanel(){
-  const rows=(G.log||[]).slice(0,18).map(x=>`<div class="history-item"><b>R${x.round}</b> · ${esc(x.text)}</div>`).join('');
+  const rows=(G.log||[]).slice(0,18).map(x=>`<div class="history-item"><b>R${x.round}</b> · ${historyText(x)}</div>`).join('');
   const total=(G.log||[]).length;return `<details class="history" ${NET.mode==='online'?'open':''}><summary>Histórico · últimas ${Math.min(total,18)} de ${total}</summary><div class="history-list">${rows||'<div class="history-item">A batalha ainda não começou.</div>'}</div></details>`;
 }
 
@@ -1761,7 +1836,7 @@ function onInspire(){
   dispatchGameAction({type:'inspire'});
 }
 function onEnd(){
-  if(NET.mode==='local')revealed=false;dispatchGameAction({type:'end'});
+  hideCardPreview(true);if(NET.mode==='local')revealed=false;dispatchGameAction({type:'end'});
 }
 function confirmNew(){
   const question=NET.mode==='host'?'Fechar a sala para todos e voltar ao menu?':NET.mode==='guest'?'Sair desta sala? Seu time perderá por desistência.':'Reiniciar a mesa e voltar à seleção?';
@@ -1857,6 +1932,13 @@ function flushVFX(){
 }
 
 /* ---------------- boot ---------------- */
+if(typeof document!=='undefined'&&document.addEventListener){
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hideCardPreview(true);});
+  document.addEventListener('pointerdown',e=>{
+    if(previewPinned&&!e.target?.closest?.('.history-card-ref'))hideCardPreview(true);
+  });
+  document.addEventListener('scroll',()=>hideCardPreview(true),true);
+}
 renderSetup();
 </script>
 </body>
