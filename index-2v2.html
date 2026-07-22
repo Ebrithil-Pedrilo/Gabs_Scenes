@@ -1,0 +1,2205 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17130f">
+<title>Age of Guthology — 2v2 (Playtest)</title>
+<style>
+:root{
+  --ink:#f4ead5; --muted:#b9aa92; --gold:#e4bd68; --gold-soft:#8f6b31;
+  --red:#d86355; --red-deep:#6e2726; --blue:#6ba6c9; --blue-deep:#203f55;
+  --green:#7fc28a; --panel:#1b1815; --panel-2:#27211b; --line:#514536;
+  --teamA:#d98a4e; --teamA-deep:#6e3a1c; --teamB:#5f97c9; --teamB-deep:#1f3f5a;
+  --shadow:0 18px 46px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{margin:0;color:var(--ink);font-family:"Segoe UI",Tahoma,sans-serif;
+  background:radial-gradient(circle at 50% -15%,rgba(214,170,86,.16),transparent 40%),
+    radial-gradient(circle at 12% 60%,rgba(105,55,37,.22),transparent 36%),
+    linear-gradient(135deg,#0d0c0b,#18130f 48%,#0b0a09);background-attachment:fixed}
+#battle3d{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .65s ease,visibility 0s linear .65s}
+#battle3d canvas{width:100%;height:100%;display:block;transition:filter .45s ease}
+body.battle-mode{background:#080706;overflow-x:hidden}
+body.battle-mode #battle3d{opacity:1;visibility:visible;transition-delay:0s;pointer-events:auto;touch-action:none}
+#app{position:relative;z-index:2}
+body.battle-mode #app{pointer-events:none}
+body.battle-mode #app .topbar,body.battle-mode #app .notice,body.battle-mode #app .team-panel,body.battle-mode #app .selbar,body.battle-mode #app .hand-wrap,body.battle-mode #app .history,body.battle-mode #app .gate,body.battle-mode #app .overlay{pointer-events:auto}
+body.dragging-card,body.dragging-card *{cursor:grabbing!important}
+button,select,input{font:inherit}button{color:inherit;cursor:pointer}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid rgba(228,189,104,.6);outline-offset:2px}
+.hidden{display:none!important}
+h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif}
+.btn{border:1px solid #735c36;border-radius:10px;background:linear-gradient(180deg,#3a2d1e,#211a13);padding:9px 14px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.25);transition:.15s transform,.15s filter,.15s border-color}
+.btn:hover:not(:disabled){filter:brightness(1.16);border-color:var(--gold);transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(180deg,#c68b35,#7d4e1c);border-color:#e5bd71;color:#fff7df}
+.btn.secondary{background:linear-gradient(180deg,#29465a,#172b38);border-color:#4f829f}
+.btn.ghost{background:rgba(0,0,0,.2)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none}
+.eyebrow{text-transform:uppercase;letter-spacing:.22em;color:var(--gold);font-size:12px;font-weight:900}
+
+/* ---------- Setup ---------- */
+.setup{max-width:1080px;margin:0 auto;padding:34px 16px 60px}
+.setup-hero{text-align:center;margin-bottom:24px}
+.setup-hero h1{font-size:clamp(34px,6.5vw,62px);text-transform:uppercase;letter-spacing:.07em;line-height:.95;margin:8px 0;color:#f3dfac;text-shadow:0 3px 0 #4f3518,0 12px 35px #000}
+.setup-hero h1 span{display:block;font-size:.3em;letter-spacing:.3em;color:#bdad8f;margin-top:12px;text-shadow:none}
+.setup-hero p{max-width:660px;margin:14px auto 0;color:#c7bba7;line-height:1.6}
+.teams-setup{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.team-card{border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(39,33,27,.96),rgba(18,16,13,.97));box-shadow:var(--shadow);padding:16px;position:relative;overflow:hidden}
+.team-card.a{border-color:#7a4a2b}.team-card.b{border-color:#33567a}
+.team-card h2{margin:0 0 4px;font-size:20px;color:#f0d79e}
+.team-card.a h2{color:#f0b985}.team-card.b h2{color:#9fc6e6}
+.team-card>.sub{color:var(--muted);font-size:12px;margin-bottom:12px}
+.seat-config{display:grid;gap:8px;padding:10px 0;border-top:1px solid rgba(255,255,255,.07)}
+.seat-config:first-of-type{border-top:0}
+.seat-role{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#c9b48f}
+.seat-role .tag{border:1px solid #6b5636;border-radius:999px;padding:2px 7px;margin-left:6px}
+.wl-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px}
+.wl-opt{border:1px solid #5a4b38;border-radius:11px;background:linear-gradient(150deg,#2c241c,#16120f);padding:9px;text-align:left;position:relative}
+.wl-opt .ic{font-size:22px}.wl-opt b{display:block;font:700 12px Georgia,serif;color:#f1dcaa;margin:3px 0 2px;line-height:1.1}
+.wl-opt small{display:block;color:#ab9e8c;font-size:9px;line-height:1.3}
+.wl-opt .hp{position:absolute;top:8px;right:8px;font-size:10px;font-weight:900;color:#ffd9a3}
+.wl-opt.sel{border-color:#ffd77f;box-shadow:0 0 0 2px rgba(255,215,127,.28);filter:brightness(1.08)}
+.wl-opt.raven{background:linear-gradient(150deg,#282232,#121017);border-color:#5b4d68}
+.wl-opt.viking{background:linear-gradient(150deg,#26363f,#101a1e);border-color:#4d6f7c}
+.wl-opt.vale{background:linear-gradient(150deg,#31291b,#15120c);border-color:#7c6134}
+.wl-opt.miku{background:linear-gradient(150deg,#173b3d,#0d171a);border-color:#397f82}
+.wl-opt.priest{background:linear-gradient(150deg,#4a452f,#1b1910);border-color:#a49355}
+.wl-opt.enchantress{background:linear-gradient(150deg,#38264d,#171020);border-color:#8662aa}
+.wl-opt.druid{background:linear-gradient(150deg,#243c26,#101a11);border-color:#56845b}
+.wl-opt.arena{background:linear-gradient(150deg,#47251f,#1c0f0c);border-color:#a65343}
+.wl-opt.succubus{background:linear-gradient(150deg,#49203e,#1d0d19);border-color:#a94f89}
+.wl-opt.pirate{background:linear-gradient(150deg,#183840,#0b171b);border-color:#3e8490}
+.wl-opt.bloodlord{background:linear-gradient(150deg,#481b22,#1b0b0e);border-color:#a84251}
+.wl-opt.rats{background:linear-gradient(150deg,#3b3420,#17150d);border-color:#7b7134}
+input.name{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100e0c;color:var(--ink);padding:9px 10px;margin-top:4px}
+.setup-foot{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.toggle{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:rgba(0,0,0,.2);font-size:12px;color:#cabfa8}
+.toggle input{width:16px;height:16px}
+.rules-note{max-width:760px;margin:18px auto 0;border:1px solid #4c4436;border-radius:12px;background:rgba(0,0,0,.16);padding:12px 14px;color:#b6a98f;font-size:12px;line-height:1.55}
+.rules-note b{color:#ecd39a}
+.mode-box{max-width:760px;margin:20px auto 0;border:1px solid var(--line);border-radius:15px;background:rgba(12,10,8,.5);padding:14px}
+.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.mode-tab{border:1px solid #594a38;border-radius:10px;background:#18130f;padding:10px;font-weight:900;color:#b9aa92}
+.mode-tab.on{border-color:var(--gold);color:#ffe5aa;background:#302416}
+.online-tools{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.field label{display:block;color:#b9aa92;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.field input{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100e0c;color:var(--ink);padding:10px}
+.net-note{grid-column:1/-1;font-size:10px;color:#9f9586;line-height:1.45}
+.net-status{display:inline-flex;align-items:center;gap:5px;border:1px solid #5b5143;border-radius:999px;padding:3px 8px;font-size:10px;color:#c9bda6}
+.net-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#8e7e68}.net-status.online:before{background:#71ce82;box-shadow:0 0 8px #71ce82}.net-status.warn:before{background:#e6af57}
+.notice{border:1px solid #b37b43;border-radius:10px;background:#3b2616;color:#f4d7a6;padding:8px 10px;font-size:11px;display:flex;gap:8px;align-items:center}.notice button{margin-left:auto}
+
+/* ---------- Lobby online ---------- */
+.lobby{max-width:1050px;margin:0 auto;padding:28px 16px 60px}
+.lobby-head{text-align:center;margin-bottom:18px}.lobby-head h1{margin:5px 0;color:#f0d79e}.room-code{display:inline-flex;gap:8px;align-items:center;border:1px solid #8a6b38;border-radius:10px;background:#17120d;padding:8px 12px;color:#ffe0a1;font:900 18px ui-monospace,monospace;letter-spacing:.16em}
+.lobby-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.lobby-team{border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#27211b,#12100d);padding:12px}.lobby-team.a{border-color:#7a4a2b}.lobby-team.b{border-color:#33567a}
+.lobby-seat{border:1px solid #554838;border-radius:12px;padding:10px;margin-top:9px;background:rgba(0,0,0,.18)}.lobby-seat.mine{border-color:#e5bd71;box-shadow:0 0 0 1px rgba(229,189,113,.22)}.lobby-seat.ready{background:rgba(58,100,58,.16)}
+.seat-line{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.seat-line b{font:700 13px Georgia,serif;color:#edd8a7}.seat-line .spacer{flex:1}.ready-dot{font-size:10px;color:#9d8f7e}.ready-dot.yes{color:#8cdf9a}
+.lobby-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}.lobby-msg{text-align:center;min-height:18px;color:#d1bd95;font-size:12px;margin-top:9px}
+.lobby .wl-picker{margin-top:8px}.lobby input.name{margin-top:8px}
+
+/* ---------- Game shell ---------- */
+.shell{width:min(1500px,100%);margin:0 auto;min-height:100vh;padding:8px;display:grid;gap:8px;grid-template-rows:auto auto 1fr auto;perspective:1500px;transform-style:preserve-3d}
+.topbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;background:rgba(20,17,14,.95);padding:7px 10px;box-shadow:0 8px 24px rgba(0,0,0,.26)}
+.brand{font-weight:900;color:#efd69d;letter-spacing:.12em;font-size:15px}
+.chip{border:1px solid #6b5636;border-radius:999px;padding:3px 9px;font-size:11px;font-weight:900;color:#e9d2a0;background:#241d13}
+.chip.turn{border-color:#b88c45;color:#ffe3a4}
+body.enemy-turn-view .chip.turn{border-color:#6da9d2;color:#c9eaff;box-shadow:0 0 14px rgba(82,151,198,.22)}
+body.enemy-turn-view #battle3d canvas{filter:saturate(1.07) contrast(1.025)}
+.spacer{flex:1}
+
+/* team panels */
+.team-panel{border:1px solid var(--line);border-radius:12px;padding:8px;background:linear-gradient(180deg,rgba(31,26,21,.84),rgba(15,13,11,.9));backdrop-filter:blur(10px);display:grid;grid-template-columns:minmax(180px,260px) 1fr 1fr;gap:8px;align-items:stretch;box-shadow:0 14px 30px rgba(0,0,0,.3);transform:translateZ(16px)}
+.team-panel.a{border-color:#7a4a2b}.team-panel.b{border-color:#33567a}
+.team-panel.act{box-shadow:0 0 0 1px rgba(228,189,104,.25),0 8px 22px rgba(0,0,0,.3)}
+.life-box{border-radius:10px;padding:9px 11px;display:flex;flex-direction:column;justify-content:center;gap:6px;position:relative;overflow:hidden}
+.team-panel.a .life-box{background:linear-gradient(140deg,#3a2214,#1a0f0a);border:1px solid #7a4a2b}
+.team-panel.b .life-box{background:linear-gradient(140deg,#152836,#0c151d);border:1px solid #33567a}
+.life-title{font:900 11px "Segoe UI",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#d9c9ad;display:flex;justify-content:space-between;align-items:baseline}
+.life-num{font:900 24px Georgia,serif}
+.team-panel.a .life-num{color:#ffb984}.team-panel.b .life-num{color:#9fcaee}
+.life-track{height:12px;border-radius:999px;background:#0c0a08;border:1px solid rgba(255,255,255,.08);overflow:hidden}
+.life-fill{height:100%;border-radius:999px;transition:width .4s ease}
+.team-panel.a .life-fill{background:linear-gradient(90deg,#f0a35e,#c25a2c)}
+.team-panel.b .life-fill{background:linear-gradient(90deg,#78b4e6,#3f79b8)}
+.ribbon{border:1px solid #4f4436;border-radius:10px;background:rgba(0,0,0,.2);padding:7px 8px;display:grid;gap:4px;min-width:0}
+.ribbon.act{border-color:#e5bd71;box-shadow:0 0 0 1px rgba(228,189,104,.2)}
+.ribbon-top{display:flex;align-items:center;gap:6px;min-width:0}
+.crest{width:30px;height:34px;flex:0 0 auto;display:grid;place-items:center;font-size:17px;clip-path:polygon(50% 0,95% 20%,88% 80%,50% 100%,12% 80%,5% 20%)}
+.ribbon.carry .crest{background:linear-gradient(180deg,#8a3c35,#481d1c)}
+.ribbon.support .crest{background:linear-gradient(180deg,#7c5e2a,#3c2c12)}
+.ribbon.teamB.carry .crest{background:linear-gradient(180deg,#3a6f8f,#173040)}
+.ribbon.teamB.support .crest{background:linear-gradient(180deg,#2f6f72,#123536)}
+.ribbon-name{min-width:0}.ribbon-name b{display:block;font:700 12px Georgia,serif;color:#f0dcae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ribbon-name span{font-size:9px;color:#a99d8b}
+.role-badge{font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:1px 6px;border:1px solid}
+.role-badge.carry{color:#f0a98c;border-color:#8c4a42;background:rgba(120,45,40,.28)}
+.role-badge.support{color:#ecd08c;border-color:#7c6134;background:rgba(120,90,30,.24)}
+.ribbon-stats{display:flex;gap:8px;font-size:10px;color:#c9bda6}
+.ribbon-stats b{color:#ffe6ac}
+.mana-pip{color:#9fd2ff}
+.hand-mini{display:flex;gap:2px;margin-top:2px}.mini-back{width:9px;height:13px;border-radius:2px;background:repeating-linear-gradient(135deg,#442e1e 0 4px,#22170f 4px 8px)}
+
+/* lanes */
+.lanes{width:min(900px,100%);margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-height:0;perspective:1250px;transform-style:preserve-3d}
+.lane{border:1px solid rgba(205,166,94,.7);border-radius:16px;background:radial-gradient(circle at 50% 0,rgba(226,185,100,.1),transparent 46%),linear-gradient(160deg,rgba(36,28,18,.72),rgba(21,17,12,.76));backdrop-filter:blur(3px);display:grid;grid-template-rows:auto 1fr auto 1fr;min-height:430px;overflow:hidden;box-shadow:0 26px 50px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.06);transform:rotateX(2.5deg) translateZ(4px);transform-origin:center;transform-style:preserve-3d}
+.lane.playable{border-color:#f2c66b;box-shadow:0 0 0 2px rgba(242,198,107,.22),0 0 22px rgba(242,198,107,.14);cursor:pointer;animation:pulse 1.3s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(242,198,107,.08),0 0 30px rgba(242,198,107,.24)}}
+.lane-head{text-align:center;padding:6px 4px 4px}
+.lane-head .lic{font-size:20px}.lane-head .lname{font:700 12px Georgia,serif;color:#f0d79b}
+.lane-side{padding:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;align-content:start;overflow-y:auto;min-height:150px}
+.lane-side.b{background:linear-gradient(180deg,rgba(31,63,90,.22),rgba(7,12,16,.12))}
+.lane-side.a{background:linear-gradient(0deg,rgba(110,58,28,.22),rgba(16,9,5,.12))}
+.lane-mid{display:flex;align-items:center;justify-content:center;gap:6px;font-size:8px;letter-spacing:.14em;color:#7a6f5e;text-transform:uppercase;border-top:1px dashed rgba(255,255,255,.09);border-bottom:1px dashed rgba(255,255,255,.09);padding:2px}
+.lane-empty{color:#6f6555;font-size:9px;text-align:center;padding:6px 2px;opacity:.7}
+
+.unit{border:1px solid #806847;border-radius:10px;background:#1c150f;padding:5px 6px;display:grid;grid-template-columns:26px 1fr auto;gap:6px;align-items:center;position:relative;text-align:left;min-width:0;transform:translateZ(12px) rotateX(-1.5deg);transform-style:preserve-3d;box-shadow:0 8px 14px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08);transition:.16s transform,.16s filter,.16s border-color}
+.unit.teamA{border-left:3px solid var(--teamA)}.unit.teamB{border-left:3px solid var(--teamB)}
+.unit.raven{background:linear-gradient(150deg,#251f30,#120f18)}
+.unit.viking{background:linear-gradient(150deg,#22323b,#0f181d)}
+.unit.vale{background:linear-gradient(150deg,#2b2417,#14110b)}
+.unit.miku{background:linear-gradient(150deg,#153a3c,#0c161a)}
+.unit.priest{background:linear-gradient(150deg,#403b28,#18160f)}
+.unit.enchantress{background:linear-gradient(150deg,#322143,#150e1d)}
+.unit.druid{background:linear-gradient(150deg,#223a24,#0f1910)}
+.unit.arena{background:linear-gradient(150deg,#3d211c,#180d0b)}
+.unit.succubus{background:linear-gradient(150deg,#3c1c35,#180b15)}
+.unit.pirate{background:linear-gradient(150deg,#17343a,#0a1619)}
+.unit.bloodlord{background:linear-gradient(150deg,#3e1820,#190a0d)}
+.unit.rats{background:linear-gradient(150deg,#38321c,#17150c)}
+.unit .uic{font-size:18px;text-align:center}
+.unit .uname{min-width:0}.unit .uname b{display:block;font:700 10px Georgia,serif;color:#f0dcae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.unit .utag{font-size:7px;color:#9a8e7c;letter-spacing:.06em;text-transform:uppercase}
+.unit .ustat{display:flex;gap:5px;align-items:center;font:900 11px Georgia,serif}
+.unit .atk{color:#f0a084}.unit .hp{color:#8fc7df}.unit .shield{color:#bfe6ff;font-size:9px}
+.unit.exhausted{opacity:.55}
+.unit.taunt:after{content:"🛡";position:absolute;top:-6px;right:-4px;font-size:11px;filter:drop-shadow(0 1px 1px #000)}
+.unit.mine{cursor:pointer}.unit.mine:hover{border-color:var(--gold);filter:brightness(1.12);transform:translateY(-3px) translateZ(25px) rotateX(-4deg) scale(1.02)}
+.unit.ready{box-shadow:0 0 0 1px rgba(127,194,138,.35)}
+.unit.selected{border-color:#ffd77f!important;box-shadow:0 0 0 2px rgba(255,215,127,.35)}
+.unit.target{cursor:crosshair;border-color:#ef8c7f;box-shadow:0 0 0 2px rgba(239,140,127,.3),0 0 16px rgba(239,140,127,.2);animation:pulseT 1.1s infinite}
+.unit.warded{box-shadow:inset 0 0 0 1px rgba(255,239,147,.45),0 0 10px rgba(255,226,121,.14)}
+@keyframes pulseT{50%{box-shadow:0 0 0 4px rgba(239,140,127,.12),0 0 22px rgba(239,140,127,.3)}}
+
+/* palco transparente: preserva espaço/layout; a mesa real e as cartas vivem no canvas */
+.board-stage{width:min(1180px,100%);height:clamp(390px,47vw,640px);margin:0 auto;position:relative;pointer-events:none}
+.board-accessibility{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.board-stage.drop-ready:after{content:"Solte para jogar";position:absolute;left:50%;bottom:8%;transform:translateX(-50%);border:1px solid rgba(255,216,128,.7);border-radius:999px;background:rgba(29,21,12,.76);padding:7px 14px;color:#ffe0a0;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 26px rgba(228,189,104,.28);backdrop-filter:blur(8px)}
+.board-stage.drop-blocked:after{content:"Alvo inválido";border-color:#b85d55;color:#ffc0b8;background:rgba(55,20,18,.78)}
+
+/* selection / controls bar */
+.selbar{border:1px solid #a47d3d;border-radius:11px;background:rgba(71,51,25,.94);padding:8px 10px;display:flex;gap:9px;align-items:center;color:#f2d9a1;font-size:12px;flex-wrap:wrap}
+.selbar.attack{border-color:#9d453d;background:rgba(82,35,31,.94)}
+.selbar b{color:#fff0c6}.selbar .btn{padding:6px 10px;font-size:11px}
+.selbar .push{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.face-btn{border:1px solid #c96;border-radius:9px;background:linear-gradient(180deg,#7d3b34,#3c1a17);color:#ffd7cd;padding:6px 11px;font-weight:900}
+.hero-btn{border:1px solid #8064a7;border-radius:9px;background:linear-gradient(180deg,#523d70,#271d37);padding:6px 11px;font-weight:900;color:#ead8ff}.hero-btn:disabled{opacity:.4;cursor:not-allowed}
+.hero-btn.locked,.action-locked{opacity:.48}
+.power-card{border:1px solid #655079;border-radius:9px;background:rgba(49,35,67,.5);padding:5px 8px;font-size:9px;color:#c9b5df;line-height:1.35}.power-card b{color:#ead8ff}
+
+/* hand */
+.hand-wrap{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(35,29,23,.86),rgba(16,14,12,.92));backdrop-filter:blur(12px);padding:8px;box-shadow:0 18px 34px rgba(0,0,0,.34);transform:translateZ(28px)}
+.hand-head{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+.hand-head b{font:700 13px Georgia,serif;color:#ecd59e}.hand-head .who{font-size:11px;color:#a99d8b}
+.hand-scroll{display:flex;gap:7px;overflow-x:auto;padding:6px 2px;min-height:150px;align-items:stretch}
+.hand-card{flex:0 0 116px;min-height:140px;border:1px solid #806747;border-radius:11px;background:linear-gradient(160deg,#34271c,#17120e 72%);padding:7px;position:relative;text-align:left;display:flex;flex-direction:column;gap:4px;transform:perspective(700px) rotateX(3deg) translateZ(0);transform-origin:center bottom;box-shadow:0 9px 15px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.08);transition:.18s transform,.14s border-color,.14s filter;user-select:none;-webkit-user-drag:none;touch-action:none}
+.hand-card.raven{background:linear-gradient(160deg,#302739,#141118 72%);border-color:#5b4d68}
+.hand-card.viking{background:linear-gradient(160deg,#29404b,#11191e 72%);border-color:#557585}
+.hand-card.vale{background:linear-gradient(160deg,#2b2417,#14110b 72%);border-color:#7c6134}
+.hand-card.miku{background:linear-gradient(160deg,#19484a,#0d191c 72%);border-color:#3c8b8d}
+.hand-card.priest{background:linear-gradient(160deg,#4b452d,#1b180e 72%);border-color:#9b8a50}
+.hand-card.enchantress{background:linear-gradient(160deg,#432b59,#181020 72%);border-color:#8761aa}
+.hand-card.druid{background:linear-gradient(160deg,#2b4b2e,#111d12 72%);border-color:#5e9465}
+.hand-card.arena{background:linear-gradient(160deg,#562b24,#1d0e0c 72%);border-color:#aa5848}
+.hand-card.succubus{background:linear-gradient(160deg,#542246,#200d1b 72%);border-color:#ad528e}
+.hand-card.pirate{background:linear-gradient(160deg,#1b454d,#0b191c 72%);border-color:#438a96}
+.hand-card.bloodlord{background:linear-gradient(160deg,#571f29,#1e0b0f 72%);border-color:#ae4657}
+.hand-card.rats{background:linear-gradient(160deg,#423b20,#19170d 72%);border-color:#85783a}
+.hand-card.neutral{background:linear-gradient(160deg,#29405a,#111923 72%);border-color:#5b8ec1}
+.hand-card:hover:not(:disabled){transform:perspective(700px) translateY(-10px) translateZ(24px) rotateX(-4deg) scale(1.045);border-color:#e2bd70;filter:brightness(1.07)}
+.hand-card.selected{transform:perspective(700px) translateY(-12px) translateZ(30px) rotateX(-5deg) scale(1.05);border-color:#ffd77f;box-shadow:0 0 0 2px rgba(255,215,127,.3),0 16px 28px rgba(0,0,0,.48)}
+.hand-card:disabled{opacity:.42;cursor:not-allowed}
+.hand-card.locked{opacity:.48}
+.hand-card .cost{position:absolute;top:5px;left:5px;width:23px;height:23px;border-radius:50%;display:grid;place-items:center;background:#142b3b;border:1px solid #77afd0;color:#c8ecff;font-weight:900;z-index:2}
+.hand-card .art{height:52px;border-radius:7px;background:radial-gradient(circle at 50% 30%,rgba(255,224,157,.22),transparent 36%),linear-gradient(145deg,#67482b,#21170f);display:grid;place-items:center;font-size:26px;border:1px solid rgba(255,255,255,.09)}
+.hand-card.raven .art{background:radial-gradient(circle at 50% 30%,rgba(201,176,255,.16),transparent 36%),linear-gradient(145deg,#493b5c,#19141e)}
+.hand-card.viking .art{background:radial-gradient(circle at 50% 30%,rgba(184,229,247,.18),transparent 36%),linear-gradient(145deg,#365c6d,#101c22)}
+.hand-card.vale .art{background:radial-gradient(circle at 50% 30%,rgba(255,224,157,.2),transparent 36%),linear-gradient(145deg,#5e4a24,#1a140b)}
+.hand-card.miku .art{background:radial-gradient(circle at 44% 25%,rgba(255,137,203,.22),transparent 34%),linear-gradient(145deg,#167a7d,#102229)}
+.hand-card.priest .art{background:radial-gradient(circle at 50% 25%,rgba(255,246,181,.28),transparent 38%),linear-gradient(145deg,#766a39,#201c0f)}
+.hand-card.enchantress .art{background:radial-gradient(circle at 50% 25%,rgba(224,168,255,.24),transparent 38%),linear-gradient(145deg,#6c4387,#21142d)}
+.hand-card.druid .art{background:radial-gradient(circle at 50% 25%,rgba(177,239,147,.22),transparent 38%),linear-gradient(145deg,#3d7043,#132417)}
+.hand-card.arena .art{background:radial-gradient(circle at 50% 25%,rgba(255,160,121,.22),transparent 38%),linear-gradient(145deg,#77382e,#26110e)}
+.hand-card.succubus .art{background:radial-gradient(circle at 50% 25%,rgba(255,137,206,.22),transparent 38%),linear-gradient(145deg,#77315f,#291020)}
+.hand-card.pirate .art{background:radial-gradient(circle at 50% 25%,rgba(126,228,226,.2),transparent 38%),linear-gradient(145deg,#286672,#0e252a)}
+.hand-card.bloodlord .art{background:radial-gradient(circle at 50% 25%,rgba(255,120,138,.22),transparent 38%),linear-gradient(145deg,#792b39,#2a0f15)}
+.hand-card.rats .art{background:radial-gradient(circle at 50% 30%,rgba(217,222,118,.18),transparent 36%),linear-gradient(145deg,#665d28,#1d1a0d)}
+.hand-card.neutral .art{background:radial-gradient(circle at 50% 30%,rgba(170,219,255,.25),transparent 36%),linear-gradient(145deg,#365b78,#111c28)}
+.hand-card .ctype{text-transform:uppercase;letter-spacing:.12em;color:#9c8b71;font-size:7px}
+.hand-card .cname{font:700 11px Georgia,serif;color:#f2dcaa;line-height:1.1;min-height:23px}
+.hand-card .ctext{font-size:8px;color:#b7aa95;line-height:1.25;flex:1}
+.hand-card .cstats{position:absolute;right:5px;top:40px;display:grid;gap:2px}
+.hand-card .cstats b{min-width:26px;border-radius:999px;padding:2px 4px;font-size:8px;text-align:center;color:#fff3dc}
+.hand-card .cstats .a{background:#6c2d2a;border:1px solid #d97b6d}
+.hand-card .cstats .d{background:#244f68;border:1px solid #76afd0}
+.hand-empty{color:#8c8171;font-size:11px;padding:12px}
+.history{border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.2);padding:7px 10px}.history summary{cursor:pointer;color:#d7bf8c;font-size:11px;font-weight:900}.history-list{max-height:130px;overflow:auto;margin-top:6px;display:grid;gap:4px}.history-item{font-size:10px;color:#b6a994;border-top:1px solid rgba(255,255,255,.05);padding-top:4px}.history-item b{color:#e4cf9d}
+.history-card-ref{display:inline;border:0;border-bottom:1px dotted #d8b96f;background:transparent;color:#f0cf85;padding:0 1px;font:700 inherit;cursor:help}.history-card-ref:hover,.history-card-ref:focus-visible{color:#fff0bd;border-bottom-style:solid;outline:none;text-shadow:0 0 8px rgba(244,202,108,.45)}
+
+/* preview universal de carta: usado por mão, unidades e histórico */
+.card-preview{position:fixed;z-index:120;width:184px;pointer-events:none;opacity:0;visibility:hidden;transform:translateY(5px) scale(.97);transition:opacity .12s ease,transform .12s ease,visibility 0s linear .12s;filter:drop-shadow(0 18px 34px rgba(0,0,0,.7))}
+.card-preview.show{opacity:1;visibility:visible;transform:translateY(0) scale(1);transition-delay:0s}
+.card-preview .preview-card{width:184px;min-height:218px;transform:none!important;border-color:#d3ac62;box-shadow:0 0 0 1px rgba(255,224,157,.18);cursor:default;opacity:1!important}
+.card-preview .preview-card .art{height:72px;font-size:38px}.card-preview .preview-card .ctype{font-size:8px}.card-preview .preview-card .cname{font-size:14px;min-height:0}.card-preview .preview-card .ctext{font-size:11px;line-height:1.4;margin-top:3px}
+.preview-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}.preview-tag{border:1px solid #67553e;border-radius:999px;background:rgba(0,0,0,.25);padding:2px 5px;color:#c8b99d;font-size:8px;font-weight:800}
+.preview-live{margin-top:6px;border-top:1px solid rgba(255,255,255,.1);padding-top:5px;color:#bde4f5;font-size:9px;line-height:1.35}
+.waiting-hand{border:1px dashed #594c3b;border-radius:9px;padding:12px;color:#a99d8b;font-size:11px}
+
+/* pass gate + win overlay */
+.gate,.overlay{position:fixed;inset:0;z-index:80;background:rgba(5,4,3,.9);backdrop-filter:blur(7px);display:grid;place-items:center;padding:20px}
+.gate-card,.overlay-card{width:min(460px,100%);border:1px solid #9b7a40;border-radius:18px;background:radial-gradient(circle at 50% 0,rgba(218,172,83,.16),transparent 40%),linear-gradient(145deg,#2b231a,#12100d);padding:26px;text-align:center;box-shadow:0 30px 80px #000}
+.gate-emblem{font-size:46px}.gate-card h2,.overlay-card h2{font:700 26px Georgia,serif;color:#f2d79b;margin:8px 0 4px}
+.gate-card .role-badge{font-size:10px;margin:6px 0}
+.gate-card p,.overlay-card p{color:#b9ab96;line-height:1.55;font-size:13px;margin:6px 0 0}
+.overlay-emblem{font-size:52px}
+
+/* vfx */
+#vfx{position:fixed;inset:0;z-index:70;pointer-events:none;overflow:hidden}
+.vfx-float{position:fixed;transform:translate(-50%,-50%);padding:3px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(13,11,10,.9);color:#fff;font:900 12px Georgia,serif;white-space:nowrap;text-shadow:0 2px 4px #000;opacity:0;animation:flt 1s ease-out forwards}
+.vfx-float.dmg{color:#ff9b88;border-color:#9d453c}.vfx-float.heal{color:#b9f7c5;border-color:#57a866}
+.vfx-float.buff{color:#ffe09a;border-color:#b77d31}.vfx-float.shield{color:#aee9ff;border-color:#4e99b7}
+.vfx-float.face{color:#ffd7cd;border-color:#c66;font-size:14px}.vfx-float.mana{color:#a9d9ff;border-color:#4e83b7}
+@keyframes flt{0%{opacity:0;transform:translate(-50%,-30%) scale(.8)}20%{opacity:1;transform:translate(-50%,-70%) scale(1.05)}75%{opacity:1;transform:translate(-50%,-115%)}100%{opacity:0;transform:translate(-50%,-150%) scale(.95)}}
+
+@media(max-width:1000px){
+  .teams-setup{grid-template-columns:1fr}
+  .team-panel{grid-template-columns:1fr 1fr;grid-auto-rows:auto}
+  .team-panel .life-box{grid-column:1/-1}
+}
+@media(max-width:640px){
+  .shell{display:flex;flex-direction:column}.shell>.topbar{order:1}.shell>.notice{order:2}.shell>.selbar{order:3}.shell>.hand-wrap{order:4}.shell>.team-panel.far{order:5}.shell>.board-stage{order:6}.shell>.team-panel.near{order:7}.shell>.history{order:8}
+  .lanes{width:100%;grid-template-columns:minmax(0,1fr);overflow:visible;padding-bottom:4px}.lane{min-height:380px}.lane-side{grid-template-columns:1fr}
+  .wl-picker{grid-template-columns:1fr}
+  .team-panel{grid-template-columns:1fr}
+  .hand-card{flex-basis:104px}
+  .online-tools{grid-template-columns:1fr}.online-tools .btn{width:100%}
+  .lobby-grid{grid-template-columns:1fr}
+  .selbar{position:sticky;bottom:0;z-index:30}
+  .hand-card .ctext{font-size:10px}.hand-card .cname{font-size:12px}.unit .uname b{font-size:11px}.history-item{font-size:11px}
+  .card-preview,.card-preview .preview-card{width:164px}.card-preview .preview-card{min-height:205px}.card-preview .preview-card .art{height:60px}
+  .lane{transform:none;backdrop-filter:blur(5px)}.team-panel,.hand-wrap{transform:none}.unit{transform:none}.unit.mine:hover{transform:translateY(-2px)}
+  .board-stage{height:clamp(360px,62vh,560px)}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.vfx-float{opacity:1!important}}
+</style>
+</head>
+<body>
+<div id="battle3d" aria-hidden="true"></div>
+<main id="app"></main>
+<div id="vfx" aria-hidden="true"></div>
+<div id="card-preview" class="card-preview" role="tooltip" aria-hidden="true"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ===================== MOTOR (idêntico ao testado no node) ===================== */
+/* ================= Age of Guthology — núcleo 2v2 (motor puro, sem DOM) =================
+   Seats: 0 = Time A carry, 1 = Time A suporte, 2 = Time B carry, 3 = Time B suporte
+   Ordem de turno alterna os times: [0,2,1,3]
+   Vida somada: cada time tem UMA barra = soma do HP dos 2 warlords (o HP do warlord é o
+   "custo/alavanca" de deckbuilding, não uma unidade no tabuleiro).
+   Ataque direto: toda unidade pronta pode atingir a vida inimiga, salvo quando houver Provocar.
+======================================================================================= */
+
+const TURN_ORDER = [0, 2, 1, 3];
+const ROUND_CAP = 14;
+const MANA_CAP = 8;
+const LANE_CAP = 8; // arena única; os dois parceiros dividem oito espaços por time
+
+const teamOf = s => (s < 2 ? 0 : 1);
+const partnerOf = s => (s === 0 ? 1 : s === 1 ? 0 : s === 2 ? 3 : 2);
+const enemySeats = s => [0, 1, 2, 3].filter(x => teamOf(x) !== teamOf(s));
+const teamSeats = t => (t === 0 ? [0, 1] : [2, 3]);
+const roleOfSeat = s => (s % 2 === 0 ? 'carry' : 'support');
+
+/* ---------------- WARLORDS (facções mapeadas em carry/suporte) ---------------- */
+const WARLORDS = {
+  raven: { id: 'raven', name: 'Blood, o Ceifador', icon: '🩸', roles: ['carry'], faction: 'raven',
+    hp: 12, blurb: 'Corvo — pressão, mobilidade e dano cirúrgico.',
+    passive:'Couraça de Almas: dano direto contra a vida do time é reduzido em 1 (mínimo 1).',
+    power:{name:'Ceifar o Fraco',cost:2,target:'enemy',text:'Cause 1 de dano a uma unidade inimiga. Se ela morrer, cure 1 da vida do seu time.',kind:'raven'},
+    deck: ['raven_rat','raven_spy','raven_blade','raven_saboteur','raven_duelist','raven_rider','raven_knight','raven_chief','raven_feint','raven_allin'] },
+  viking: { id: 'viking', name: 'Ragnhild, Coração da Tempestade', icon: '⚡', roles: ['carry'], faction: 'viking',
+    hp: 14, blurb: 'Fiorde — feridos ficam mais perigosos; agressão que se sustenta.',
+    power:{name:'Prova de Sangue',cost:2,target:'ally',text:'Cause 1 de dano a um aliado; se ele sobreviver, recebe +3 ATQ permanente.',kind:'viking'},
+    deck: ['viking_scout','viking_skald','viking_maiden','viking_raider','viking_berserker','viking_huscarl','viking_valkyrie','viking_jarl','viking_chant','viking_valhalla'] },
+  vale: { id: 'vale', name: 'Rainha Ysabet, Bastião Vivo', icon: '👸', roles: ['support'], faction: 'vale',
+    hp: 20, blurb: 'Valebruma — muralha, formação e provocar; segura a linha.',
+    power:{name:'Ordem do Bastião',cost:1,target:'ally',text:'Conceda +2 de Escudo a uma unidade aliada.',kind:'vale'},
+    deck: ['vale_page','vale_scout','vale_shield','vale_spear','vale_sister','vale_guard','vale_marshal','vale_rally','vale_barricade','vale_laststand'] },
+  miku: { id: 'miku', name: 'Gabs Kimiko Kikamuito', icon: '🎧', roles: ['support'], faction: 'miku',
+    hp: 16, blurb: 'Concerto — cura o time, buffa e escuda; salva no fio.',
+    power:{name:'Refrão Impossível',cost:2,target:'ally',text:'Cure 2 de uma unidade aliada; cura excedente vira Escudo.',kind:'miku'},
+    deck: ['miku_note','miku_backup','miku_duet','miku_dancer','miku_sonic','miku_arranger','miku_diva','miku_encore','miku_leek','miku_world'] },
+  priest:{id:'priest',name:'Sumo Sacerdote Marcelo Horse',icon:'✠️',roles:['support'],faction:'priest',hp:20,
+    blurb:'Santuário — anjos, cura precisa e proteções contra grandes golpes.',
+    power:{name:'Prece Restauradora',cost:2,target:'ally',filter:'wounded',text:'Cure 1 de uma unidade aliada ferida. Não cura a vida da dupla.',kind:'priestHeal'},
+    deck:['priest_novice','priest_cherub','priest_sentinel','priest_deaconess','priest_annunciation','priest_raphael','priest_blessing','priest_light_protection','priest_assumptio','priest_healing_circle']},
+  enchantress:{id:'enchantress',name:'Maelis, Tecelã Prismática',icon:'🪄',roles:['support'],faction:'enchantress',hp:18,
+    blurb:'Ressonância — escudos preparados se transformam em cura e poder permanente.',
+    power:{name:'Ponto de Ressonância',cost:1,target:'ally',text:'Dê +2 Escudo; se o alvo já tinha Escudo, também recebe +1 ATQ.',kind:'enchantPower'},
+    deck:['ench_threadling','ench_rune_apprentice','ench_mirror_guard','ench_heartweaver','ench_prism_familiar','ench_archweaver','ench_silver_thread','ench_giant_stitch','ench_vital_mending','ench_prism_barrier']},
+  druid:{id:'druid',name:'Aldren, Guardião das Duas Luas',icon:'🌿',roles:['carry','support'],faction:'druid',hp:16,hpByRole:{carry:15,support:16},
+    blurb:'Bosque — cria feras, fortalece a matilha e segura lanes com plantas antigas.',
+    power:{name:'Chamado das Duas Luas',cost:2,target:'lane',choices:[{id:'wolf',name:'Lobo 2/1 · Ímpeto',icon:'🐺'},{id:'vulture',name:'Urubu 1/2 · Provocar',icon:'🦅'}],text:'Escolha: Lobo 2/1 com Ímpeto ou Urubu 1/2 exausto com Provocar.',kind:'druid'},
+    deck:['druid_acorn_scout','druid_clearing_cub','druid_bark_guard','druid_moon_tender','druid_packcaller','druid_rootweaver','druid_ancient_bear','druid_grove_titan','druid_wild_growth','druid_call_pair']},
+  arena:{id:'arena',name:'Vexa, Mestra da Arena',icon:'⚔️',roles:['support'],faction:'arena',hp:15,
+    blurb:'Arena — dá Ímpeto, aumenta a pressão e obriga confrontos imediatos.',
+    power:{name:'Soltem as Feras!',cost:3,target:'ally',filter:'enemyInLane',text:'Briga: o aliado e o inimigo legal mais frágil causam ATQ um ao outro. Respeita Provocar.',kind:'arenaFight'},
+    deck:['arena_heckler','arena_sprinter','arena_banner','arena_hound','arena_referee','arena_drummer','arena_champion','arena_chainmaster','arena_rush_order','arena_gauntlet']},
+  succubus:{id:'succubus',name:'Velistra, Rosa da Agonia',icon:'🌹',roles:['carry'],faction:'succubus',hp:14,
+    blurb:'Corte Rubra — transforma dor real em crescimento e luta no limite da própria vida.',
+    power:{name:'Carícia Dolorosa',cost:2,target:'ally',filter:'canBleed1',text:'Cause 1 de dano à Vida de um aliado. Se sobreviver, recebe +1/+1 permanente.',kind:'succubus'},
+    deck:['succ_imp','succ_confessor','succ_martyr','succ_lasher','succ_dancer','succ_painweaver','succ_matron','succ_rapture','succ_ecstasy','succ_invitation']},
+  pirate:{id:'pirate',name:'Almirante Vhalmar, Rei do Naufrágio',icon:'🏴‍☠️',roles:['carry'],faction:'pirate',hp:13,
+    blurb:'Naufrágio — tripulação agressiva e mortos consumidos para erguer Afogados.',
+    power:{name:'Todos Voltam do Mar',cost:2,target:'lane',text:'Consuma o morto aliado mais recente e invoque um Afogado 1/1 com Ímpeto na lane.',kind:'pirate'},
+    deck:['pirate_deckhand','pirate_lookout','pirate_boarder','pirate_anchor','pirate_gunner','pirate_mistblade','pirate_boatswain','pirate_dreadcaptain','pirate_broadside','pirate_allhands']},
+  bloodlord:{id:'bloodlord',name:'Lord Vesper, Soberano Hemático',icon:'🩸',roles:['carry'],faction:'bloodlord',hp:15,
+    blurb:'Corte Hemática — paga a vida da dupla para ferir, drenar e alimentar seus aliados.',
+    power:{name:'Tributo Escarlate',cost:2,target:'enemy',damage:3,text:'Pague 1 de vida da dupla e cause 3. Se causar dano à Vida, cure 1 de uma unidade aliada ferida.',kind:'bloodlord'},
+    deck:['blood_novice','blood_scribe','blood_thrall','blood_leechguard','blood_physician','blood_coagulate','blood_reaver','blood_archon','blood_lancet','blood_transfusion']},
+  rats: { id:'rats', name:'Gym Rat, Rei do Supino', icon:'🐀', roles:['carry','support'], faction:'rats',
+    hp:15, hpByRole:{carry:13,support:17}, blurb:'Homens-Rato — enxame híbrido, sucata, buffs de matilha e um botão nuclear.',
+    power:{name:'Hora do Pump',cost:7,target:'lane',onceGame:true,text:'Uma vez por partida: invoque o Avatar Gym Rat 7/7 exausto e dê +2 ATQ aos outros Ratos aliados da lane.',kind:'ratsAvatar'},
+    deck:['rats_runner','rats_scrounger','rats_shield','rats_alchemist','rats_pack','rats_assassin','rats_abomination','rats_coach','rats_scraprain','ratomanocu'] },
+};
+
+/* ---------------- CARTAS (subconjunto curado, nomes/números fiéis) ----------------
+   unit: {atk, hp}; passive: 'taunt'|'charge'; rage:n
+   onPlay: {k:'draw'|'selfAtk'|'selfDef'|'allyAtk'|'allyShield'|'heal'|'damage'|'debuff', n, t}
+   t (alvo) p/ ally: 'weak'|'strong'|'all'|'fragile' ; p/ heal: 'most'|'all' ; p/ enemy: 'big'  */
+const CARDS = {
+  // ---- Corvo (carry) ----
+  raven_rat:{f:'raven',name:'Rato de Estrada',type:'unit',cost:1,atk:2,hp:2,icon:'🗡️',text:'Batedor barato.'},
+  raven_spy:{f:'raven',name:'Espião do Corvo',type:'unit',cost:1,atk:1,hp:2,icon:'🐦‍⬛',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  raven_blade:{f:'raven',name:'Lâmina Mercenária',type:'unit',cost:2,atk:3,hp:3,icon:'⚔️',text:'Ataque justo.'},
+  raven_saboteur:{f:'raven',name:'Sabotadora da Ponte',type:'unit',cost:2,atk:2,hp:3,icon:'💣',text:'Ao entrar: 2 de dano no maior inimigo da lane.',onPlay:{k:'damage',n:2,t:'big'}},
+  raven_duelist:{f:'raven',name:'Duelista Rubra',type:'unit',cost:3,atk:4,hp:3,icon:'🤺',text:'Ao entrar: +2 ATQ nela mesma.',onPlay:{k:'selfAtk',n:2}},
+  raven_rider:{f:'raven',name:'Cavaleiro do Corvo',type:'unit',cost:3,atk:4,hp:3,icon:'🐎',text:'Ímpeto: pode agir na hora.',passive:'charge'},
+  raven_knight:{f:'raven',name:'Cavaleiro Negro',type:'unit',cost:4,atk:6,hp:5,icon:'♞',text:'Ameaça ofensiva pesada.'},
+  raven_chief:{f:'raven',name:'Chefe da Companhia',type:'unit',cost:5,atk:5,hp:6,icon:'🪶',text:'Ao entrar: +2 ATQ no aliado mais forte da lane.',onPlay:{k:'allyAtk',n:2,t:'strong'}},
+  raven_feint:{f:'raven',name:'Finta Cruel',type:'tactic',cost:1,icon:'🩸',text:'2 de dano no maior inimigo da lane.',onPlay:{k:'damage',n:2,t:'big'}},
+  raven_allin:{f:'raven',name:'Tudo ou Nada',type:'tactic',cost:3,icon:'🔥',text:'+1 ATQ em todos os seus aliados da lane.',onPlay:{k:'allyAtk',n:1,t:'all'}},
+  // ---- Viking (carry) ----
+  viking_scout:{f:'viking',name:'Batedor do Fiorde',type:'unit',cost:1,atk:2,hp:2,icon:'🛶',text:'Ao entrar: +1 DEF nela mesma.',onPlay:{k:'selfDef',n:1}},
+  viking_skald:{f:'viking',name:'Skald Aprendiz',type:'unit',cost:1,atk:1,hp:2,icon:'🪕',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  viking_maiden:{f:'viking',name:'Donzela do Escudo',type:'unit',cost:2,atk:2,hp:4,icon:'🛡️',text:'Ao entrar: cura 1 do aliado mais ferido.',onPlay:{k:'heal',n:1,t:'most'}},
+  viking_raider:{f:'viking',name:'Saqueador',type:'unit',cost:2,atk:3,hp:3,icon:'🔨',text:'Ao entrar: 2 de dano no maior inimigo da lane.',onPlay:{k:'damage',n:2,t:'big'}},
+  viking_berserker:{f:'viking',name:'Berserker Marcado',type:'unit',cost:3,atk:3,hp:4,icon:'🪓',text:'Fúria: +2 ATQ ao atacar se estiver ferido.',rage:2},
+  viking_huscarl:{f:'viking',name:'Huscarl Juramentado',type:'unit',cost:3,atk:4,hp:3,icon:'⚔️',text:'Ao entrar: +1 ATQ nela mesma.',onPlay:{k:'selfAtk',n:1}},
+  viking_valkyrie:{f:'viking',name:'Valquíria do Ocaso',type:'unit',cost:4,atk:4,hp:6,icon:'🪽',text:'Ao entrar: cura 2 do aliado mais ferido.',onPlay:{k:'heal',n:2,t:'most'}},
+  viking_jarl:{f:'viking',name:'Jarl da Tempestade',type:'unit',cost:5,atk:5,hp:6,icon:'🌩️',text:'Ao entrar: +2 ATQ no aliado mais forte da lane.',rage:2,onPlay:{k:'allyAtk',n:2,t:'strong'}},
+  viking_chant:{f:'viking',name:'Canto de Guerra',type:'tactic',cost:1,icon:'📯',text:'+2 ATQ no aliado mais forte da lane.',onPlay:{k:'allyAtk',n:2,t:'strong'}},
+  viking_valhalla:{f:'viking',name:'Até Valhalla!',type:'tactic',cost:3,icon:'🌌',text:'+1 ATQ em todos os seus aliados da lane.',onPlay:{k:'allyAtk',n:1,t:'all'}},
+  // ---- Valebruma (suporte) ----
+  vale_page:{f:'vale',name:'Pajem do Portão',type:'unit',cost:1,atk:1,hp:3,icon:'🛡️',text:'Ao entrar: +1 DEF nela mesma.',onPlay:{k:'selfDef',n:1}},
+  vale_scout:{f:'vale',name:'Batedora da Muralha',type:'unit',cost:1,atk:1,hp:2,icon:'🦅',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  vale_shield:{f:'vale',name:'Porta-Escudo',type:'unit',cost:2,atk:1,hp:5,icon:'🔰',text:'Provocar: inimigos miram nela primeiro.',passive:'taunt'},
+  vale_spear:{f:'vale',name:'Lanceiro do Fosso',type:'unit',cost:2,atk:3,hp:3,icon:'🔱',text:'Ao entrar: 1 de dano no maior inimigo da lane.',onPlay:{k:'damage',n:1,t:'big'}},
+  vale_sister:{f:'vale',name:'Irmã da Capela',type:'unit',cost:3,atk:1,hp:4,icon:'🕯️',text:'Ao entrar: +2 Escudo no aliado mais frágil.',onPlay:{k:'allyShield',n:2,t:'fragile'}},
+  vale_guard:{f:'vale',name:'Guarda do Portão',type:'unit',cost:3,atk:3,hp:5,icon:'⚔️',text:'Provocar: inimigos miram nela primeiro.',passive:'taunt'},
+  vale_marshal:{f:'vale',name:'Marechal de Valebruma',type:'unit',cost:5,atk:4,hp:7,icon:'👑',text:'Ao entrar: +1 Escudo em todos os aliados da lane.',onPlay:{k:'allyShield',n:1,t:'all'}},
+  vale_rally:{f:'vale',name:'Reagrupar!',type:'tactic',cost:1,icon:'📯',text:'+2 ATQ no seu aliado de menor ATQ na lane.',onPlay:{k:'allyAtk',n:2,t:'weak'}},
+  vale_barricade:{f:'vale',name:'Erguer Barricadas',type:'tactic',cost:2,icon:'🪵',text:'+2 Escudo em todos os aliados da lane.',onPlay:{k:'allyShield',n:2,t:'all'}},
+  vale_laststand:{f:'vale',name:'Segurar a Linha',type:'tactic',cost:3,icon:'🏰',text:'+4 Escudo no seu aliado mais frágil da lane.',onPlay:{k:'allyShield',n:4,t:'fragile'}},
+  // ---- Miku (suporte) ----
+  miku_note:{f:'miku',name:'Miku de Abertura',type:'unit',cost:1,atk:1,hp:3,icon:'🎼',text:'Ao entrar: +1 DEF nela mesma.',onPlay:{k:'selfDef',n:1}},
+  miku_backup:{f:'miku',name:'Fã do Glowstick',type:'unit',cost:1,atk:1,hp:2,icon:'🩵',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  miku_duet:{f:'miku',name:'Miku de Dueto',type:'unit',cost:2,atk:3,hp:3,icon:'🎶',text:'Ao entrar: +1 ATQ nela mesma.',onPlay:{k:'selfAtk',n:1}},
+  miku_dancer:{f:'miku',name:'Dançarina Holográfica',type:'unit',cost:2,atk:2,hp:4,icon:'💃',text:'Ao entrar: cura 1 do aliado mais ferido.',onPlay:{k:'heal',n:1,t:'most'}},
+  miku_sonic:{f:'miku',name:'Miku Sonic',type:'unit',cost:3,atk:4,hp:3,icon:'💫',text:'Ímpeto: pode agir na hora.',passive:'charge'},
+  miku_arranger:{f:'miku',name:'Arranjadora de Harmonia',type:'unit',cost:3,atk:2,hp:4,icon:'🎹',text:'Ao entrar: +2 Escudo no aliado mais frágil.',onPlay:{k:'allyShield',n:2,t:'fragile'}},
+  miku_diva:{f:'miku',name:'Diva Holográfica',type:'unit',cost:4,atk:4,hp:6,icon:'🪩',text:'Ao entrar: cura 1 de todos os aliados da lane.',onPlay:{k:'heal',n:1,t:'all'}},
+  miku_encore:{f:'miku',name:'Encore Infinito',type:'unit',cost:5,atk:5,hp:6,icon:'🎤',text:'Ao entrar: cura 1 e +1 ATQ em todos os aliados da lane.',onPlay:{k:'encore'}},
+  miku_leek:{f:'miku',name:'Batida de Alho-Poró',type:'tactic',cost:1,icon:'🥬',text:'Cura 1 do aliado mais ferido da lane.',onPlay:{k:'heal',n:1,t:'most'}},
+  miku_world:{f:'miku',name:'O Mundo é Meu!',type:'tactic',cost:3,icon:'🌐',text:'+1 ATQ e cura 1 em todos os aliados da lane.',onPlay:{k:'worldbuff'}},
+  // ---- Santuário de Marcelo Horse (suporte) ----
+  priest_novice:{f:'priest',name:'Noviço do Corcel',type:'unit',cost:1,atk:1,hp:2,icon:'📜',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  priest_cherub:{f:'priest',name:'Querubim do Alvorecer',type:'unit',cost:1,atk:1,hp:3,icon:'👼',text:'Ao entrar: cure 1 do aliado mais ferido da lane.',onPlay:{k:'heal',n:1,t:'most'}},
+  priest_sentinel:{f:'priest',name:'Sentinela Angelical',type:'unit',cost:2,atk:2,hp:5,icon:'👼',text:'Provocar.',passive:'taunt'},
+  priest_deaconess:{f:'priest',name:'Diaconisa da Aurora',type:'unit',cost:2,atk:2,hp:3,icon:'🕯️',text:'Ao entrar: cure 2 do aliado mais ferido da lane.',onPlay:{k:'heal',n:2,t:'most'}},
+  priest_annunciation:{f:'priest',name:'Anjo da Anunciação',type:'unit',cost:3,atk:3,hp:4,icon:'📯',text:'Ao entrar: outro aliado frágil recebe +1/+1 permanente.',onPlay:{k:'allyStats',atk:1,hp:1,t:'fragile',excludeSelf:true}},
+  priest_raphael:{f:'priest',name:'Arcanjo Rafael',type:'unit',cost:5,atk:5,hp:6,icon:'👼',text:'Ao entrar: cure 2 de todos os aliados da lane.',onPlay:{k:'heal',n:2,t:'all'}},
+  priest_blessing:{f:'priest',name:'Bênção',type:'tactic',targetUnit:'ally',cost:1,icon:'🙏',text:'Um aliado recebe +2 ATQ e +2 Vida permanentes.',onPlay:{k:'bless',n:2}},
+  priest_light_protection:{f:'priest',name:'Proteção da Luz',type:'tactic',targetUnit:'ally',targetFilter:'noWard',cost:3,icon:'✨',text:'Um aliado ignora por completo a próxima fonte de dano.',onPlay:{k:'ward'}},
+  priest_assumptio:{f:'priest',name:'Assumptio',type:'tactic',targetUnit:'ally',cost:2,icon:'🕊️',text:'Um aliado reduz em 2 todo dano por um ciclo completo de turnos.',onPlay:{k:'assumptio',n:2}},
+  priest_healing_circle:{f:'priest',name:'Círculo de Cura',type:'tactic',cost:3,icon:'⭕',text:'Cure 2 de todos os aliados feridos da lane.',onPlay:{k:'heal',n:2,t:'all'}},
+  // ---- Maelis e a Ressonância (suporte) ----
+  ench_threadling:{f:'enchantress',name:'Fada do Dedal',type:'unit',cost:1,atk:1,hp:2,icon:'🧚',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  ench_rune_apprentice:{f:'enchantress',name:'Aprendiz de Runa',type:'unit',cost:1,atk:1,hp:3,icon:'🔮',text:'Ao entrar: +1 Escudo no aliado mais frágil.',onPlay:{k:'allyShield',n:1,t:'fragile'}},
+  ench_mirror_guard:{f:'enchantress',name:'Guardiã do Espelho',type:'unit',cost:2,atk:2,hp:3,icon:'🪞',text:'Provocar. Entra com +2 Escudo.',passive:'taunt',onPlay:{k:'selfShield',n:2}},
+  ench_heartweaver:{f:'enchantress',name:'Bordadeira de Corações',type:'unit',cost:2,atk:2,hp:3,icon:'🧵',text:'Cure 1 do mais ferido; cure 2 se ele já tinha Escudo.',onPlay:{k:'resonantHeal',base:1,bonus:1}},
+  ench_prism_familiar:{f:'enchantress',name:'Familiar Prismático',type:'unit',cost:3,atk:3,hp:4,icon:'💈',text:'Buffa um aliado com Escudo; sem alvo, recebe +2 Escudo.',onPlay:{k:'prismFamiliar',atk:1,hp:1,fallbackShield:2}},
+  ench_archweaver:{f:'enchantress',name:'Arquiencantadora',type:'unit',cost:5,atk:4,hp:6,icon:'🪄',text:'+1 Escudo a todos; quem já tinha Escudo também cura 1.',onPlay:{k:'resonantLane',shield:1,healExisting:1}},
+  ench_silver_thread:{f:'enchantress',name:'Fio de Prata',type:'tactic',targetUnit:'ally',cost:1,icon:'🧶',text:'+2 Escudo; se já tinha Escudo, cure 1.',onPlay:{k:'resonantShield',shield:2,healExisting:1}},
+  ench_giant_stitch:{f:'enchantress',name:'Encanto do Gigante',type:'tactic',targetUnit:'ally',cost:2,icon:'🪡',text:'+1 ATQ/+2 Vida; com Escudo, recebe +2 ATQ.',onPlay:{k:'resonantStats',atk:1,hp:2,bonusAtk:1}},
+  ench_vital_mending:{f:'enchantress',name:'Remendo Vital',type:'tactic',targetUnit:'ally',cost:2,icon:'🩹',text:'Cure 2 e conceda +1 Escudo.',onPlay:{k:'healShield',heal:2,shield:1}},
+  ench_prism_barrier:{f:'enchantress',name:'Barreira Prismática',type:'tactic',cost:3,icon:'🌈',text:'+2 Escudo a todos; quem já tinha recebe +1 ATQ.',onPlay:{k:'resonantLane',shield:2,atkExisting:1}},
+  // ---- Aldren e o Bosque das Duas Luas (híbrido) ----
+  druid_acorn_scout:{f:'druid',name:'Batedora da Bolota',type:'unit',cost:1,atk:1,hp:2,icon:'🌰',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  druid_clearing_cub:{f:'druid',tribe:'beast',name:'Filhote da Clareira',type:'unit',cost:1,atk:2,hp:2,icon:'🐾',text:'Fera jovem e eficiente.'},
+  druid_bark_guard:{f:'druid',tribe:'plant',name:'Guarda-Casca',type:'unit',cost:2,atk:1,hp:5,icon:'🌳',text:'Provocar.',passive:'taunt'},
+  druid_moon_tender:{f:'druid',name:'Cuidadora Lunar',type:'unit',cost:2,atk:2,hp:3,icon:'🌙',text:'Ao entrar: cure 1 do aliado mais ferido.',onPlay:{k:'heal',n:1,t:'most'}},
+  druid_packcaller:{f:'druid',name:'Chamador da Alcateia',type:'unit',cost:3,atk:4,hp:4,icon:'📯',text:'Ao entrar: outras Feras da lane recebem +1 ATQ permanente.',onPlay:{k:'tribeAtk',tribe:'beast',n:1,excludeSelf:true}},
+  druid_rootweaver:{f:'druid',tribe:'plant',name:'Tecelã de Raízes',type:'unit',cost:3,atk:2,hp:4,icon:'🪴',text:'Ao entrar: cure 2 do aliado mais ferido.',onPlay:{k:'heal',n:2,t:'most'}},
+  druid_ancient_bear:{f:'druid',tribe:'beast',name:'Urso Ancestral',type:'unit',cost:4,atk:4,hp:6,icon:'🐻',text:'Provocar.',passive:'taunt'},
+  druid_grove_titan:{f:'druid',tribe:'plant',name:'Titã do Bosque',type:'unit',cost:5,atk:4,hp:7,icon:'🌲',text:'Provocar.',passive:'taunt'},
+  druid_wild_growth:{f:'druid',name:'Crescimento Selvagem',type:'tactic',cost:2,icon:'🍃',text:'Todas as Feras aliadas da lane recebem +1/+1 permanente.',onPlay:{k:'tribePack',tribe:'beast',atk:1,hp:1}},
+  druid_call_pair:{f:'druid',name:'Chamado da Dupla',type:'tactic',cost:3,icon:'🌕',text:'Invoque exaustos um Lobo 2/1 e um Urubu 1/2. Requer 2 espaços.',onPlay:{k:'summonTokens',ids:['druid_wolf_token','druid_vulture_token'],exhausted:true,requireSlots:2}},
+  druid_wolf_token:{f:'druid',tribe:'beast',token:true,name:'Lobo Lunar',type:'unit',cost:0,atk:2,hp:1,icon:'🐺',text:'Token Fera 2/1 com Ímpeto.',passive:'charge'},
+  druid_vulture_token:{f:'druid',tribe:'beast',token:true,name:'Urubu Solar',type:'unit',cost:0,atk:1,hp:2,icon:'🦅',text:'Token Fera 1/2 com Provocar.',passive:'taunt'},
+  // ---- Vexa e a Arena (suporte agressivo) ----
+  arena_heckler:{f:'arena',name:'Provocador da Arquibancada',type:'unit',cost:1,atk:1,hp:2,icon:'📣',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  arena_sprinter:{f:'arena',name:'Corredora da Arena',type:'unit',cost:1,atk:2,hp:1,icon:'🏃',text:'Ímpeto.',passive:'charge'},
+  arena_banner:{f:'arena',name:'Porta-Estandarte Rubro',type:'unit',cost:2,atk:2,hp:3,icon:'🚩',text:'Ao entrar: o aliado de menor ATQ recebe +1 ATQ permanente.',onPlay:{k:'allyAtk',n:1,t:'weak'}},
+  arena_hound:{f:'arena',name:'Cão de Combate',type:'unit',cost:2,atk:2,hp:2,icon:'🐕',text:'Ímpeto.',passive:'charge'},
+  arena_referee:{f:'arena',name:'Árbitro de Ferro',type:'unit',cost:3,atk:3,hp:4,icon:'🛎️',text:'Ao entrar: Briga com o inimigo legal mais frágil (dano simultâneo).',onPlay:{k:'autoFight',fighter:'self'}},
+  arena_drummer:{f:'arena',name:'Tambor da Investida',type:'unit',cost:3,atk:2,hp:4,icon:'🥁',text:'Ao entrar: outros aliados da lane recebem +1 ATQ permanente.',onPlay:{k:'allyAtk',n:1,t:'all'}},
+  arena_champion:{f:'arena',name:'Campeã da Jaula',type:'unit',cost:4,atk:4,hp:4,icon:'🏆',text:'Ímpeto.',passive:'charge'},
+  arena_chainmaster:{f:'arena',name:'Mestre das Correntes',type:'unit',cost:5,atk:5,hp:6,icon:'⛓️',text:'Ao entrar: o outro aliado mais forte Briga com um inimigo legal.',onPlay:{k:'autoFight',fighter:'strongOther'}},
+  arena_rush_order:{f:'arena',name:'Ordem de Investida',type:'tactic',cost:1,icon:'⚡',text:'Prepare a unidade aliada mais forte que entrou neste turno e ainda não agiu.',onPlay:{k:'grantCharge'}},
+  arena_gauntlet:{f:'arena',name:'Luva do Desafio',type:'tactic',cost:2,icon:'🥊',text:'Seu aliado mais forte que ainda não Brigou nesta rodada enfrenta o inimigo legal mais frágil.',onPlay:{k:'autoFight',fighter:'strong'}},
+  // ---- Velistra e a Corte da Agonia (carry) ----
+  succ_imp:{f:'succubus',name:'Diabrete Rosado',type:'unit',cost:1,atk:2,hp:2,icon:'😈',text:'Pequeno, rápido e imprudente.'},
+  succ_confessor:{f:'succubus',name:'Confessor das Cicatrizes',type:'unit',cost:1,atk:1,hp:3,icon:'🕯️',text:'Ao entrar: sofre 1 de dano; se sobreviver, compre 1.',onPlay:{k:'selfPainDraw',n:1,draw:1}},
+  succ_martyr:{f:'succubus',name:'Mártir do Desejo',type:'unit',cost:2,atk:2,hp:4,icon:'🥀',text:'Provocar. Ao perder Vida e sobreviver, recebe +1 ATQ.',passive:'taunt',painAtk:1},
+  succ_lasher:{f:'succubus',name:'Açoitadora Carmesim',type:'unit',cost:2,atk:3,hp:3,icon:'🪢',text:'Pressão direta.'},
+  succ_dancer:{f:'succubus',name:'Dançarina da Lâmina',type:'unit',cost:3,atk:4,hp:3,icon:'💃',text:'Ímpeto.',passive:'charge'},
+  succ_painweaver:{f:'succubus',name:'Tecelã da Dor',type:'unit',cost:3,atk:3,hp:5,icon:'🕸️',text:'Ao perder Vida e sobreviver, recebe +1 ATQ.',painAtk:1},
+  succ_matron:{f:'succubus',name:'Matriarca da Rosa',type:'unit',cost:4,atk:4,hp:6,icon:'🌹',text:'Ao entrar: sofre 1 de dano; se sobreviver, compre 1.',onPlay:{k:'selfPainDraw',n:1,draw:1}},
+  succ_rapture:{f:'succubus',name:'Êxtase Encarnado',type:'unit',cost:5,atk:5,hp:7,icon:'🖤',text:'Ao perder Vida e sobreviver, recebe +1 ATQ.',painAtk:1},
+  succ_ecstasy:{f:'succubus',name:'Êxtase Cruel',type:'tactic',targetUnit:'ally',cost:1,icon:'💋',text:'Um aliado recebe +2 ATQ permanente.',onPlay:{k:'targetAtk',n:2}},
+  succ_invitation:{f:'succubus',name:'Convite Irrecusável',type:'tactic',targetUnit:'enemy',targetFilter:'fightable',cost:2,icon:'💌',text:'Seu aliado mais forte que ainda não Brigou nesta rodada enfrenta o inimigo escolhido.',onPlay:{k:'forcedFight'}},
+  // ---- Vhalmar e os Afogados (carry) ----
+  pirate_deckhand:{f:'pirate',name:'Marujo do Convés Partido',type:'unit',cost:1,atk:2,hp:1,icon:'🪝',text:'Agressor barato.'},
+  pirate_lookout:{f:'pirate',name:'Vigia do Nevoeiro',type:'unit',cost:1,atk:1,hp:2,icon:'🔭',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  pirate_boarder:{f:'pirate',name:'Abordador Encharcado',type:'unit',cost:2,atk:3,hp:3,icon:'⚓',text:'Tripulante eficiente.'},
+  pirate_anchor:{f:'pirate',name:'Portador da Âncora',type:'unit',cost:2,atk:1,hp:5,icon:'⚓',text:'Provocar.',passive:'taunt'},
+  pirate_gunner:{f:'pirate',name:'Artilheira do Casco Oco',type:'unit',cost:3,atk:3,hp:3,icon:'💣',text:'Ao entrar: cause 1 ao maior inimigo da lane.',onPlay:{k:'damage',n:1,t:'big'}},
+  pirate_mistblade:{f:'pirate',name:'Lâmina da Bruma',type:'unit',cost:3,atk:4,hp:2,icon:'🌫️',text:'Ímpeto.',passive:'charge'},
+  pirate_boatswain:{f:'pirate',name:'Contramestre sem Pulso',type:'unit',cost:4,atk:3,hp:5,icon:'☠️',text:'Ao entrar: se houver espaço, invoque um Afogado 1/1 exausto.',onPlay:{k:'summon',cardId:'pirate_drowned_token',count:1,exhausted:true}},
+  pirate_dreadcaptain:{f:'pirate',name:'Capitão do Abismo',type:'unit',cost:5,atk:5,hp:7,icon:'🦑',text:'A maré sempre cobra.'},
+  pirate_broadside:{f:'pirate',name:'Bordada Fantasma',type:'tactic',cost:2,icon:'💥',text:'Cause 2 ao maior inimigo da lane.',onPlay:{k:'damage',n:2,t:'big'}},
+  pirate_allhands:{f:'pirate',name:'Todos ao Convés!',type:'tactic',cost:3,icon:'🏴‍☠️',text:'Invoque até 2 Afogados 1/1 com Ímpeto.',onPlay:{k:'summonTokens',ids:['pirate_drowned_token','pirate_drowned_token'],exhausted:false}},
+  pirate_drowned_token:{f:'pirate',tribe:'drowned',token:true,drowned:true,name:'Tripulante Afogado',type:'unit',cost:0,atk:1,hp:1,icon:'🧟',text:'Token 1/1 com Ímpeto. Não volta ao cemitério.',passive:'charge'},
+  // ---- Lord Vesper e a Corte Hemática (carry) ----
+  blood_novice:{f:'bloodlord',name:'Noviço Hemático',type:'unit',cost:1,atk:2,hp:2,icon:'🩸',text:'Sangue novo.'},
+  blood_scribe:{f:'bloodlord',name:'Escriba de Veias',type:'unit',cost:1,atk:1,hp:3,icon:'📕',text:'Ao entrar: sofre 1 de dano; se sobreviver, compre 1.',onPlay:{k:'selfPainDraw',n:1,draw:1}},
+  blood_thrall:{f:'bloodlord',name:'Servo Escarlate',type:'unit',cost:2,atk:3,hp:3,icon:'🗡️',text:'Infantaria da corte.'},
+  blood_leechguard:{f:'bloodlord',name:'Guarda-Sanguessuga',type:'unit',cost:2,atk:3,hp:4,icon:'🪱',text:'Dreno 1: ao causar dano à Vida, cure até 1 da vida da dupla.',drain:1},
+  blood_physician:{f:'bloodlord',name:'Médica da Corte Rubra',type:'unit',targetUnit:'ally',targetFilter:'wounded',cost:3,atk:2,hp:4,icon:'🩺',text:'Entre na lane do aliado escolhido e cure 2 dele.',onPlay:{k:'targetHeal',n:2}},
+  blood_coagulate:{f:'bloodlord',name:'Cavaleiro Coagulado',type:'unit',cost:3,atk:2,hp:5,icon:'🛡️',text:'Provocar.',passive:'taunt'},
+  blood_reaver:{f:'bloodlord',name:'Ceifador de Artérias',type:'unit',cost:4,atk:5,hp:5,icon:'🪓',text:'Ao perder Vida e sobreviver, recebe +1 ATQ.',painAtk:1},
+  blood_archon:{f:'bloodlord',name:'Arconte da Hemomancia',type:'unit',cost:5,atk:5,hp:7,icon:'🦇',text:'Dreno 2: ao causar dano à Vida, cure até 2 da vida da dupla.',drain:2},
+  blood_lancet:{f:'bloodlord',name:'Lanceta Rubra',type:'tactic',targetUnit:'enemy',cost:1,icon:'🩸',text:'Cause 1 a um inimigo; dano à Vida cura até 1 da vida da dupla.',onPlay:{k:'bloodDrain',n:1,h:1}},
+  blood_transfusion:{f:'bloodlord',name:'Transfusão Profana',type:'tactic',targetUnit:'ally',targetFilter:'noDrain',cost:2,icon:'🧪',text:'Um aliado ganha Dreno 1 permanentemente. Não acumula.',onPlay:{k:'grantDrain',n:1}},
+  // ---- Homens-Rato (híbrido) ----
+  rats_runner:{f:'rats',tribe:'rat',name:'Rato Corre-Cano',type:'unit',cost:1,atk:2,hp:2,icon:'🐀',text:'Barato, rápido e suspeitamente musculoso.'},
+  rats_scrounger:{f:'rats',tribe:'rat',name:'Catador de Migalhas',type:'unit',cost:1,atk:1,hp:2,icon:'🧀',text:'Ao entrar: compre 1.',onPlay:{k:'draw',n:1}},
+  rats_shield:{f:'rats',tribe:'rat',name:'Tampa-Escudo',type:'unit',cost:2,atk:1,hp:5,icon:'🛡️',text:'Provocar: uma tampa de bueiro surpreendentemente firme.',passive:'taunt'},
+  rats_alchemist:{f:'rats',tribe:'rat',name:'Alquimista do Esgoto',type:'unit',cost:2,atk:2,hp:3,icon:'🧪',text:'Ao entrar: cause 1 de dano ao maior inimigo da lane.',onPlay:{k:'damage',n:1,t:'big'}},
+  rats_pack:{f:'rats',tribe:'rat',name:'Capitão da Matilha',type:'unit',cost:3,atk:3,hp:4,icon:'👑',text:'Ao entrar: outros Homens-Rato aliados da lane recebem +1 ATQ permanente.',onPlay:{k:'ratAtk',n:1}},
+  rats_assassin:{f:'rats',tribe:'rat',name:'Assassino do Sino',type:'unit',cost:3,atk:4,hp:2,icon:'🔔',text:'Ímpeto: pode agir na hora.',passive:'charge'},
+  rats_abomination:{f:'rats',tribe:'rat',name:'Abominação Costurada',type:'unit',cost:4,atk:4,hp:6,icon:'🧵',text:'Ao entrar: cure 1 de todos os aliados da lane.',onPlay:{k:'heal',n:1,t:'all'}},
+  rats_coach:{f:'rats',tribe:'rat',name:'Personal Ratainer',type:'unit',cost:5,atk:5,hp:6,icon:'🏋️',text:'Ao entrar: Homens-Rato aliados da lane recebem +1 ATQ e +1 DEF permanentes.',onPlay:{k:'ratPack',n:1}},
+  rats_scraprain:{f:'rats',name:'Chuva de Sucata',type:'tactic',cost:2,icon:'🔩',text:'Seus aliados da lane recebem +1 ATQ e +1 Escudo.',onPlay:{k:'packBuff',n:1}},
+  ratomanocu:{f:'rats',name:'Ratomanocu',type:'tactic',global:true,cost:5,icon:'💥',text:'Limpa TODAS as unidades da arena. Não causa dano à vida dos times.',onPlay:{k:'ratomanocu'}},
+  rats_avatar:{f:'rats',tribe:'rat',token:true,name:'Avatar do Gym Rat',type:'unit',cost:7,atk:7,hp:7,icon:'🏋️',text:'7/7 exausto. Veio direto da área dos Warlords.'},
+  // ---- carta neutra de recuperação ----
+  neutral_coin:{f:'neutral',name:'A Moeda',type:'tactic',global:true,cost:0,icon:'🪙',text:'Ganhe +1 Mana nesta vez.',onPlay:{k:'coin',n:1}},
+};
+
+const LANES = [
+  { id:'arena', name:'Arena dos Juramentos', icon:'⚔️' },
+];
+
+/* ---------------- utilidades de baralho ---------------- */
+function shuffle(list, rnd = Math.random) {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function makeDeck(warlordId, rnd, makeEntry) {
+  let recipe=WARLORDS[warlordId].deck.flatMap(id => id==='ratomanocu' ? [id] : [id,id]);
+  if (warlordId==='rats') recipe.push('rats_runner'); // 20 cartas; Ratomanocu permanece singleton
+  return shuffle(recipe, rnd).map(makeEntry);
+}
+const cardIdOf = entry => typeof entry === 'string' ? entry : entry && entry.cardId;
+
+/* ---------------- criação de estado ---------------- */
+function createGame(config, rnd = Math.random) {
+  // config.warlords = [wA_carry, wA_support, wB_carry, wB_support]; config.names = [..4]
+  let nextCardUid = 1;
+  const makeEntry = cardId => ({ uid:'c' + nextCardUid++, cardId });
+  const players = config.warlords.map((wid, seat) => {
+    const w = WARLORDS[wid];
+    if (!w || !w.roles.includes(roleOfSeat(seat))) throw new Error('Warlord incompatível com o assento ' + seat);
+    const deck = makeDeck(wid, rnd, makeEntry);
+    const hand = [];
+    for (let i = 0; i < 4; i++) hand.push(deck.pop());
+    // Recuperação do time que joga depois: o carry compra uma carta extra e
+    // o suporte recebe a Moeda. Assim o bônus não se concentra em um só jogador.
+    if (seat === 2 && deck.length) { hand.push(deck.pop()); if(config.doubleCoin)hand.push(makeEntry('neutral_coin')); }
+    if (seat === 3) hand.push(makeEntry('neutral_coin'));
+    return { seat, name: config.names[seat] || ('Jogador ' + (seat + 1)), warlordId: wid,
+      role: roleOfSeat(seat), faction: w.faction, mana: 0, maxMana: 0, pendingMana: 0,
+      tempMana: 0, deck, hand, inspired: false, heroUsed: false, heroSpent: false, hasTakenTurn: false };
+  });
+  const teams = [0, 1].map(t => {
+    const life = teamSeats(t).reduce((s, seat) => {
+      const w=WARLORDS[players[seat].warlordId]; return s+(w.hpByRole?.[roleOfSeat(seat)]||w.hp);
+    }, 0);
+    return { life, maxLife: life };
+  });
+  const g = {
+    round: 1, turnPtr: 0, active: TURN_ORDER[0],
+    players, teams, lanes: LANES.map(l => ({ ...l })),
+    units: [], graveyard: [], nextUid: 1, nextCardUid, turnSerial: 0, log: [], over: null,
+    seq: 0, events: [], // eventos p/ VFX (a UI consome)
+    crossPool: !!config.crossPool, // knob: doar mana ao parceiro (default on)
+    doubleCoin: !!config.doubleCoin,
+  };
+  logMsg(g,`Bônus do Time B: Carry com 5 cartas${config.doubleCoin?' + Moeda':''}; Suporte com 4 + Moeda.`);
+  beginTurn(g, true);
+  return g;
+}
+
+/* ---------------- helpers de combate/alvo ---------------- */
+const atkVal = u => Math.max(0, u.atk + (u.atkPerm || 0) + (u.atkTemp || 0));
+const unitsInLane = (g, lane) => g.units.filter(u => u.lane === lane);
+const alliesInLane = (g, seat, lane, excludeUid) =>
+  g.units.filter(u => u.lane === lane && teamOf(u.owner) === teamOf(seat) && u.uid !== excludeUid);
+const enemiesInLane = (g, seat, lane) =>
+  g.units.filter(u => u.lane === lane && teamOf(u.owner) !== teamOf(seat));
+const mostWounded = list => { let best = null, d = 0; for (const u of list) { const w = u.maxHp - u.hp; if (w > d) { d = w; best = u; } } return best; };
+const mostFragile = list => list.slice().sort((a, b) => (a.hp + (a.shield||0)) - (b.hp + (b.shield||0)))[0] || null;
+const strongest = list => list.slice().sort((a, b) => atkVal(b) - atkVal(a))[0] || null;
+const weakestAtk = list => list.slice().sort((a, b) => atkVal(a) - atkVal(b))[0] || null;
+const combatAtk = u => atkVal(u) + (u.rage && u.hp < u.maxHp ? u.rage : 0);
+function legalFightEnemies(g,seat,lane){const enemies=enemiesInLane(g,seat,lane),taunts=enemies.filter(u=>u.passive==='taunt');return taunts.length?taunts:enemies;}
+const describeUnitHit=h=>`${h.hpDamage} na Vida${h.warded?' (Proteção ignorou o restante)':h.absorbed?` + ${h.absorbed} no Escudo`:''}${h.reduced?` + ${h.reduced} reduzido`:''}`;
+function resolveFight(g,seat,fighter,target){
+  if(!fighter||!target||fighter.lane!==target.lane||teamOf(fighter.owner)!==teamOf(seat)||teamOf(target.owner)===teamOf(seat))return false;
+  if(!legalFightEnemies(g,seat,fighter.lane).some(u=>u.uid===target.uid)||fighter.lastForcedFightRound===g.round)return false;
+  const toEnemy=combatAtk(fighter),toAlly=combatAtk(target);fighter.lastForcedFightRound=g.round;fighter.exhausted=true;fighter.hasAttacked=true;
+  ev(g,{type:'forcedFight',uid:fighter.uid,targetUid:target.uid,lane:fighter.lane});
+  const hitEnemy=dealToUnit(g,target,toEnemy),hitAlly=dealToUnit(g,fighter,toAlly);
+  if(fighter.drain&&hitEnemy.hpDamage>0)healTeamLife(g,teamOf(seat),Math.min(fighter.drain,hitEnemy.hpDamage));
+  if(target.drain&&hitAlly.hpDamage>0)healTeamLife(g,teamOf(target.owner),Math.min(target.drain,hitAlly.hpDamage));
+  logMsg(g,`⚔ Briga na ${g.lanes[fighter.lane].name}: ${CARDS[fighter.cardId].name} causou ${describeUnitHit(hitEnemy)} e recebeu ${describeUnitHit(hitAlly)}.`,fighter.cardId);
+  return {hitEnemy,hitAlly};
+}
+
+function ev(g, e) { g.events.push({ seq: ++g.seq, ...e }); g.events=g.events.slice(-60); }
+function logMsg(g, text, cardId=null) {
+  const row={round:g.round,text};if(cardId&&CARDS[cardId])row.cardId=cardId;
+  g.log.unshift(row);g.log=g.log.slice(0,80);
+}
+function draw(g, seat, n = 1) { const p = g.players[seat]; for (let i = 0; i < n; i++) if (p.deck.length) p.hand.push(p.deck.pop()); }
+
+/* ---------------- dano ---------------- */
+function dealToUnit(g, u, amount) {
+  amount=Math.max(0,amount||0);const beforeHp=u.hp;
+  const reduced=Math.min(amount,u.damageReduction||0);let rem=amount-reduced;
+  if(reduced>0)ev(g,{type:'reduced',uid:u.uid,owner:u.owner,lane:u.lane,amount:reduced});
+  if(rem>0&&(u.ward||0)>0){u.ward--;ev(g,{type:'wardblock',uid:u.uid,owner:u.owner,lane:u.lane,amount:rem});return {absorbed:rem,hpDamage:0,reduced,warded:true,killed:false};}
+  const sh = Math.min(u.shield || 0, rem); u.shield -= sh; rem -= sh;
+  if(sh>0)ev(g,{type:'shieldhit',uid:u.uid,owner:u.owner,lane:u.lane,amount:sh});
+  if (rem > 0) {u.hp -= rem;ev(g,{type:'hit',uid:u.uid,owner:u.owner,lane:u.lane,amount:Math.min(beforeHp,rem)});}
+  const hpDamage=Math.min(beforeHp,Math.max(0,rem));
+  const result={absorbed:sh,hpDamage,reduced,warded:false,killed:u.hp<=0};
+  if(hpDamage>0&&u.hp>0&&(u.painAtk||0)>0){u.atkPerm=(u.atkPerm||0)+u.painAtk;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:u.painAtk});}
+  if (u.hp <= 0) killUnit(g, u);
+  return result;
+}
+function killUnit(g, u) {
+  g.units = g.units.filter(x => x.uid !== u.uid);
+  if(!u.drowned){g.graveyard.unshift({cardId:u.cardId,owner:u.owner,lane:u.lane,round:g.round});g.graveyard=g.graveyard.slice(0,30);}
+  ev(g, { type: 'death', uid: u.uid, owner: u.owner, lane: u.lane, name: CARDS[u.cardId].name, icon: CARDS[u.cardId].icon });
+  logMsg(g, `☠ ${CARDS[u.cardId].name} caiu.`,u.cardId);
+  if(!g.suppressDeathrattles&&u.deathSummon&&g.units.filter(x=>x.lane===u.lane&&teamOf(x.owner)===teamOf(u.owner)).length<LANE_CAP)spawnUnit(g,u.owner,u.deathSummon,u.lane,true);
+}
+function dealToTeamLife(g, team, amount, sourceSeat) {
+  const hasBlood=teamSeats(team).some(seat=>g.players[seat]?.warlordId==='raven');
+  const dealt=hasBlood?Math.max(1,amount-1):amount;
+  g.teams[team].life = Math.max(0, g.teams[team].life - dealt);
+  ev(g, { type: 'face', team, amount:dealt, sourceSeat });
+  if (g.teams[team].life <= 0 && !g.over) {
+    g.over = { winnerTeam: 1 - team, reason: `Time ${1 - team === 0 ? 'A' : 'B'} zerou a vida somada inimiga.` };
+  }
+  return dealt;
+}
+function healTeamLife(g, team, amount) {
+  const t = g.teams[team], before = t.life;
+  t.life = Math.min(t.maxLife, t.life + amount);
+  if (t.life > before) ev(g, { type:'teamheal', team, amount:t.life-before });
+}
+
+/* ---------------- efeitos onPlay ---------------- */
+function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
+  if (!onPlay) return;
+  const k = onPlay.k, n = onPlay.n || 0, t = onPlay.t;
+  if (k === 'draw') { draw(g, seat, n); return; }
+  if (k === 'selfAtk' && selfUnit) { selfUnit.atkPerm = (selfUnit.atkPerm||0) + n; ev(g,{type:'buff',uid:selfUnit.uid,owner:seat,lane,amount:n}); return; }
+  if (k === 'selfDef' && selfUnit) { selfUnit.hp += n; selfUnit.maxHp += n; ev(g,{type:'fortify',uid:selfUnit.uid,owner:seat,lane,amount:n}); return; }
+  if (k === 'allyAtk') {
+    const pool = alliesInLane(g, seat, lane, selfUnit ? selfUnit.uid : null);
+    let targets = [];
+    if (t === 'all') targets = pool; else if (t === 'strong') { const x = strongest(pool); if (x) targets = [x]; }
+    else if (t === 'weak') { const x = weakestAtk(pool); if (x) targets = [x]; }
+    for (const u of targets) { u.atkPerm = (u.atkPerm||0) + n; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:n}); }
+    return;
+  }
+  if (k === 'allyShield') {
+    const pool = alliesInLane(g, seat, lane, null); // inclui self p/ táticas; unidades: self também pode
+    let targets = [];
+    if (t === 'all') targets = pool; else if (t === 'fragile') { const x = mostFragile(pool); if (x) targets = [x]; }
+    for (const u of targets) { u.shield = (u.shield||0) + n; ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane,amount:n}); }
+    return;
+  }
+  if (k === 'heal') {
+    const pool = alliesInLane(g, seat, lane, null);
+    let targets = [];
+    if (t === 'all') targets = pool; else if (t === 'most') { const x = mostWounded(pool); if (x) targets = [x]; }
+    for (const u of targets) { const before = u.hp; u.hp = Math.min(u.maxHp, u.hp + n); if (u.hp>before) ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane,amount:u.hp-before}); }
+    return;
+  }
+  if (k === 'damage') {
+    const pool = enemiesInLane(g, seat, lane);
+    const x = strongest(pool);
+    if (x) dealToUnit(g, x, n);
+    return;
+  }
+  if (k === 'encore') { // cura 1 + atk 1 em todos aliados da lane
+    const pool = alliesInLane(g, seat, lane, selfUnit ? selfUnit.uid : null);
+    for (const u of pool) { const b=u.hp; u.hp=Math.min(u.maxHp,u.hp+1); if(u.hp>b) ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane,amount:1}); u.atkPerm=(u.atkPerm||0)+1; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:1}); }
+    return;
+  }
+  if (k === 'worldbuff') { // tática: +1 atk e cura 1 em todos aliados da lane (inclui todos)
+    const pool = alliesInLane(g, seat, lane, null);
+    for (const u of pool) { const b=u.hp; u.hp=Math.min(u.maxHp,u.hp+1); if(u.hp>b) ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane,amount:1}); u.atkPerm=(u.atkPerm||0)+1; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:1}); }
+    return;
+  }
+  if(k==='bless'&&explicitTarget){
+    explicitTarget.atkPerm=(explicitTarget.atkPerm||0)+n;explicitTarget.hp+=n;explicitTarget.maxHp+=n;
+    ev(g,{type:'buff',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});ev(g,{type:'fortify',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;
+  }
+  if(k==='ward'&&explicitTarget){explicitTarget.ward=Math.max(1,explicitTarget.ward||0);ev(g,{type:'ward',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane});return;}
+  if(k==='assumptio'&&explicitTarget){explicitTarget.damageReduction=Math.max(explicitTarget.damageReduction||0,n);explicitTarget.damageReductionExpires=Math.max(explicitTarget.damageReductionExpires||0,g.turnSerial+4);ev(g,{type:'assumptio',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
+  if(k==='targetHeal'&&explicitTarget){const before=explicitTarget.hp;explicitTarget.hp=Math.min(explicitTarget.maxHp,explicitTarget.hp+n);if(explicitTarget.hp>before)ev(g,{type:'heal',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:explicitTarget.hp-before});return;}
+  if(k==='targetShield'&&explicitTarget){explicitTarget.shield=(explicitTarget.shield||0)+n;ev(g,{type:'shield',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
+  if(k==='targetAtk'&&explicitTarget){explicitTarget.atkPerm=(explicitTarget.atkPerm||0)+n;ev(g,{type:'buff',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
+  if(k==='targetReady'&&explicitTarget){explicitTarget.exhausted=false;ev(g,{type:'ready',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane});return;}
+  if(k==='bloodDrain'&&explicitTarget){const hit=dealToUnit(g,explicitTarget,n);if(hit.hpDamage>0)healTeamLife(g,teamOf(seat),Math.min(onPlay.h||1,hit.hpDamage));return;}
+  if(k==='forcedFight'&&explicitTarget){
+    const fighter=strongest(alliesInLane(g,seat,explicitTarget.lane,null).filter(u=>atkVal(u)>0&&u.lastForcedFightRound!==g.round));
+    if(fighter)resolveFight(g,seat,fighter,explicitTarget);return;
+  }
+  if(k==='selfPainDraw'&&selfUnit){dealToUnit(g,selfUnit,n);if(g.units.some(u=>u.uid===selfUnit.uid))draw(g,seat,onPlay.draw||1);return;}
+  if(k==='summon'){
+    for(let i=0;i<(onPlay.count||1);i++)if(g.units.filter(u=>u.lane===lane&&teamOf(u.owner)===teamOf(seat)).length<LANE_CAP)spawnUnit(g,seat,onPlay.cardId,lane,onPlay.exhausted!==false);return;
+  }
+  if(k==='grantDrain'&&explicitTarget){explicitTarget.drain=Math.max(explicitTarget.drain||0,n);ev(g,{type:'drain',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
+  if(k==='selfShield'&&selfUnit){selfUnit.shield=(selfUnit.shield||0)+n;ev(g,{type:'shield',uid:selfUnit.uid,owner:selfUnit.owner,lane:selfUnit.lane,amount:n});return;}
+  if(k==='allyStats'){
+    const pool=alliesInLane(g,seat,lane,onPlay.excludeSelf&&selfUnit?selfUnit.uid:null),u=onPlay.t==='fragile'?mostFragile(pool):strongest(pool);if(!u)return;
+    const a=onPlay.atk||0,h=onPlay.hp||0;u.atkPerm=(u.atkPerm||0)+a;u.hp+=h;u.maxHp+=h;if(a)ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:a});if(h)ev(g,{type:'fortify',uid:u.uid,owner:u.owner,lane:u.lane,amount:h});return;
+  }
+  if(k==='resonantHeal'){
+    const u=mostWounded(alliesInLane(g,seat,lane,null));if(!u)return;const amount=(onPlay.base||1)+((u.shield||0)>0?(onPlay.bonus||0):0),b=u.hp;u.hp=Math.min(u.maxHp,u.hp+amount);if(u.hp>b)ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:u.hp-b});return;
+  }
+  if(k==='prismFamiliar'&&selfUnit){
+    const shielded=alliesInLane(g,seat,lane,selfUnit.uid).filter(u=>(u.shield||0)>0),u=mostFragile(shielded);
+    if(u){u.atkPerm=(u.atkPerm||0)+(onPlay.atk||1);u.hp+=onPlay.hp||1;u.maxHp+=onPlay.hp||1;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:onPlay.atk||1});ev(g,{type:'fortify',uid:u.uid,owner:u.owner,lane:u.lane,amount:onPlay.hp||1});}
+    else {selfUnit.shield=(selfUnit.shield||0)+(onPlay.fallbackShield||2);ev(g,{type:'shield',uid:selfUnit.uid,owner:selfUnit.owner,lane,amount:onPlay.fallbackShield||2});}return;
+  }
+  if(k==='resonantLane'){
+    const pool=alliesInLane(g,seat,lane,null),had=new Set(pool.filter(u=>(u.shield||0)>0).map(u=>u.uid));
+    for(const u of pool){const shield=onPlay.shield||0;if(shield){u.shield=(u.shield||0)+shield;ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:shield});}if(had.has(u.uid)&&onPlay.healExisting){const b=u.hp;u.hp=Math.min(u.maxHp,u.hp+onPlay.healExisting);if(u.hp>b)ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:u.hp-b});}if(had.has(u.uid)&&onPlay.atkExisting){u.atkPerm=(u.atkPerm||0)+onPlay.atkExisting;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:onPlay.atkExisting});}}return;
+  }
+  if(k==='resonantShield'&&explicitTarget){const had=(explicitTarget.shield||0)>0,shield=onPlay.shield||2;explicitTarget.shield=(explicitTarget.shield||0)+shield;ev(g,{type:'shield',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:shield});if(had&&onPlay.healExisting){const b=explicitTarget.hp;explicitTarget.hp=Math.min(explicitTarget.maxHp,explicitTarget.hp+onPlay.healExisting);if(explicitTarget.hp>b)ev(g,{type:'heal',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:explicitTarget.hp-b});}return;}
+  if(k==='resonantStats'&&explicitTarget){const had=(explicitTarget.shield||0)>0,a=(onPlay.atk||0)+(had?(onPlay.bonusAtk||0):0),h=onPlay.hp||0;explicitTarget.atkPerm=(explicitTarget.atkPerm||0)+a;explicitTarget.hp+=h;explicitTarget.maxHp+=h;if(a)ev(g,{type:'buff',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:a});if(h)ev(g,{type:'fortify',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:h});return;}
+  if(k==='healShield'&&explicitTarget){const b=explicitTarget.hp;explicitTarget.hp=Math.min(explicitTarget.maxHp,explicitTarget.hp+(onPlay.heal||0));if(explicitTarget.hp>b)ev(g,{type:'heal',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:explicitTarget.hp-b});explicitTarget.shield=(explicitTarget.shield||0)+(onPlay.shield||0);if(onPlay.shield)ev(g,{type:'shield',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:onPlay.shield});return;}
+  if(k==='tribeAtk'){
+    const pool=alliesInLane(g,seat,lane,onPlay.excludeSelf&&selfUnit?selfUnit.uid:null).filter(u=>CARDS[u.cardId].tribe===onPlay.tribe);
+    for(const u of pool){u.atkPerm=(u.atkPerm||0)+n;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:n});}return;
+  }
+  if(k==='tribePack'){
+    const pool=alliesInLane(g,seat,lane,null).filter(u=>CARDS[u.cardId].tribe===onPlay.tribe),a=onPlay.atk||0,h=onPlay.hp||0;
+    for(const u of pool){u.atkPerm=(u.atkPerm||0)+a;u.hp+=h;u.maxHp+=h;if(a)ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:a});if(h)ev(g,{type:'fortify',uid:u.uid,owner:u.owner,lane:u.lane,amount:h});}return;
+  }
+  if(k==='summonTokens'){
+    const ids=onPlay.ids||[],free=LANE_CAP-g.units.filter(u=>u.lane===lane&&teamOf(u.owner)===teamOf(seat)).length;
+    if(onPlay.requireSlots&&free<onPlay.requireSlots)return;
+    for(const cardId of ids)if(g.units.filter(u=>u.lane===lane&&teamOf(u.owner)===teamOf(seat)).length<LANE_CAP)spawnUnit(g,seat,cardId,lane,onPlay.exhausted!==false);return;
+  }
+  if(k==='grantCharge'){
+    const eligible=alliesInLane(g,seat,lane,null).filter(u=>u.owner===seat&&u.enteredSerial===g.turnSerial&&u.exhausted&&!u.hasAttacked),u=strongest(eligible);
+    if(u){u.exhausted=false;ev(g,{type:'ready',uid:u.uid,owner:u.owner,lane:u.lane});}return;
+  }
+  if(k==='autoFight'){
+    let pool=alliesInLane(g,seat,lane,onPlay.fighter==='strongOther'&&selfUnit?selfUnit.uid:null).filter(u=>atkVal(u)>0&&u.lastForcedFightRound!==g.round),fighter=null;
+    if(onPlay.fighter==='self')fighter=selfUnit&&pool.find(u=>u.uid===selfUnit.uid);else fighter=strongest(pool);
+    if(!fighter)return;const target=mostFragile(legalFightEnemies(g,seat,lane));if(target)resolveFight(g,seat,fighter,target);return;
+  }
+  if (k === 'coin') {
+    const p = g.players[seat], gain=n||1; p.mana += gain; p.tempMana=(p.tempMana||0)+gain;
+    ev(g,{type:'coin',owner:seat,amount:n||1});
+    return;
+  }
+  if (k === 'ratAtk') {
+    const pool = alliesInLane(g,seat,lane,selfUnit ? selfUnit.uid : null).filter(u=>CARDS[u.cardId].tribe==='rat');
+    for (const u of pool) { u.atkPerm=(u.atkPerm||0)+n; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:n}); }
+    return;
+  }
+  if (k === 'ratPack') {
+    const pool = alliesInLane(g,seat,lane,selfUnit ? selfUnit.uid : null).filter(u=>CARDS[u.cardId].tribe==='rat');
+    for (const u of pool) {
+      u.atkPerm=(u.atkPerm||0)+n; u.hp+=n; u.maxHp+=n;
+      ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:n});
+      ev(g,{type:'fortify',uid:u.uid,owner:u.owner,lane,amount:n});
+    }
+    return;
+  }
+  if (k === 'packBuff') {
+    const pool = alliesInLane(g,seat,lane,null);
+    for (const u of pool) {
+      u.atkPerm=(u.atkPerm||0)+n; u.shield=(u.shield||0)+n;
+      ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:n});
+      ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane,amount:n});
+    }
+    return;
+  }
+  if (k === 'ratomanocu') {
+    const doomed = g.units.slice();
+    ev(g,{type:'boardwipe',owner:seat,amount:doomed.length});
+    g.suppressDeathrattles=true;
+    for (const u of doomed) if (g.units.some(x=>x.uid===u.uid)) killUnit(g,u);
+    g.suppressDeathrattles=false;
+    logMsg(g,`Ratomanocu limpou a arena (${doomed.length} unidades).`,'ratomanocu');
+    return;
+  }
+}
+
+/* ---------------- poderes heroicos ---------------- */
+function heroTargetUids(g, seat) {
+  const p=g.players[seat], w=p&&WARLORDS[p.warlordId];
+  if (!w || !w.power || w.power.target==='lane') return [];
+  let pool=g.units.filter(u=>w.power.target==='ally'?teamOf(u.owner)===teamOf(seat):w.power.target==='own'?u.owner===seat:teamOf(u.owner)!==teamOf(seat));
+  if(w.power.filter==='wounded')pool=pool.filter(u=>u.hp<u.maxHp);
+  else if(w.power.filter==='survive1')pool=pool.filter(u=>u.hp+(u.shield||0)>1);
+  else if(w.power.filter==='canBleed1')pool=pool.filter(u=>u.hp>1&&!(u.shield||0)&&!(u.ward||0)&&!(u.damageReduction||0));
+  else if(w.power.filter==='freshExhausted')pool=pool.filter(u=>u.owner===seat&&u.exhausted&&!u.hasAttacked);
+  else if(w.power.filter==='enemyInLane')pool=pool.filter(u=>u.lastForcedFightRound!==g.round&&atkVal(u)>0&&legalFightEnemies(g,seat,u.lane).length>0);
+  return pool.map(u=>u.uid);
+}
+function heroTargetLanes(g,seat) {
+  const w=WARLORDS[g.players[seat]?.warlordId];
+  if (!w?.power || w.power.target!=='lane') return [];
+  if(w.power.kind==='pirate'&&!g.graveyard?.some(x=>teamOf(x.owner)===teamOf(seat)))return [];
+  return g.lanes.map((_,lane)=>lane).filter(lane=>g.units.filter(u=>u.lane===lane&&teamOf(u.owner)===teamOf(seat)).length<LANE_CAP);
+}
+function canUseHeroPower(g, seat) {
+  if (g.over || g.active!==seat) return false;
+  const p=g.players[seat], w=WARLORDS[p.warlordId];
+  const hasTarget=w?.power?.target==='lane' ? heroTargetLanes(g,seat).length : heroTargetUids(g,seat).length;
+  const extraOk=w?.power?.kind!=='bloodlord'||g.teams[teamOf(seat)].life>1;
+  return !!(w?.power && !p.heroUsed && !(w.power.onceGame&&p.heroSpent) && p.mana>=w.power.cost && hasTarget&&extraOk);
+}
+function useHeroPower(g, seat, targetRef, choice) {
+  if (!canUseHeroPower(g,seat)) return {ok:false,err:'poder-ilegal'};
+  const p=g.players[seat], w=WARLORDS[p.warlordId];
+  if (w.power.target==='lane') {
+    if (!heroTargetLanes(g,seat).includes(targetRef)) return {ok:false,err:'alvo'};
+    if(w.power.choices&&!w.power.choices.some(x=>x.id===choice))return {ok:false,err:'escolha'};
+    spendMana(p,w.power.cost); p.heroUsed=true; p.heroSpent=!!w.power.onceGame;
+    let summoned=null,detail='';
+    if(w.power.kind==='ratsAvatar'){
+      summoned=spawnUnit(g,seat,'rats_avatar',targetRef,true);
+      for (const rat of alliesInLane(g,seat,targetRef,summoned.uid).filter(u=>CARDS[u.cardId].tribe==='rat')) {rat.atkPerm=(rat.atkPerm||0)+2;ev(g,{type:'buff',uid:rat.uid,owner:rat.owner,lane:rat.lane,amount:2});}
+    }else if(w.power.kind==='druid'){
+      const token=choice==='vulture'?'druid_vulture_token':'druid_wolf_token';summoned=spawnUnit(g,seat,token,targetRef,choice!=='wolf');detail=` Invocou ${CARDS[token].name}${choice==='wolf'?' com Ímpeto':' exausto com Provocar'}.`;
+    }else if(w.power.kind==='pirate'){
+      const i=g.graveyard.findIndex(x=>teamOf(x.owner)===teamOf(seat)),dead=g.graveyard.splice(i,1)[0];
+      summoned=spawnUnit(g,seat,'pirate_drowned_token',targetRef,false);detail=` Consumiu ${CARDS[dead.cardId].name} e invocou um Afogado com Ímpeto.`;
+    }
+    ev(g,{type:'hero',owner:seat,uid:summoned?.uid,lane:targetRef,name:w.power.name});
+    logMsg(g,`${p.name} usou ${w.power.name} na ${g.lanes[targetRef].name}.${detail}`,summoned?.cardId||null);
+    return {ok:true};
+  }
+  if (!heroTargetUids(g,seat).includes(targetRef)) return {ok:false,err:'alvo'};
+  const targetUid=targetRef, u=g.units.find(x=>x.uid===targetUid);
+  spendMana(p,w.power.cost); p.heroUsed=true; if(w.power.onceGame)p.heroSpent=true;
+  ev(g,{type:'hero',owner:seat,uid:u.uid,lane:u.lane,name:w.power.name});
+  if (w.power.kind==='raven') {
+    dealToUnit(g,u,1);
+    if (!g.units.some(x=>x.uid===targetUid)) healTeamLife(g,teamOf(seat),1);
+  } else if (w.power.kind==='viking') {
+    dealToUnit(g,u,1);
+    const survivor=g.units.find(x=>x.uid===targetUid);
+    if (survivor) { survivor.atkPerm=(survivor.atkPerm||0)+3; ev(g,{type:'buff',uid:survivor.uid,owner:survivor.owner,lane:survivor.lane,amount:3}); }
+  } else if (w.power.kind==='vale') {
+    u.shield=(u.shield||0)+2; ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:2});
+  } else if (w.power.kind==='miku') {
+    const missing=Math.max(0,u.maxHp-u.hp), healed=Math.min(2,missing), excess=2-healed;
+    if (healed) { u.hp+=healed; ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:healed}); }
+    if (excess) { u.shield=(u.shield||0)+excess; ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:excess}); }
+  } else if(w.power.kind==='priestHeal'){
+    const before=u.hp;u.hp=Math.min(u.maxHp,u.hp+1);if(u.hp>before)ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});
+  } else if(w.power.kind==='succubus'){
+    const hit=dealToUnit(g,u,1);if(hit.hpDamage>0&&g.units.some(x=>x.uid===u.uid)){u.atkPerm=(u.atkPerm||0)+1;u.hp+=1;u.maxHp+=1;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});ev(g,{type:'fortify',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});}
+  } else if(w.power.kind==='bloodlord'){
+    g.teams[teamOf(seat)].life--;ev(g,{type:'bloodcost',team:teamOf(seat),amount:1});const hit=dealToUnit(g,u,w.power.damage||2);if(hit.hpDamage>0){const wounded=mostWounded(g.units.filter(x=>teamOf(x.owner)===teamOf(seat)));if(wounded){const b=wounded.hp;wounded.hp=Math.min(wounded.maxHp,wounded.hp+1);if(wounded.hp>b)ev(g,{type:'heal',uid:wounded.uid,owner:wounded.owner,lane:wounded.lane,amount:1});}}
+  } else if(w.power.kind==='enchantPower'){
+    const had=(u.shield||0)>0;u.shield=(u.shield||0)+2;ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:2});if(had){u.atkPerm=(u.atkPerm||0)+1;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});}
+  } else if(w.power.kind==='arenaFight'){
+    const target=mostFragile(legalFightEnemies(g,seat,u.lane));if(target)resolveFight(g,seat,u,target);
+  }
+  logMsg(g,`${p.name} usou ${w.power.name} em ${CARDS[u.cardId].name}, na ${g.lanes[u.lane].name}.`,u.cardId);
+  return {ok:true};
+}
+
+/* ---------------- ações ---------------- */
+function handIndexFor(p, cardRef) {
+  if (typeof cardRef==='string') return p.hand.findIndex(e=>e && e.uid===cardRef);
+  return Number.isInteger(cardRef) ? cardRef : -1;
+}
+function validCardTargetUids(g,seat,card){
+  if(!card?.targetUnit)return [];
+  let pool=g.units.filter(u=>card.targetUnit==='ally'?teamOf(u.owner)===teamOf(seat):card.targetUnit==='enemy'?teamOf(u.owner)!==teamOf(seat):card.targetUnit==='own'?u.owner===seat:true);
+  if(card.targetFilter==='wounded')pool=pool.filter(u=>u.hp<u.maxHp);
+  else if(card.targetFilter==='survive1')pool=pool.filter(u=>u.hp+(u.shield||0)>1);
+  else if(card.targetFilter==='freshExhausted')pool=pool.filter(u=>u.owner===seat&&u.exhausted&&!u.hasAttacked);
+  else if(card.targetFilter==='fightable')pool=pool.filter(u=>legalFightEnemies(g,seat,u.lane).some(e=>e.uid===u.uid)&&alliesInLane(g,seat,u.lane,null).some(a=>atkVal(a)>0&&a.lastForcedFightRound!==g.round));
+  else if(card.targetFilter==='noWard')pool=pool.filter(u=>!(u.ward||0));
+  else if(card.targetFilter==='noDrain')pool=pool.filter(u=>!(u.drain||0));
+  return pool.map(u=>u.uid);
+}
+function tacticHasEffect(g,seat,card,lane){
+  if(card.type!=='tactic')return true;
+  const k=card.onPlay?.k,allies=Number.isInteger(lane)?alliesInLane(g,seat,lane,null):[],enemies=Number.isInteger(lane)?enemiesInLane(g,seat,lane):[];
+  if(k==='coin')return true;
+  if(k==='ratomanocu')return g.units.length>0;
+  if(k==='damage')return enemies.length>0;
+  if(k==='allyAtk'||k==='allyShield'||k==='worldbuff'||k==='packBuff'||k==='resonantLane')return allies.length>0;
+  if(k==='heal')return allies.some(u=>u.hp<u.maxHp);
+  if(k==='tribePack')return allies.some(u=>CARDS[u.cardId].tribe===card.onPlay.tribe);
+  if(k==='summonTokens'){
+    const free=LANE_CAP-allies.length,needed=card.onPlay.requireSlots||1;return free>=needed;
+  }
+  if(k==='grantCharge')return allies.some(u=>u.owner===seat&&u.enteredSerial===g.turnSerial&&u.exhausted&&!u.hasAttacked);
+  if(k==='autoFight')return enemies.length>0&&allies.some(u=>atkVal(u)>0&&u.lastForcedFightRound!==g.round);
+  return true;
+}
+function canPlay(g, seat, cardRef, lane, targetUid) {
+  if (g.over || g.active !== seat) return false;
+  const p = g.players[seat], i=handIndexFor(p,cardRef), entry=p.hand[i], id=cardIdOf(entry), card=CARDS[id];
+  if (!card) return false;
+  let effectiveLane=lane;
+  if(card.targetUnit){if(lane!==undefined||!validCardTargetUids(g,seat,card).includes(targetUid))return false;effectiveLane=g.units.find(u=>u.uid===targetUid)?.lane;}
+  else if (card.global) { if (lane!==undefined||targetUid!==undefined) return false; }
+  else if (!Number.isInteger(lane) || lane<0 || lane>=LANES.length) return false;
+  if (card.type==='unit' && g.units.filter(u=>u.lane===effectiveLane && teamOf(u.owner)===teamOf(seat)).length>=LANE_CAP) return false;
+  return card.cost <= p.mana && tacticHasEffect(g,seat,card,effectiveLane);
+}
+function spendMana(p,cost) {
+  const base=Math.max(0,p.mana-(p.tempMana||0)), fromBase=Math.min(cost,base), fromTemp=cost-fromBase;
+  p.mana-=cost; p.tempMana=Math.max(0,(p.tempMana||0)-fromTemp);
+}
+function spawnUnit(g,seat,cardId,lane,forceExhausted=false,overrides={}) {
+  const card=CARDS[cardId];
+  const u={uid:g.nextUid++,owner:seat,cardId,lane,atk:card.atk,atkPerm:0,atkTemp:0,
+    hp:card.hp,maxHp:card.hp,shield:0,exhausted:forceExhausted||card.passive!=='charge',
+    enteredTurn:g.round,enteredSerial:g.turnSerial,passive:card.passive||null,rage:card.rage||0,
+    ward:0,damageReduction:0,damageReductionExpires:0,painAtk:card.painAtk||0,drain:card.drain||0,deathSummon:card.deathSummon||null,drowned:!!card.drowned,hasAttacked:false,...overrides};
+  g.units.push(u); ev(g,{type:'summon',uid:u.uid,owner:seat,lane,name:card.name});
+  return u;
+}
+function playCard(g, seat, cardRef, lane, targetUid) {
+  const p = g.players[seat], handIndex=handIndexFor(p,cardRef), entry=p.hand[handIndex];
+  const id=cardIdOf(entry), card=CARDS[id],explicitTarget=card?.targetUnit?g.units.find(u=>u.uid===targetUid):null;
+  if(card?.targetUnit)lane=explicitTarget?.lane;
+  if (!canPlay(g, seat, cardRef, card?.targetUnit?undefined:lane, targetUid)) return { ok: false, err: 'ilegal' };
+  spendMana(p,card.cost);
+  p.hand.splice(handIndex, 1);
+  if (card.type === 'unit') {
+    const u=spawnUnit(g,seat,id,lane);
+    logMsg(g, `${p.name} jogou ${card.name} na ${g.lanes[lane].name}.`,id);
+    applyEffect(g, seat, lane, u, card.onPlay,explicitTarget);
+  } else {
+    ev(g, { type: 'tactic', owner: seat, lane, name: card.name });
+    logMsg(g, `${p.name} usou ${card.name}${explicitTarget?' em '+CARDS[explicitTarget.cardId].name:Number.isInteger(lane)?' na '+g.lanes[lane].name:' (efeito global)'}.`,id);
+    applyEffect(g, seat, lane, null, card.onPlay,explicitTarget);
+  }
+  return { ok: true };
+}
+
+function attackTargets(g, u) {
+  // Inimigos comuns não bloqueiam a vida; Provocar protege unidades e a vida da dupla.
+  const enemies = enemiesInLane(g, u.owner, u.lane);
+  const taunts = enemies.filter(e => e.passive === 'taunt');
+  const list = (taunts.length ? taunts : enemies).map(e => e.uid);
+  return { units: list, face: taunts.length === 0 };
+}
+function canAttackWith(g, seat, uid) {
+  if (g.over || g.active !== seat) return false;
+  const u = g.units.find(x => x.uid === uid && x.owner === seat);
+  if (!u || u.exhausted) return false;
+  if (atkVal(u) <= 0) return false;
+  const t = attackTargets(g, u);
+  return t.units.length > 0 || t.face;
+}
+function attack(g, seat, uid, targetUid /* or null for face */) {
+  if (!canAttackWith(g, seat, uid)) return { ok: false, err: 'ilegal' };
+  const u = g.units.find(x => x.uid === uid);
+  const t = attackTargets(g, u);
+  let dmg = combatAtk(u); // inclui Fúria quando a unidade está ferida
+  if (targetUid == null) {
+    if (!t.face) return { ok: false, err: 'face-bloqueada' };
+    const enemyTeam = 1 - teamOf(seat);
+    ev(g, { type: 'attack', uid: u.uid, owner: seat, lane: u.lane, face: true });
+    const dealt=dealToTeamLife(g, enemyTeam, dmg, seat);
+    if(u.drain&&dealt>0)healTeamLife(g,teamOf(seat),Math.min(u.drain,dealt));
+    logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} atacou diretamente a dupla: ${dealt} de dano${dealt<dmg?' (Couraça de Almas reduziu 1)':''}.`,u.cardId);
+  } else {
+    if (!t.units.includes(targetUid)) return { ok: false, err: 'alvo' };
+    const target = g.units.find(x => x.uid === targetUid);
+    const counter=combatAtk(target);
+    ev(g, { type: 'combat', uid: u.uid, owner: seat, lane: u.lane, targetUid, targetOwner: target.owner, amount: dmg, counterAmount:counter });
+    const hit=dealToUnit(g,target,dmg),back=dealToUnit(g,u,counter);
+    if(u.drain&&hit.hpDamage>0)healTeamLife(g,teamOf(seat),Math.min(u.drain,hit.hpDamage));
+    if(target.drain&&back.hpDamage>0)healTeamLife(g,teamOf(target.owner),Math.min(target.drain,back.hpDamage));
+    logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} enfrentou ${CARDS[target.cardId].name} na ${g.lanes[u.lane].name}: causou ${describeUnitHit(hit)} e recebeu ${describeUnitHit(back)}.`,u.cardId);
+  }
+  u.exhausted = true;u.hasAttacked=true;
+  maybeRoundCap(g);
+  return { ok: true };
+}
+
+function inspire(g, seat) {
+  if (g.over || g.active !== seat || !g.crossPool) return { ok: false };
+  const p = g.players[seat]; if (p.inspired || p.mana-(p.tempMana||0) < 1) return { ok: false };
+  const partner = g.players[partnerOf(seat)];
+  if ((partner.pendingMana||0)>=2) return {ok:false,err:'reserva-cheia'};
+  spendMana(p,1); partner.pendingMana = Math.min((partner.pendingMana||0) + 1, 2); p.inspired = true;
+  ev(g, { type: 'inspire', from: seat, to: partner.seat });
+  logMsg(g, `${p.name} inspirou ${partner.name} (+1 Mana).`);
+  return { ok: true };
+}
+
+/* ---------------- fluxo de turno ---------------- */
+function beginTurn(g, first) {
+  const seat = g.active; const p = g.players[seat];
+  g.turnSerial=(g.turnSerial||0)+1;
+  for(const u of g.units)if(u.damageReductionExpires&&u.damageReductionExpires<=g.turnSerial){u.damageReduction=0;u.damageReductionExpires=0;}
+  p.maxMana = Math.min(g.round, MANA_CAP);
+  p.mana = p.maxMana + (p.pendingMana||0); p.pendingMana=0; p.tempMana=0;
+  p.inspired = false; p.heroUsed=false;
+  // reset das unidades DESTE dono
+  for (const u of g.units) if (u.owner === seat) { u.exhausted = false; u.atkTemp = 0; u.hasAttacked=false; }
+  // Todos pulam a compra na primeira vez individual. Isso elimina a assimetria
+  // acidental do hotseat; apenas o catch-up declarado do Time B permanece.
+  if (p.hasTakenTurn) draw(g, seat, 1); else p.hasTakenTurn=true;
+  ev(g, { type: 'turn', seat });
+}
+function endTurn(g, seat) {
+  if (g.over || g.active !== seat) return { ok: false };
+  g.turnPtr = (g.turnPtr + 1) % TURN_ORDER.length;
+  if (g.turnPtr === 0) { g.round += 1; maybeRoundCap(g); }
+  g.active = TURN_ORDER[g.turnPtr];
+  if (!g.over) beginTurn(g, false);
+  return { ok: true };
+}
+function maybeRoundCap(g) {
+  if (g.over) return;
+  if (g.round > ROUND_CAP) {
+    const a = g.teams[0].life, b = g.teams[1].life;
+    g.over = { winnerTeam: a === b ? null : (a > b ? 0 : 1), reason: `Fim da rodada ${ROUND_CAP}. ${a===b?'Empate na vida.':'Maior vida somada vence.'}` };
+  }
+}
+
+/* ---------------- ações legais (p/ simulação e UI) ---------------- */
+function legalActions(g) {
+  if (g.over) return [];
+  const seat = g.active, p = g.players[seat], acts = [];
+  p.hand.forEach(entry => {
+    const card=CARDS[cardIdOf(entry)];
+    if(card.targetUnit){for(const targetUid of validCardTargetUids(g,seat,card))if(canPlay(g,seat,entry.uid,undefined,targetUid))acts.push({type:'play',cardUid:entry.uid,targetUid});}
+    else if(card.global) { if(canPlay(g,seat,entry.uid)) acts.push({type:'play',cardUid:entry.uid}); }
+    else for (let lane=0; lane<g.lanes.length; lane++) if (canPlay(g,seat,entry.uid,lane)) acts.push({type:'play',cardUid:entry.uid,lane});
+  });
+  for (const u of g.units) if (u.owner === seat && canAttackWith(g, seat, u.uid)) {
+    const t = attackTargets(g, u);
+    for (const tu of t.units) acts.push({ type: 'attack', uid: u.uid, targetUid: tu });
+    if (t.face) acts.push({ type: 'attack', uid: u.uid, targetUid: null });
+  }
+  if (canUseHeroPower(g,seat)) {
+    const w=WARLORDS[p.warlordId];
+    if(w.power.target==='lane')for(const lane of heroTargetLanes(g,seat)){
+      if(w.power.choices)for(const choice of w.power.choices)acts.push({type:'hero',lane,choice:choice.id});else acts.push({type:'hero',lane});
+    }
+    else for (const targetUid of heroTargetUids(g,seat)) acts.push({type:'hero',targetUid});
+  }
+  if (g.crossPool && !p.inspired && p.mana-(p.tempMana||0)>=1 && (g.players[partnerOf(seat)].pendingMana||0)<2) acts.push({ type: 'inspire' });
+  acts.push({ type: 'end' });
+  return acts;
+}
+function doAction(g, a) {
+  if (a.type === 'play') return playCard(g, g.active, a.cardUid!=null?a.cardUid:a.handIndex, a.lane,a.targetUid);
+  if (a.type === 'attack') return attack(g, g.active, a.uid, a.targetUid);
+  if (a.type === 'hero') return useHeroPower(g,g.active,a.lane!=null?a.lane:a.targetUid,a.choice);
+  if (a.type === 'inspire') return inspire(g, g.active);
+  if (a.type === 'end') return endTurn(g, g.active);
+  return { ok: false };
+}
+
+const API = { TURN_ORDER, WARLORDS, CARDS, LANES, teamOf, partnerOf, enemySeats, teamSeats, roleOfSeat,
+  createGame, playCard, attack, inspire, useHeroPower, heroTargetUids, heroTargetLanes, canUseHeroPower,
+  endTurn, legalActions, doAction, atkVal, cardIdOf, validCardTargetUids,
+  unitsInLane, alliesInLane, enemiesInLane, attackTargets, canAttackWith, canPlay };
+
+if (typeof module !== 'undefined' && module.exports) module.exports = API;
+if (typeof window !== 'undefined') window.GuthoEngine = API;
+
+/* ===================== INTERFACE ===================== */
+const app = () => document.getElementById('app');
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const teamLabel = t => t===0 ? 'Time A' : 'Time B';
+const roleLabel = r => r==='carry' ? 'Carry' : 'Suporte';
+
+let G = null;
+let sel = null;               // card/attack/hero, sempre por UID estável
+let revealed = false;         // gate passa-aparelho
+let lastSeq = 0;              // vfx
+let setupMode = 'local';
+let lobbyMessage = '';
+let soundOn = true, audioContext = null;
+let previewPinned=false,previewCardId=null;
+
+function cardPreviewMarkup(cardId,unitUid){
+  const c=CARDS[cardId];if(!c)return '';
+  const tags=[];
+  if(c.passive==='charge')tags.push('Ímpeto');if(c.passive==='taunt')tags.push('Provocar');
+  if(c.rage)tags.push(`Fúria +${c.rage}`);if(c.drain)tags.push(`Dreno ${c.drain}`);if(c.painAtk)tags.push(`Dor +${c.painAtk} ATQ`);
+  if(c.tribe)tags.push(c.tribe==='beast'?'Fera':c.tribe==='rat'?'Homem-Rato':c.tribe==='drowned'?'Afogado':c.tribe);
+  if(c.token)tags.push('Token');
+  const stats=c.type==='unit'?`<div class="cstats"><b class="a">⚔${c.atk}</b><b class="d">❤${c.hp}</b></div>`:'';
+  const uid=Number(unitUid),u=Number.isFinite(uid)&&G?.units?.find(x=>x.uid===uid);
+  const owner=u&&G?.players?.[u.owner],mine=!!u&&u.owner===localSeat(),sameTeam=!!u&&teamOf(u.owner)===teamOf(localSeat());
+  let control='';
+  if(u){
+    if(!sameTeam)control='Unidade inimiga';
+    else if(!mine)control=`Unidade de ${owner?.name||'seu parceiro'} · só o dono pode atacar`;
+    else if(u.exhausted)control=u.hasAttacked?'Sua unidade · já atacou nesta vez':'Sua unidade · exausta até o início do seu próximo turno';
+    else if(atkVal(u)<=0)control='Sua unidade · sem ATQ para atacar';
+    else control=G.active===u.owner?'Sua unidade · pronta para atacar':'Sua unidade · pronta no seu próximo turno';
+  }
+  const live=u?`<div class="preview-live"><b>Em campo agora</b> · ⚔ ${atkVal(u)} · ❤ ${u.hp}/${u.maxHp}${u.shield?` · 🛡 ${u.shield}`:''}${u.ward?' · ✨ Proteção':''}${u.damageReduction?` · ↓${u.damageReduction} dano`:''}<br><b>${esc(owner?.name||'Jogador')}</b> · ${esc(control)}</div>`:'';
+  return `<div class="hand-card ${c.f} preview-card">
+    <span class="cost">${c.cost}</span><div class="art">${c.icon}</div>${stats}
+    <div class="ctype">${c.type==='unit'?(c.token?'Token':'Unidade'):'Tática / Magia'}</div>
+    <div class="cname">${esc(c.name)}</div><div class="ctext">${esc(c.text||'Sem efeito adicional.')}</div>
+    ${tags.length?`<div class="preview-tags">${tags.map(t=>`<span class="preview-tag">${esc(t)}</span>`).join('')}</div>`:''}${live}
+  </div>`;
+}
+function placeCardPreview(el,anchor){
+  const r=anchor?.getBoundingClientRect?.(),vw=globalThis.innerWidth||1024,vh=globalThis.innerHeight||768,gap=12,w=el.offsetWidth||184,h=el.offsetHeight||230;
+  if(!r){el.style.left=Math.max(8,vw-w-12)+'px';el.style.top='12px';return;}
+  let left=r.right+gap;if(left+w>vw-8)left=r.left-w-gap;left=Math.max(8,Math.min(left,vw-w-8));
+  let top=r.top+(r.height-h)/2;top=Math.max(8,Math.min(top,vh-h-8));el.style.left=left+'px';el.style.top=top+'px';
+}
+function showCardPreview(cardId,anchor,unitUid=null,pinned=false){
+  const el=document.getElementById('card-preview');if(!el?.classList||!CARDS[cardId])return;
+  previewPinned=!!pinned;previewCardId=cardId;el.innerHTML=cardPreviewMarkup(cardId,unitUid);el.setAttribute('aria-hidden','false');el.classList.add('show');
+  placeCardPreview(el,anchor);
+}
+function hideCardPreview(force=false){
+  if(previewPinned&&!force)return;const el=document.getElementById('card-preview');previewPinned=false;previewCardId=null;
+  if(!el?.classList)return;el.classList.remove('show');el.setAttribute('aria-hidden','true');
+}
+function toggleCardPreview(cardId,anchor,unitUid=null){
+  if(previewPinned&&previewCardId===cardId){hideCardPreview(true);return;}showCardPreview(cardId,anchor,unitUid,true);
+}
+
+const setup = {
+  warlords: { 0:'raven', 1:'vale', 2:'viking', 3:'miku' },
+  names: { 0:'', 1:'', 2:'', 3:'' },
+  crossPool: true,
+  doubleCoin: true,
+};
+const CARRY_OPTS = ['raven','viking','druid','succubus','pirate','bloodlord','rats'];
+const SUPPORT_OPTS = ['vale','miku','priest','enchantress','arena','druid','rats'];
+
+const NET_PROTOCOL='gutho-2v2-v6', BUILD_ID='2026-07-21-3d6', ROOM_PREFIX='gutho-2v2-v6-';
+const NET={mode:'local',phase:'menu',peer:null,hostConn:null,connections:new Map(),roomCode:'',
+  clientId:'',resumeToken:'',localSeat:null,status:'offline',revision:0,pending:null,retry:0,retryTimer:null};
+const HOST={lobby:null,game:null,revision:0,requestCache:new Map()};
+
+function randomToken(n=10){
+  const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789', bytes=new Uint8Array(n);
+  if(globalThis.crypto?.getRandomValues)crypto.getRandomValues(bytes); else for(let i=0;i<n;i++)bytes[i]=Math.random()*256;
+  return Array.from(bytes,b=>alphabet[b%alphabet.length]).join('');
+}
+function ensureIdentity(){
+  if(!NET.clientId)NET.clientId='p-'+randomToken(12);
+  if(!NET.resumeToken)NET.resumeToken=randomToken(20);
+}
+function localSeat(){return NET.mode==='local'?G?.active:NET.localSeat;}
+function isNetworkPaused(){
+  if(NET.mode==='guest'&&(!NET.hostConn?.open||NET.status!=='online'))return true;
+  if(NET.mode==='host'&&NET.status!=='online')return true;
+  if(NET.mode==='host'&&HOST.lobby?.phase==='game')return HOST.lobby.seats.some(id=>!HOST.lobby.members[id]?.connected);
+  return !!G?.paused;
+}
+function isMyTurn(){return !!G&&!G.over&&!isNetworkPaused()&&(NET.mode==='local'||NET.localSeat===G.active)&&!NET.pending;}
+function selectionStillLegal(game,seat,selection){
+  if(!game||!selection||game.over||game.active!==seat)return false;
+  if(selection.mode==='attack')return canAttackWith(game,seat,selection.uid);
+  if(selection.mode==='hero'||selection.mode==='heroChoice')return canUseHeroPower(game,seat);
+  if(selection.mode==='card'||selection.mode==='cardTarget'){
+    const entry=game.players[seat]?.hand?.find(e=>String(e.uid)===String(selection.cardUid)),card=CARDS[cardIdOf(entry)];if(!entry||!card)return false;
+    if(selection.mode==='cardTarget')return validCardTargetUids(game,seat,card).some(uid=>canPlay(game,seat,selection.cardUid,undefined,uid));
+    return card.global?canPlay(game,seat,selection.cardUid):game.lanes.some((_,lane)=>canPlay(game,seat,selection.cardUid,lane));
+  }
+  return false;
+}
+function visibleHandPlayer(){return NET.mode==='local'?G.players[G.active]:G.players[NET.localSeat];}
+function playerHandCount(p){return Array.isArray(p.hand)?p.hand.length:(p.handCount||0);}
+function playerDeckCount(p){return Array.isArray(p.deck)?p.deck.length:(p.deckCount||0);}
+function unlockAudio(){
+  if(!soundOn)return null;try{audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();if(audioContext.state==='suspended')audioContext.resume();return audioContext;}catch(e){return null;}
+}
+function tinySound(kind){
+  const ac=unlockAudio();if(!ac)return;const o=ac.createOscillator(),gain=ac.createGain(),now=ac.currentTime;
+  o.type=kind==='death'?'triangle':'sine';o.frequency.setValueAtTime(kind==='death'?150:440,now);o.frequency.exponentialRampToValueAtTime(kind==='death'?55:620,now+.12);
+  gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(kind==='death' ? .035 : .022,now+.012);gain.gain.exponentialRampToValueAtTime(.0001,now+.16);
+  o.connect(gain);gain.connect(ac.destination);o.start(now);o.stop(now+.17);
+}
+function toggleSound(){soundOn=!soundOn;if(soundOn)unlockAudio();render();}
+
+/* ---------------- rede PeerJS: host autoritativo ---------------- */
+function cleanName(v,fallback='Jogador'){
+  const s=String(v||'').replace(/[<>\x00-\x1f]/g,'').trim().slice(0,18); return s||fallback;
+}
+function validWarlordFor(wid,seat){return !!WARLORDS[wid]?.roles?.includes(roleOfSeat(seat));}
+function newLobby(){return {phase:'lobby',crossPool:true,doubleCoin:true,hostId:NET.clientId,members:{},seats:[null,null,null,null]};}
+function hostMember(id){return HOST.lobby?.members[id]||null;}
+function seatForClient(id){return hostMember(id)?.seat??null;}
+function publicLobbyFor(clientId){
+  const L=HOST.lobby;
+  return {phase:L.phase,crossPool:L.crossPool,doubleCoin:L.doubleCoin,hostId:L.hostId,youSeat:seatForClient(clientId),
+    connectedCount:Object.values(L.members).filter(m=>m.connected).length,
+    waitingNames:Object.values(L.members).filter(m=>m.connected&&m.seat==null).map(m=>m.name),
+    seats:L.seats.map((id,seat)=>{
+      const m=id&&L.members[id]; return m?{seat,clientId:id,name:m.name,warlordId:m.warlordId,ready:!!m.ready,connected:!!m.connected}:null;
+    })};
+}
+function syncHostLobbyView(){
+  if(NET.mode!=='host'||!HOST.lobby)return;
+  NET.localSeat=seatForClient(NET.clientId); NET.lobby=publicLobbyFor(NET.clientId);
+}
+function netEnvelope(type,payload={}){return {protocol:NET_PROTOCOL,build:BUILD_ID,type,payload};}
+function safeSend(conn,msg){try{if(conn?.open)conn.send(msg);}catch(e){/* a reconexão cuidará disso */}}
+function netSetStatus(status,msg=''){NET.status=status;if(msg)lobbyMessage=msg;}
+function hasPeer(){
+  if(typeof Peer==='undefined'){lobbyMessage='O modo online precisa de internet para carregar o PeerJS.';renderSetup();return false;}
+  return true;
+}
+function closeNetwork(goMenu=true){
+  if(NET.retryTimer)clearTimeout(NET.retryTimer);
+  if(NET.mode==='host')for(const c of NET.connections.values())safeSend(c,netEnvelope('room_closed',{message:'O host encerrou a sala.'}));
+  try{NET.hostConn?.close();}catch(e){} for(const c of NET.connections.values())try{c.close();}catch(e){}
+  try{NET.peer?.destroy();}catch(e){}
+  Object.assign(NET,{mode:'local',phase:goMenu?'menu':NET.phase,peer:null,hostConn:null,connections:new Map(),roomCode:'',localSeat:null,status:'offline',revision:0,pending:null,retry:0,retryTimer:null,lobby:null});
+  HOST.lobby=null;HOST.game=null;HOST.revision=0;HOST.requestCache.clear();lobbyMessage='';
+}
+function peerCommon(peer){
+  peer.on('disconnected',()=>{if(peer!==NET.peer)return;netSetStatus('warn','Conexão com o serviço caiu; tentando voltar...');try{peer.reconnect();}catch(e){}render();});
+  peer.on('close',()=>{if(NET.peer===peer){netSetStatus('warn','Conexão PeerJS encerrada.');NET.pending=null;render();}});
+  peer.on('error',err=>{if(peer!==NET.peer)return;netSetStatus('warn',peerErrorText(err));render();});
+}
+function peerErrorText(err){
+  const type=err?.type||'';
+  if(type==='peer-unavailable')return 'Sala não encontrada. Confira o código.';
+  if(type==='unavailable-id')return 'Esse código acabou de ser ocupado. Tente criar outra sala.';
+  return 'Falha de conexão ('+(type||'rede')+').';
+}
+function createOnlineRoom(){
+  if(!hasPeer())return; const displayName=cleanName(document.getElementById('onlineName')?.value,'Anfitrião');closeNetwork(false); ensureIdentity();NET.displayName=displayName;
+  NET.mode='host';NET.phase='connecting';NET.roomCode=randomToken(6);netSetStatus('warn','Criando sala...');renderSetup();
+  const peer=NET.peer=new Peer(ROOM_PREFIX+NET.roomCode,{debug:0});peerCommon(peer);
+  peer.on('open',()=>{
+    if(peer!==NET.peer)return;
+    if(HOST.lobby){netSetStatus('online','Conexão restaurada.');HOST.lobby.phase==='game'?broadcastGame():broadcastLobby();return;}
+    HOST.lobby=newLobby();HOST.lobby.members[NET.clientId]={clientId:NET.clientId,token:NET.resumeToken,name:NET.displayName,seat:null,warlordId:null,ready:false,connected:true};
+    NET.phase='lobby';netSetStatus('online','Sala criada. Cada pessoa escolhe o próprio assento.');syncHostLobbyView();renderLobby();
+  });
+  peer.on('connection',attachIncomingConnection);
+}
+function identityForRoom(code){
+  try{const x=JSON.parse(localStorage.getItem('gutho.identity.'+code)||'null');if(x?.clientId&&x?.resumeToken)return x;}catch(e){}
+  return {clientId:'p-'+randomToken(12),resumeToken:randomToken(20)};
+}
+function joinOnlineRoom(){
+  if(!hasPeer())return;
+  const displayName=cleanName(document.getElementById('onlineName')?.value,'Jogador');
+  const code=String(document.getElementById('roomInput')?.value||'').trim().toUpperCase().replace(/[^A-Z2-9]/g,'');
+  if(code.length!==6){lobbyMessage='Digite o código de 6 caracteres.';renderSetup();return;}
+  const ident=identityForRoom(code);closeNetwork(false);Object.assign(NET,{mode:'guest',phase:'connecting',roomCode:code,clientId:ident.clientId,resumeToken:ident.resumeToken,displayName,retry:0});
+  try{localStorage.setItem('gutho.identity.'+code,JSON.stringify(ident));}catch(e){}
+  netSetStatus('warn','Entrando na sala...');renderSetup();
+  const peer=NET.peer=new Peer({debug:0});peerCommon(peer);
+  peer.on('open',()=>{if(peer!==NET.peer)return;if(NET.hostConn?.open){netSetStatus('online','Conexão restaurada.');safeSend(NET.hostConn,netEnvelope('resync',{}));render();}else guestConnect();});
+}
+function guestConnect(){
+  if(NET.mode!=='guest'||!NET.peer||NET.peer.destroyed)return;
+  const conn=NET.peer.connect(ROOM_PREFIX+NET.roomCode,{reliable:true,metadata:{protocol:NET_PROTOCOL,build:BUILD_ID}});
+  NET.hostConn=conn;
+  conn.on('open',()=>{
+    if(conn!==NET.hostConn){try{conn.close();}catch(e){}return;}
+    if(NET.retryTimer)clearTimeout(NET.retryTimer);NET.retryTimer=null;NET.retry=0;netSetStatus('online','Conectado. Escolha um assento.');
+    safeSend(conn,netEnvelope('hello',{clientId:NET.clientId,resumeToken:NET.resumeToken,name:NET.displayName||'Jogador'}));
+  });
+  conn.on('data',msg=>{if(conn===NET.hostConn)handleClientMessage(msg);});
+  conn.on('close',()=>{if(conn===NET.hostConn)scheduleGuestReconnect();});
+  conn.on('error',()=>{if(conn===NET.hostConn)scheduleGuestReconnect();});
+}
+function scheduleGuestReconnect(){
+  if(NET.mode!=='guest'||NET.phase==='menu')return;
+  if(NET.retryTimer)return;
+  netSetStatus('warn','Conexão com o host perdida. Reconectando...');NET.pending=null;render();
+  const delays=[1000,2000,4000,8000,15000],delay=delays[Math.min(NET.retry++,delays.length-1)];
+  NET.retryTimer=setTimeout(()=>{NET.retryTimer=null;if(NET.mode==='guest'&&(!NET.hostConn||!NET.hostConn.open))guestConnect();},delay);
+}
+function attachIncomingConnection(conn){
+  if(NET.mode!=='host')return conn.close();
+  let identified=false;
+  const timer=setTimeout(()=>{if(!identified)conn.close();},8000);
+  conn.on('data',msg=>{
+    if(!identified){
+      if(!validMessage(msg,'hello'))return conn.close();
+      const p=msg.payload||{},id=String(p.clientId||'').slice(0,40),token=String(p.resumeToken||'').slice(0,60);
+      if(!id||!token)return conn.close();
+      let m=hostMember(id);
+      if(m&&m.token!==token){safeSend(conn,netEnvelope('error',{message:'Identidade recusada.'}));return conn.close();}
+      if(!m&&Object.keys(HOST.lobby.members).length>=4){safeSend(conn,netEnvelope('error',{message:'A sala já tem quatro jogadores.'}));return conn.close();}
+      if(!m){m=HOST.lobby.members[id]={clientId:id,token,name:cleanName(p.name),seat:null,warlordId:null,ready:false,connected:true};}
+      m.connected=true;try{NET.connections.get(id)?.close();}catch(e){}NET.connections.set(id,conn);conn._clientId=id;identified=true;clearTimeout(timer);
+      safeSend(conn,netEnvelope('welcome',{roomCode:NET.roomCode}));
+      if(HOST.lobby.phase==='game')broadcastGame();else broadcastLobby();
+      return;
+    }
+    handleHostMessage(conn,msg);
+  });
+  conn.on('close',()=>{
+    clearTimeout(timer);const id=conn._clientId,m=id&&hostMember(id);
+    if(m&&NET.connections.get(id)===conn){
+      NET.connections.delete(id);
+      if(HOST.lobby.phase==='lobby'&&m.seat==null)delete HOST.lobby.members[id];
+      else {m.connected=false;if(HOST.lobby.phase==='lobby')m.ready=false;}
+      if(HOST.lobby.phase==='game')broadcastGame();else broadcastLobby();
+    }
+  });
+}
+function validMessage(msg,type){return !!msg&&typeof msg==='object'&&msg.protocol===NET_PROTOCOL&&msg.build===BUILD_ID&&(!type||msg.type===type);}
+function sendHostError(clientId,message){
+  if(clientId===NET.clientId){lobbyMessage=message;render();return;}
+  safeSend(NET.connections.get(clientId),netEnvelope('error',{message}));
+}
+function handleHostMessage(conn,msg){
+  if(!validMessage(msg)){safeSend(conn,netEnvelope('error',{message:'Versão incompatível.'}));return;}
+  const id=conn._clientId;if(!id||NET.connections.get(id)!==conn)return;
+  if(msg.type==='lobby')hostApplyLobby(id,msg.payload?.intent,msg.payload||{});
+  else if(msg.type==='action')hostApplyGameAction(id,msg);
+  else if(msg.type==='forfeit')hostForfeit(id);
+  else if(msg.type==='resync')HOST.lobby.phase==='game'?sendGameTo(id):sendLobbyTo(id);
+  else if(msg.type==='ping')safeSend(conn,netEnvelope('pong',{}));
+}
+function hostApplyLobby(clientId,intent,payload={}){
+  const L=HOST.lobby,m=hostMember(clientId);if(!L||L.phase!=='lobby'||!m)return;
+  if(intent==='claim'){
+    const seat=Number(payload.seat);if(!Number.isInteger(seat)||seat<0||seat>3)return sendHostError(clientId,'Assento inválido.');
+    const occupant=L.seats[seat];if(occupant&&occupant!==clientId)return sendHostError(clientId,'Esse assento já foi escolhido.');
+    if(m.seat!=null)L.seats[m.seat]=null;L.seats[seat]=clientId;m.seat=seat;m.ready=false;
+    if(!validWarlordFor(m.warlordId,seat))m.warlordId=(roleOfSeat(seat)==='carry'?CARRY_OPTS:SUPPORT_OPTS)[0];
+  }else if(intent==='release'){
+    if(m.seat!=null)L.seats[m.seat]=null;m.seat=null;m.warlordId=null;m.ready=false;
+  }else if(intent==='name'){m.name=cleanName(payload.name,m.name);m.ready=false;
+  }else if(intent==='warlord'){
+    const wid=String(payload.warlordId||'');if(m.seat==null||!validWarlordFor(wid,m.seat))return sendHostError(clientId,'Warlord incompatível com esse papel.');
+    m.warlordId=wid;m.ready=false;
+  }else if(intent==='ready'){
+    if(m.seat==null||!validWarlordFor(m.warlordId,m.seat))return sendHostError(clientId,'Escolha assento e Warlord primeiro.');
+    m.ready=!!payload.ready;
+  }else if(intent==='cross'&&clientId===L.hostId){L.crossPool=!!payload.value;Object.values(L.members).forEach(x=>x.ready=false);
+  }else if(intent==='doubleCoin'&&clientId===L.hostId){L.doubleCoin=!!payload.value;Object.values(L.members).forEach(x=>x.ready=false);
+  }else if(intent==='kick'&&clientId===L.hostId){
+    const seat=Number(payload.seat),id=L.seats[seat],target=id&&L.members[id];
+    if(!Number.isInteger(seat)||!target||target.connected)return sendHostError(clientId,'Só é possível liberar um assento offline.');
+    L.seats[seat]=null;delete L.members[id];
+  }else if(intent==='leave'&&clientId!==L.hostId){
+    if(m.seat!=null)L.seats[m.seat]=null;delete L.members[clientId];
+  }else return;
+  broadcastLobby();
+}
+function sendLobbyIntent(intent,payload={}){
+  if(NET.mode==='host')hostApplyLobby(NET.clientId,intent,{intent,...payload});
+  else if(NET.mode==='guest'&&NET.hostConn?.open)safeSend(NET.hostConn,netEnvelope('lobby',{intent,...payload}));
+}
+function sendLobbyTo(clientId){safeSend(NET.connections.get(clientId),netEnvelope('lobby_snapshot',{lobby:publicLobbyFor(clientId)}));}
+function broadcastLobby(){
+  syncHostLobbyView();for(const id of NET.connections.keys())sendLobbyTo(id);renderLobby();
+}
+function lobbyCanStart(){
+  const L=HOST.lobby;if(!L||L.seats.some(x=>!x))return false;
+  return L.seats.every((id,seat)=>{const m=L.members[id];return m?.connected&&m.ready&&validWarlordFor(m.warlordId,seat);});
+}
+function hostStartOnline(){
+  if(NET.mode!=='host'||!lobbyCanStart()){lobbyMessage='Todos precisam ocupar um assento, escolher Warlord e marcar Pronto.';renderLobby();return;}
+  const L=HOST.lobby,cfg={warlords:L.seats.map(id=>L.members[id].warlordId),names:L.seats.map(id=>L.members[id].name),crossPool:L.crossPool,doubleCoin:L.doubleCoin};
+  HOST.game=createGame(cfg);HOST.revision=1;HOST.lobby.phase='game';G=HOST.game;NET.phase='game';NET.revision=1;NET.localSeat=seatForClient(NET.clientId);sel=null;revealed=true;lastSeq=G.seq;lobbyMessage='';
+  broadcastGame();render();
+}
+function buildGameView(game,viewerSeat){
+  const disconnected=HOST.lobby?HOST.lobby.seats.some(id=>!HOST.lobby.members[id]?.connected):false;
+  return {round:game.round,turnPtr:game.turnPtr,active:game.active,turnSerial:game.turnSerial,teams:game.teams.map(t=>({life:t.life,maxLife:t.maxLife})),
+    lanes:game.lanes.map(l=>({...l})),units:game.units.map(u=>({...u})),graveyard:(game.graveyard||[]).map(x=>({...x})),over:game.over?{...game.over}:null,seq:game.seq,
+    events:game.events.slice(-40).map(e=>({...e})),log:game.log.slice(0,50).map(x=>({...x})),crossPool:game.crossPool,doubleCoin:game.doubleCoin,paused:disconnected,
+    players:game.players.map(p=>({seat:p.seat,name:p.name,warlordId:p.warlordId,role:p.role,faction:p.faction,mana:p.mana,maxMana:p.maxMana,
+      pendingMana:p.pendingMana||0,tempMana:p.tempMana||0,inspired:!!p.inspired,heroUsed:!!p.heroUsed,heroSpent:!!p.heroSpent,
+      handCount:p.hand.length,deckCount:p.deck.length,hand:p.seat===viewerSeat?p.hand.map(e=>({uid:e.uid,cardId:e.cardId})):null}))};
+}
+function sendGameTo(clientId){
+  const seat=seatForClient(clientId);if(seat==null)return;
+  safeSend(NET.connections.get(clientId),netEnvelope('game_snapshot',{revision:HOST.revision,viewerSeat:seat,game:buildGameView(HOST.game,seat)}));
+}
+function broadcastGame(){
+  if(!HOST.game)return;G=HOST.game;NET.revision=HOST.revision;NET.localSeat=seatForClient(NET.clientId);
+  for(const id of NET.connections.keys())sendGameTo(id);
+  if(NET.mode==='host'){render();flushVFX();}
+}
+function sanitizeAction(a){
+  if(!a||typeof a!=='object')return null;const type=String(a.type||'');
+  if(type==='play')return {type,cardUid:String(a.cardUid||'').slice(0,24),lane:a.lane==null?undefined:Number(a.lane),targetUid:a.targetUid==null?undefined:Number(a.targetUid)};
+  if(type==='attack')return {type,uid:Number(a.uid),targetUid:a.targetUid==null?null:Number(a.targetUid)};
+  if(type==='hero')return {type,targetUid:a.targetUid==null?undefined:Number(a.targetUid),lane:a.lane==null?undefined:Number(a.lane),choice:a.choice==null?undefined:String(a.choice).slice(0,20)};
+  if(type==='inspire'||type==='end')return {type};return null;
+}
+function hostApplyGameAction(clientId,msgOrAction){
+  if(!HOST.game||HOST.lobby.phase!=='game')return;
+  const onlineEnvelope=msgOrAction?.type==='action'&&msgOrAction.payload;
+  const requestId=onlineEnvelope?String(msgOrAction.requestId||'').slice(0,60):'host-'+randomToken(8);
+  const baseRevision=onlineEnvelope?Number(msgOrAction.baseRevision):HOST.revision;
+  const raw=onlineEnvelope?msgOrAction.payload.action:msgOrAction;
+  const cacheKey=clientId+':'+requestId;
+  if(HOST.requestCache.has(cacheKey)){sendGameTo(clientId);return;}
+  if(baseRevision!==HOST.revision){sendHostError(clientId,'O jogo avançou; sua tela foi atualizada.');sendGameTo(clientId);return;}
+  if(HOST.lobby.seats.some(id=>!HOST.lobby.members[id]?.connected)){sendHostError(clientId,'Partida pausada enquanto um jogador reconecta.');return;}
+  const seat=seatForClient(clientId),a=sanitizeAction(raw);
+  if(seat==null||seat!==HOST.game.active||!a){sendHostError(clientId,'Ação fora da vez ou inválida.');return;}
+  const result=doAction(HOST.game,a);
+  if(!result?.ok){sendHostError(clientId,'Essa jogada não é mais válida.');sendGameTo(clientId);return;}
+  HOST.revision++;HOST.requestCache.set(cacheKey,{revision:HOST.revision});
+  if(HOST.requestCache.size>120)HOST.requestCache.delete(HOST.requestCache.keys().next().value);
+  sel=null;broadcastGame();
+}
+function hostForfeit(clientId){
+  if(!HOST.game||HOST.game.over)return;const seat=seatForClient(clientId);if(seat==null)return;
+  const loser=teamOf(seat),winner=1-loser;HOST.game.over={winnerTeam:winner,reason:`${HOST.game.players[seat].name} abandonou; ${teamLabel(winner)} vence por desistência.`};
+  logMsg(HOST.game,HOST.game.over.reason);HOST.revision++;broadcastGame();
+}
+function dispatchGameAction(action){
+  if(!G||G.paused)return {ok:false};
+  lobbyMessage='';
+  unlockAudio();
+  if(NET.mode==='local'){
+    const r=doAction(G,action);if(r?.ok){sel=null;afterAction();}else render();return r;
+  }
+  if(!isMyTurn())return {ok:false};
+  if(NET.mode==='host'){hostApplyGameAction(NET.clientId,action);return {ok:true};}
+  const requestId=NET.clientId+'-'+Date.now()+'-'+randomToken(4);NET.pending=requestId;
+  safeSend(NET.hostConn,{...netEnvelope('action',{action}),requestId,baseRevision:NET.revision});render();return {ok:true};
+}
+function handleClientMessage(msg){
+  if(!validMessage(msg))return;
+  if(msg.type==='room_closed'){closeNetwork();G=null;setupMode='online';lobbyMessage=String(msg.payload?.message||'Sala encerrada.').slice(0,120);renderSetup();return;}
+  if(msg.type==='error'){NET.pending=null;lobbyMessage=String(msg.payload?.message||'Erro de rede').slice(0,120);render();return;}
+  if(msg.type==='lobby_snapshot'){
+    NET.lobby=msg.payload.lobby;NET.localSeat=NET.lobby.youSeat;NET.phase='lobby';netSetStatus('online');renderLobby();return;
+  }
+  if(msg.type==='game_snapshot'){
+    const first=NET.phase!=='game',incomingRevision=Number(msg.payload.revision)||0,previousRevision=NET.revision,previousSelection=sel,hadPending=!!NET.pending;
+    if(!first&&incomingRevision<previousRevision)return;
+    NET.phase='game';NET.localSeat=Number(msg.payload.viewerSeat);NET.revision=incomingRevision;NET.pending=null;if(first)lobbyMessage='';
+    G=msg.payload.game;sel=!hadPending&&!first&&incomingRevision===previousRevision&&selectionStillLegal(G,NET.localSeat,previousSelection)?previousSelection:null;revealed=true;if(first)lastSeq=G.seq;render();if(!first)flushVFX();return;
+  }
+}
+
+/* ---------------- SETUP ---------------- */
+function warlordOpt(seat, wid){
+  const w = WARLORDS[wid]; const on = setup.warlords[seat]===wid;
+  const hp=w.hpByRole?.[roleOfSeat(seat)]||w.hp;
+  return `<button class="wl-opt ${wid} ${on?'sel':''}" aria-pressed="${on}" title="${esc(w.power.name+': '+w.power.text)}" onclick="pickWarlord(${seat},'${wid}')">
+    <span class="hp">❤ ${hp}</span><span class="ic">${w.icon}</span>
+    <b>${esc(w.name)}</b><small>${esc(w.blurb)}<br>✦ ${esc(w.power.name)} (${w.power.cost})${w.passive?'<br>◆ '+esc(w.passive):''}</small></button>`;
+}
+function seatConfig(seat, roleName, opts){
+  return `<div class="seat-config">
+    <div class="seat-role">${roleName}<span class="tag">seat ${seat+1}</span></div>
+    <div class="wl-picker">${opts.map(o=>warlordOpt(seat,o)).join('')}</div>
+    <input class="name" maxlength="16" placeholder="Nome do jogador" value="${esc(setup.names[seat])}"
+      oninput="setName(${seat},this.value)">
+  </div>`;
+}
+function renderSetup(){
+  hideCardPreview(true);
+  if(typeof battleTable3D!=='undefined')syncBattle3D();
+  const localBody=`<div class="teams-setup">
+      <div class="team-card a"><h2>Time A</h2><div class="sub">Vermelho — começa jogando</div>${seatConfig(0,'Carry',CARRY_OPTS)}${seatConfig(1,'Suporte',SUPPORT_OPTS)}</div>
+      <div class="team-card b"><h2>Time B</h2><div class="sub">Azul — Carry: 5 cartas${setup.doubleCoin?' + Moeda':''} · Suporte: 4 + Moeda</div>${seatConfig(2,'Carry',CARRY_OPTS)}${seatConfig(3,'Suporte',SUPPORT_OPTS)}</div>
+    </div>
+    <div class="setup-foot">
+      <label class="toggle"><input type="checkbox" ${setup.crossPool?'checked':''} onchange="toggleCross(this.checked)"><span><b>Inspirar</b> — reserve 1 Mana para a próxima vez do parceiro (1×/vez).</span></label>
+      <label class="toggle"><input type="checkbox" ${setup.doubleCoin?'checked':''} onchange="toggleDoubleCoin(this.checked)"><span><b>Equilíbrio experimental</b> — B-Carry também recebe A Moeda (simulação: ~48/52; desligado: ~62/38).</span></label>
+      <button class="btn primary" style="font-size:15px;padding:12px 22px" onclick="startGame()">Começar batalha local ⚔️</button>
+    </div>`;
+  const onlineBody=`<div class="mode-box">
+    <div class="online-tools">
+      <div class="field"><label>Seu nome</label><input id="onlineName" maxlength="18" value="${esc(NET.displayName||'')}" placeholder="Como os outros verão você"></div>
+      <button class="btn primary" onclick="createOnlineRoom()">Criar sala</button>
+      <div class="field"><label>Código para entrar</label><input id="roomInput" maxlength="6" value="${esc(NET.roomCode||'')}" placeholder="ABC234" style="text-transform:uppercase;letter-spacing:.15em"></div>
+      <button class="btn secondary" onclick="joinOnlineRoom()">Entrar na sala</button>
+      <div class="net-note">O host valida todas as jogadas. Cada convidado recebe somente a própria mão; a mão do parceiro e dos rivais não viaja na rede. PeerJS requer internet. Para publicar, use HTTPS; redes restritivas podem exigir um servidor TURN.</div>
+    </div>
+    <div class="lobby-msg">${esc(lobbyMessage)}</div>
+  </div>`;
+  app().innerHTML = `<div class="setup">
+    <div class="setup-hero">
+      <div class="eyebrow">Playtest cooperativo</div>
+      <h1>Age of Guthology<span>2 contra 2 — carry &amp; suporte</span></h1>
+      <p>Dois times de dois. Cada dupla tem um <b>carry</b> (dano) e um <b>suporte</b> (protege, cura, provoca).
+      A dupla compartilha <b>uma vida somada</b> — a soma do HP dos dois warlords. Zerar a vida do time inimigo vence.</p>
+    </div>
+    <div class="mode-box"><div class="mode-tabs">
+      <button class="mode-tab ${setupMode==='local'?'on':''}" onclick="setSetupMode('local')">🏠 Hotseat local</button>
+      <button class="mode-tab ${setupMode==='online'?'on':''}" onclick="setSetupMode('online')">🌐 Sala online (4)</button>
+    </div></div>
+    ${setupMode==='local'?localBody:onlineBody}
+    <div class="rules-note">
+      <b>Como funciona (v0.4):</b> a ordem é A-Carry → B-Carry → A-Suporte → B-Suporte; as quatro vezes formam uma rodada.
+      Sua Mana é renovada e cresce a cada rodada (teto 8; não acumula). Ninguém compra na primeira vez individual; da segunda em diante, compra 1.
+      Você pode jogar cartas e atacar com suas próprias unidades prontas; buffs e curas também podem ajudar unidades do parceiro.
+      Existe uma única <b>Arena dos Juramentos</b>, compartilhada pelos quatro jogadores, com até <b>8 unidades por time</b>.
+      Unidades entram exaustas (o "Ímpeto" age na hora). Ao atacar, escolha uma unidade inimiga válida ou ataque diretamente a <b>vida somada</b> da dupla, mesmo que existam inimigos comuns na arena.
+      <b>Provocar</b> obriga a mirar naquela unidade e também impede ataques diretos à dupla enquanto permanecer na arena.
+      No combate entre unidades, atacante e defensor causam seu ATQ <b>simultaneamente</b> e podem cair juntos; apenas o ataque direto à dupla não devolve dano.
+      <b>Briga</b> força esse mesmo combate simultâneo fora do ataque normal: Provocar é respeitado, o lutador fica exausto e cada unidade só pode iniciar uma Briga por rodada.
+      <b>Dreno</b> cura a vida da dupla quando o dano atravessa Escudo/Proteção e chega à Vida.
+      Cada Warlord tem uma ação heroica, normalmente 1× por própria vez. O Time B compensa a iniciativa:
+      seu Carry inicia com <b>5 cartas normais</b> e seu Suporte com <b>4 + A Moeda</b> (+1 Mana temporária, não doável).
+      O ajuste de equilíbrio, ligado por padrão, também dá uma Moeda ao B-Carry e pode ser desligado para testar a regra original.
+      Após a rodada ${ROUND_CAP}, vence quem tiver mais vida (empate se for igual). Provocar bloqueia ataques diretos, mas não táticas ou heroicas.
+    </div>
+  </div>`;
+}
+function setSetupMode(mode){if(mode==='local'&&NET.mode!=='local')closeNetwork();setupMode=mode==='online'?'online':'local';lobbyMessage='';renderSetup();}
+function pickWarlord(seat, wid){ setup.warlords[seat]=wid; renderSetup(); }
+function setName(seat, v){ setup.names[seat]=v; }
+function toggleCross(v){ setup.crossPool=!!v; }
+function toggleDoubleCoin(v){setup.doubleCoin=!!v;}
+
+function lobbyWarlordOpt(seat,wid,selected,editable){
+  const w=WARLORDS[wid],hp=w.hpByRole?.[roleOfSeat(seat)]||w.hp;
+  return `<button class="wl-opt ${wid} ${selected===wid?'sel':''}" aria-pressed="${selected===wid}" ${editable?'': 'disabled'} onclick="sendLobbyIntent('warlord',{warlordId:'${wid}'})">
+    <span class="hp">❤ ${hp}</span><span class="ic">${w.icon}</span><b>${esc(w.name)}</b><small>${esc(w.power.name)} · ${w.power.cost} Mana<br>${esc(w.power.text)}${w.passive?'<br>◆ '+esc(w.passive):''}</small></button>`;
+}
+function lobbySeatCard(seat){
+  const L=NET.lobby,slot=L?.seats?.[seat],mine=slot?.clientId===NET.clientId,role=roleOfSeat(seat),opts=role==='carry'?CARRY_OPTS:SUPPORT_OPTS;
+  if(!slot)return `<div class="lobby-seat"><div class="seat-line"><b>Assento ${seat+1} · ${roleLabel(role)}</b><span class="spacer"></span><span class="ready-dot">livre</span></div>
+    <button class="btn ghost" style="width:100%;margin-top:8px" onclick="sendLobbyIntent('claim',{seat:${seat}})">Escolher este assento</button></div>`;
+  const w=WARLORDS[slot.warlordId];
+  return `<div class="lobby-seat ${mine?'mine':''} ${slot.ready?'ready':''}">
+    <div class="seat-line"><b>${esc(slot.name)}</b><span class="role-badge ${role}">${roleLabel(role)}</span><span class="spacer"></span>
+      <span class="ready-dot ${slot.ready?'yes':''}">${slot.connected?(slot.ready?'✓ pronto':'conectado'):'● offline'}</span></div>
+    ${mine?`<input class="name" maxlength="18" value="${esc(slot.name)}" onchange="sendLobbyIntent('name',{name:this.value})">
+      <div class="wl-picker">${opts.map(id=>lobbyWarlordOpt(seat,id,slot.warlordId,true)).join('')}</div>
+      <div class="seat-line" style="margin-top:8px"><button class="btn ghost" onclick="sendLobbyIntent('release')">Trocar assento</button><span class="spacer"></span>
+      <button class="btn ${slot.ready?'secondary':'primary'}" onclick="sendLobbyIntent('ready',{ready:${!slot.ready}})">${slot.ready?'Não estou pronto':'Estou pronto'}</button></div>`:
+      `<div class="power-card" style="margin-top:8px"><b>${w?.icon||''} ${esc(w?.name||'Escolhendo Warlord')}</b>${w?`<br>✦ ${esc(w.power.name)}: ${esc(w.power.text)}${w.passive?'<br>◆ '+esc(w.passive):''}`:''}</div>`}
+    ${!mine&&NET.mode==='host'&&!slot.connected?`<button class="btn ghost" style="width:100%;margin-top:8px" onclick="sendLobbyIntent('kick',{seat:${seat}})">Liberar assento offline</button>`:''}
+  </div>`;
+}
+function renderLobby(){
+  hideCardPreview(true);
+  if(typeof battleTable3D!=='undefined')syncBattle3D();
+  if(!NET.lobby){renderSetup();return;}
+  const L=NET.lobby,occupied=L.seats.filter(Boolean).length,connected=L.connectedCount??occupied,me=L.seats.find(s=>s?.clientId===NET.clientId);
+  const canStart=NET.mode==='host'&&lobbyCanStart();
+  app().innerHTML=`<div class="lobby">
+    <div class="lobby-head"><div class="eyebrow">Sala online · ${connected}/4 conectados · ${occupied}/4 assentos</div><h1>Escolham times e papéis</h1>
+      <div class="room-code"><span>${esc(NET.roomCode)}</span><button class="btn ghost" onclick="copyRoomCode()">Copiar</button></div>
+      <p style="color:#b9aa92;font-size:12px">Compartilhe o código. A ordem de entrada não define os times.${L.waitingNames?.length?' Aguardando escolha: '+esc(L.waitingNames.join(', '))+'.':''}</p></div>
+    <div class="lobby-grid">
+      <section class="lobby-team a"><h2>Time A</h2><div style="color:#b99d83;font-size:10px">Começa a batalha</div>${lobbySeatCard(0)}${lobbySeatCard(1)}</section>
+      <section class="lobby-team b"><h2>Time B</h2><div style="color:#8eb5d3;font-size:10px">Carry +1 carta${L.doubleCoin?' + Moeda':''} · Suporte recebe A Moeda</div>${lobbySeatCard(2)}${lobbySeatCard(3)}</section>
+    </div>
+    <div class="lobby-actions">
+      ${NET.mode==='host'?`<label class="toggle"><input type="checkbox" ${L.crossPool?'checked':''} onchange="sendLobbyIntent('cross',{value:this.checked})"><span>Inspirar parceiro</span></label>
+      <label class="toggle"><input type="checkbox" ${L.doubleCoin?'checked':''} onchange="sendLobbyIntent('doubleCoin',{value:this.checked})"><span>Equilíbrio: Moeda extra no B-Carry</span></label>
+      <button class="btn primary" ${canStart?'':'disabled'} onclick="hostStartOnline()">Iniciar partida</button>`:'<span class="net-status online">Host prepara a partida</span>'}
+      <button class="btn ghost" onclick="leaveOnline()">Sair da sala</button>
+    </div>
+    <div class="lobby-msg">${esc(lobbyMessage||(me?'Escolha seu Warlord e marque Pronto.':'Escolha um dos quatro assentos.'))}</div>
+  </div>`;
+}
+function copyRoomCode(){navigator.clipboard?.writeText(NET.roomCode).then(()=>{lobbyMessage='Código copiado.';renderLobby();}).catch(()=>{});}
+function leaveOnline(){
+  if(NET.mode==='guest'&&NET.hostConn?.open){safeSend(NET.hostConn,netEnvelope('lobby',{intent:'leave'}));setTimeout(()=>{closeNetwork();G=null;setupMode='online';renderSetup();},60);return;}
+  closeNetwork();G=null;setupMode='online';renderSetup();
+}
+
+function startGame(){
+  const cfg = {
+    warlords: [setup.warlords[0], setup.warlords[1], setup.warlords[2], setup.warlords[3]],
+    names: [ setup.names[0]||'A-Carry', setup.names[1]||'A-Suporte', setup.names[2]||'B-Carry', setup.names[3]||'B-Suporte' ],
+    crossPool: setup.crossPool,
+    doubleCoin: setup.doubleCoin,
+  };
+  G = createGame(cfg);
+  sel = null; revealed = false; lastSeq = G.seq;
+  render();
+}
+
+/* ---------------- RENDER PRINCIPAL ---------------- */
+function render(){
+  hideCardPreview(true);
+  if(typeof battleTable3D!=='undefined')syncBattle3D();
+  if(!G){ if(NET.phase==='lobby')renderLobby();else renderSetup(); return; }
+  const oldLane=document.querySelector('.lanes')?.scrollLeft||0,oldHand=document.querySelector('.hand-scroll')?.scrollLeft||0;
+  const focusKey=document.activeElement?.dataset?.cardUid||document.activeElement?.dataset?.uid||null;
+  app().innerHTML = renderBoard();
+  if(G.over){ app().insertAdjacentHTML('beforeend', winOverlay()); }
+  else if(isNetworkPaused()){app().insertAdjacentHTML('beforeend',networkPauseGate());}
+  else if(NET.mode==='local'&&!revealed){ app().insertAdjacentHTML('beforeend', passGate()); }
+  const restore=()=>{
+    const lanes=document.querySelector('.lanes'),hand=document.querySelector('.hand-scroll');if(lanes)lanes.scrollLeft=oldLane;if(hand)hand.scrollLeft=oldHand;
+    if(focusKey)document.querySelector(`[data-card-uid="${focusKey}"],[data-uid="${focusKey}"]`)?.focus?.({preventScroll:true});
+    if(typeof battleTable3D!=='undefined')battleTable3D.alignToStage();
+  };
+  if(typeof requestAnimationFrame==='function')requestAnimationFrame(restore);else setTimeout(restore,0);
+}
+
+function lifeBox(team){
+  const t = G.teams[team]; const pct = Math.max(0, Math.round(100*t.life/t.maxLife));
+  return `<div class="life-box" data-team="${team}">
+    <div class="life-title"><span>${teamLabel(team)} · Vida somada</span><span class="life-num">${t.life}</span></div>
+    <div class="life-track"><div class="life-fill" style="width:${pct}%"></div></div>
+    <div style="font-size:9px;color:#a99d8b">de ${t.maxLife}</div>
+  </div>`;
+}
+function ribbon(seat){
+  const p = G.players[seat]; const w = WARLORDS[p.warlordId]; const t = teamOf(seat);
+  const active = G.active===seat && !G.over;
+  const hc=playerHandCount(p);
+  return `<div class="ribbon ${p.role} ${t===1?'teamB':''} ${active?'act':''}" data-seat="${seat}">
+    <div class="ribbon-top">
+      <div class="crest">${w.icon}</div>
+      <div class="ribbon-name"><b>${esc(p.name)}</b><span>${esc(w.faction.toUpperCase())}</span></div>
+      <span class="role-badge ${p.role}">${roleLabel(p.role)}</span>
+    </div>
+    <div class="ribbon-stats">
+      <span class="mana-pip">🔷 <b>${p.mana}</b>/${p.maxMana}</span>
+      ${p.pendingMana?`<span style="color:#9fd2ff">+${p.pendingMana} reservada</span>`:''}
+      <span>✋ <b>${hc}</b></span>
+      <span>🂠 <b>${playerDeckCount(p)}</b></span>
+      ${active?'<span style="color:#ffe3a4">▶ na vez</span>':''}
+    </div>
+    <div class="hand-mini">${Array.from({length:Math.min(hc,7)},()=>'<span class="mini-back"></span>').join('')}</div>
+  </div>`;
+}
+function viewTeamForClient(){
+  const seat=NET.mode==='local'?G?.active:NET.localSeat;return Number.isInteger(seat)?teamOf(seat):teamOf(G?.active??0);
+}
+function teamPanel(team,placement=''){
+  const act = teamOf(G.active)===team && !G.over;
+  const seats = teamSeats(team);
+  return `<div class="team-panel ${team===0?'a':'b'} ${placement} ${act?'act':''}">
+    ${lifeBox(team)}${ribbon(seats[0])}${ribbon(seats[1])}
+  </div>`;
+}
+
+function unitEl(u){
+  const c = CARDS[u.cardId]; const t = teamOf(u.owner);
+  const mine = u.owner===localSeat() && isMyTurn();
+  const ready = mine && canAttackWith(G, localSeat(), u.uid);
+  const isSel = sel && sel.mode==='attack' && sel.uid===u.uid;
+  let isTarget = false;
+  if(sel && sel.mode==='attack'){
+    const src = G.units.find(x=>x.uid===sel.uid);
+    if(src){ const tg = attackTargets(G, src); isTarget = tg.units.includes(u.uid); }
+  }
+  if(sel&&sel.mode==='hero')isTarget=heroTargetUids(G,localSeat()).includes(u.uid);
+  if(sel&&sel.mode==='cardTarget'){
+    const entry=G.players[localSeat()]?.hand?.find(e=>e.uid===sel.cardUid),card=CARDS[cardIdOf(entry)];
+    isTarget=validCardTargetUids(G,localSeat(),card).includes(u.uid)&&canPlay(G,localSeat(),sel.cardUid,undefined,u.uid);
+  }
+  const cls = ['unit', t===0?'teamA':'teamB', c.f, u.exhausted?'exhausted':'',(u.ward||0)>0?'warded':'',
+    u.passive==='taunt'?'taunt':'', mine?'mine':'', ready?'ready':'', isSel?'selected':'', isTarget?'target':''].join(' ');
+  const av = atkVal(u);
+  const rage = (u.rage && u.hp<u.maxHp) ? `<span style="color:#ff9a5f;font-size:8px">+${u.rage}🪓</span>` : '';
+  const shield = u.shield>0 ? `<span class="shield">🛡${u.shield}</span>` : '';
+  const ward = u.ward>0 ? `<span class="shield" title="Ignora a próxima fonte de dano">✨</span>` : '';
+  const reduction = u.damageReduction>0 ? `<span class="shield" title="Reduz dano em ${u.damageReduction}">↓${u.damageReduction}</span>` : '';
+  const drain = u.drain>0 ? `<span class="shield" title="Dreno ${u.drain}">🩸${u.drain}</span>` : '';
+  const pain = u.painAtk>0 ? `<span class="shield" title="Ao perder Vida e sobreviver: +${u.painAtk} ATQ">🌹</span>` : '';
+  const fought = u.lastForcedFightRound===G.round ? `<span class="shield" title="Já iniciou uma Briga nesta rodada">⚔✓</span>` : '';
+  const aria=`${c.name}, ${G.players[u.owner].name}, ataque ${av}, vida ${u.hp}${u.shield?', escudo '+u.shield:''}${u.drain?', dreno '+u.drain:''}${u.exhausted?', exausta':', pronta'}`;
+  return `<button class="${cls}" data-uid="${u.uid}" data-lane="${u.lane}" aria-label="${esc(aria)}" aria-describedby="card-preview"
+    onmouseenter="showCardPreview('${u.cardId}',this,${u.uid})" onmouseleave="hideCardPreview()" onfocus="showCardPreview('${u.cardId}',this,${u.uid})" onblur="hideCardPreview()"
+    onclick="event.stopPropagation();onUnit(${u.uid})">
+    <span class="uic">${c.icon}</span>
+    <span class="uname"><b>${esc(c.name)}</b><span class="utag">${esc(G.players[u.owner].name)} · ${roleLabel(G.players[u.owner].role)}</span></span>
+    <span class="ustat"><span class="atk">${av}${rage}</span><span class="hp">${u.hp}</span>${shield}${ward}${reduction}${drain}${pain}${fought}</span>
+  </button>`;
+}
+function laneSideUnits(team, lane){
+  const us = G.units.filter(u=>u.lane===lane && teamOf(u.owner)===team);
+  if(!us.length) return `<div class="lane-empty">—</div>`;
+  return us.map(unitEl).join('');
+}
+function laneEl(lane){
+  const L = G.lanes[lane];
+  const cardPlayable=sel?.mode==='card'&&canPlay(G,localSeat(),sel.cardUid,lane)&&!CARDS[cardIdOf(G.players[localSeat()]?.hand?.find(e=>e.uid===sel.cardUid))]?.global;
+  const heroPlayable=sel?.mode==='hero'&&heroTargetLanes(G,localSeat()).includes(lane);
+  const playable=!!((cardPlayable||heroPlayable)&&!G.over&&revealed&&isMyTurn());
+  return `<div class="lane ${playable?'playable':''}" data-lane="${lane}" ${playable?`onclick="onLane(${lane})"`:''}>
+    <div class="lane-head"><div class="lic">${L.icon}</div><div class="lname">${esc(L.name)}</div></div>
+    <div class="lane-side b">${laneSideUnits(1,lane)}</div>
+    <div class="lane-mid">campo de batalha</div>
+    <div class="lane-side a">${laneSideUnits(0,lane)}</div>
+  </div>`;
+}
+function boardStage(){
+  const units=G.units.map(unitEl).join('');
+  return `<section class="board-stage" data-board-stage aria-label="Mesa 3D interativa">
+    <div class="board-accessibility">
+      <h2>${esc(G.lanes[0]?.name||'Arena')}</h2>
+      <p>Arraste uma carta da mão para a mesa. Use Tab para navegar pelas unidades em campo.</p>
+      ${units||'<span>Nenhuma unidade em campo.</span>'}
+    </div>
+  </section>`;
+}
+
+function selBar(){
+  if(G.over) return '';
+  const p = G.players[G.active];
+  const mine=isMyTurn();
+  const canInspire = mine&&G.crossPool&&!p.inspired&&p.mana-(p.tempMana||0)>=1&&(G.players[partnerOf(G.active)].pendingMana||0)<2;
+  const inspireBtn = G.crossPool?`<button class="btn secondary ${canInspire?'':'action-locked'}" aria-disabled="${!canInspire}" onclick="onInspire()">✨ Inspirar: +1 na próxima vez</button>`:'';
+  const w=WARLORDS[p.warlordId],powerReady=mine&&canUseHeroPower(G,G.active);
+  const powerBtn=`<button class="hero-btn ${powerReady?'':'locked'}" aria-disabled="${!powerReady}" title="${esc(w.power.text)}" onclick="onHero()">✦ ${esc(w.power.name)} (${w.power.cost})</button>`;
+  const endBtn = mine?`<button class="btn primary" onclick="onEnd()">Encerrar vez ⏭</button>`:'';
+  if(NET.pending)return `<div class="selbar"><b>Validando jogada com o host...</b><div class="push"></div></div>`;
+  if(!mine)return `<div class="selbar">Aguardando <b>${esc(p.name)}</b> · ${roleLabel(p.role)} do ${teamLabel(teamOf(G.active))}.
+    <div class="push"><span class="net-status ${NET.status==='online'?'online':'warn'}">${NET.status==='online'?'sincronizado':'reconectando'}</span></div></div>`;
+  if(NET.mode==='local'&&!revealed){
+    return `<div class="selbar"><b>${esc(p.name)}</b>, revele sua mão para jogar.<div class="push">${endBtn}</div></div>`;
+  }
+  if(sel&&sel.mode==='cardTarget'){
+    const entry=p.hand?.find(e=>e.uid===sel.cardUid),c=CARDS[cardIdOf(entry)];
+    if(!c){sel=null;return selBar();}
+    return `<div class="selbar"><b>${esc(c.name)}</b> — toque em uma unidade ${c.targetUnit==='enemy'?'inimiga':'aliada'} destacada.
+      <div class="push"><button class="btn ghost" onclick="clearSel()">Cancelar</button>${endBtn}</div></div>`;
+  }
+  if(sel && sel.mode==='card'){
+    const entry=p.hand?.find(e=>e.uid===sel.cardUid),c=CARDS[cardIdOf(entry)];
+    if(!c){sel=null;return selBar();}
+    return `<div class="selbar"><b>${esc(c.name)}</b> selecionada — ${c.global?'confirme para resolver o efeito global':'toque na arena destacada'}.
+      <div class="push">${c.global?'<button class="btn primary" onclick="onGlobalCard()">Usar agora</button>':''}<button class="btn ghost" onclick="clearSel()">Cancelar</button>${endBtn}</div></div>`;
+  }
+  if(sel && sel.mode==='attack'){
+    const u = G.units.find(x=>x.uid===sel.uid);
+    const tg = u ? attackTargets(G,u) : {units:[],face:false};
+    const faceBtn = tg.face ? `<button class="face-btn" onclick="onFace()">Atacar a dupla inimiga 💥</button>` : '';
+    return `<div class="selbar attack"><b>${esc(CARDS[u.cardId].name)}</b> vai atacar — toque num alvo destacado${tg.face?' ou bata na vida':''}. Unidades trocam dano; ataque direto não recebe dano de volta.
+      <div class="push">${faceBtn}<button class="btn ghost" onclick="clearSel()">Cancelar</button>${endBtn}</div></div>`;
+  }
+  if(sel&&sel.mode==='heroChoice'){
+    return `<div class="selbar"><b>${esc(w.power.name)}</b> — escolha o animal a invocar.<div class="push">
+      ${w.power.choices.map(x=>`<button class="hero-btn" onclick="chooseHeroChoice('${x.id}')">${x.icon} ${esc(x.label||x.name)}</button>`).join('')}
+      <button class="btn ghost" onclick="clearSel()">Cancelar</button>${endBtn}</div></div>`;
+  }
+  if(sel&&sel.mode==='hero'){
+    return `<div class="selbar"><b>${esc(w.power.name)}</b> — ${w.power.target==='lane'?'toque na arena destacada':'toque em uma unidade destacada'}.
+      <div class="push"><button class="btn ghost" onclick="clearSel()">Cancelar</button>${endBtn}</div></div>`;
+  }
+  return `<div class="selbar">Vez de <b>${esc(p.name)}</b> (${roleLabel(p.role)}, ${teamLabel(teamOf(G.active))}). Jogue cartas, ataque, ou encerre.
+    <div class="push">${powerBtn}${inspireBtn}${endBtn}</div></div>`;
+}
+
+function handWrap(){
+  const p = visibleHandPlayer();
+  if(!p)return `<div class="hand-wrap"><div class="hand-empty">Escolha um assento para receber sua mão.</div></div>`;
+  if(NET.mode==='local'&&!revealed){
+    return `<div class="hand-wrap"><div class="hand-head"><b>Mão oculta</b><span class="who">passe o aparelho e revele para ver as cartas</span></div>
+      <div class="hand-empty">🂠 A mão de ${esc(p.name)} está virada para baixo.</div></div>`;
+  }
+  const myTurn=isMyTurn(),hand=Array.isArray(p.hand)?p.hand:[];
+  const cards = hand.map(entry=>{
+    const c = CARDS[cardIdOf(entry)];
+    const affordable=myTurn&&(c.targetUnit?validCardTargetUids(G,p.seat,c).some(uid=>canPlay(G,p.seat,entry.uid,undefined,uid)):c.global?canPlay(G,p.seat,entry.uid):G.lanes.some((_,l)=>canPlay(G,p.seat,entry.uid,l)));
+    const isSel = sel && (sel.mode==='card'||sel.mode==='cardTarget') && sel.cardUid===entry.uid;
+    const stats = c.type==='unit' ? `<div class="cstats"><b class="a">⚔${c.atk}</b><b class="d">❤${c.hp}</b></div>` : '';
+    return `<button class="hand-card ${c.f} ${isSel?'selected':''} ${affordable?'':'locked'}" data-card-uid="${entry.uid}" aria-disabled="${!affordable}" aria-describedby="card-preview"
+      onmouseenter="showCardPreview('${cardIdOf(entry)}',this)" onmouseleave="hideCardPreview()" onfocus="showCardPreview('${cardIdOf(entry)}',this)" onblur="hideCardPreview()"
+      onpointerdown="beginCardDrag(event,'${entry.uid}')" onclick="onCard('${entry.uid}')" aria-label="${esc(c.name+', custo '+c.cost+'. '+c.text)}">
+      <span class="cost">${c.cost}</span>
+      <div class="art">${c.icon}</div>${stats}
+      <div class="ctype">${c.type==='unit'?'Unidade':'Tática'}</div>
+      <div class="cname">${esc(c.name)}</div>
+      <div class="ctext">${esc(c.text)}</div>
+    </button>`;
+  }).join('');
+  const w=WARLORDS[p.warlordId];
+  const alliedDead=(G.graveyard||[]).filter(x=>teamOf(x.owner)===teamOf(p.seat)),nextDead=alliedDead[0];
+  const graveNote=w.power.kind==='pirate'?`<br>⚓ Mortos disponíveis: <b>${alliedDead.length}</b>${nextDead?` · próximo: <b>${esc(CARDS[nextDead.cardId]?.name||'desconhecido')}</b>`:' · nenhum para consumir'}`:'';
+  return `<div class="hand-wrap">
+    <div class="hand-head"><b>${NET.mode==='local'?'Mão de':'Sua mão ·'} ${esc(p.name)}</b><span class="who">${roleLabel(p.role)} · ${teamLabel(teamOf(p.seat))} · 🔷 ${p.mana}/${p.maxMana}${p.tempMana?' (+'+p.tempMana+' temporária)':''}</span></div>
+    <div class="power-card"><b>✦ ${esc(w.power.name)} · ${w.power.cost} Mana</b> — ${esc(w.power.text)} ${p.heroSpent?'<b>(já usado)</b>':p.heroUsed?'<b>(usado nesta vez)</b>':''}${w.passive?'<br>◆ '+esc(w.passive):''}${graveNote}</div>
+    <div class="hand-scroll">${cards || '<div class="hand-empty">Sem cartas na mão.</div>'}</div>
+  </div>`;
+}
+
+function historyCardRef(cardId){
+  const c=CARDS[cardId];if(!c)return '';
+  const aria=`Ver carta ${c.name}, custo ${c.cost}. ${c.text}`;
+  return `<button type="button" class="history-card-ref" aria-label="${esc(aria)}" aria-describedby="card-preview"
+    onmouseenter="showCardPreview('${cardId}',this)" onmouseleave="hideCardPreview()" onfocus="showCardPreview('${cardId}',this)" onblur="hideCardPreview()"
+    onclick="event.stopPropagation();toggleCardPreview('${cardId}',this)">${c.icon} ${esc(c.name)}</button>`;
+}
+function historyText(x){
+  const raw=String(x?.text||''),c=CARDS[x?.cardId];if(!c)return esc(raw);
+  // A carta é citada depois do nome do jogador; usar a última ocorrência evita
+  // transformar o apelido em link quando alguém escolhe o nome de uma carta.
+  const at=raw.lastIndexOf(c.name),ref=historyCardRef(x.cardId);
+  return at>=0?esc(raw.slice(0,at))+ref+esc(raw.slice(at+c.name.length)):esc(raw)+` · ${ref}`;
+}
+function historyPanel(){
+  const rows=(G.log||[]).slice(0,18).map(x=>`<div class="history-item"><b>R${x.round}</b> · ${historyText(x)}</div>`).join('');
+  const total=(G.log||[]).length;return `<details class="history" ${NET.mode==='online'?'open':''}><summary>Histórico · últimas ${Math.min(total,18)} de ${total}</summary><div class="history-list">${rows||'<div class="history-item">A batalha ainda não começou.</div>'}</div></details>`;
+}
+
+function renderBoard(){
+  const p = G.players[G.active];
+  const me=NET.mode==='local'?null:G.players[NET.localSeat];
+  const viewTeam=viewTeamForClient(),farTeam=1-viewTeam;
+  return `<div class="shell">
+    <div class="topbar">
+      <span class="brand">AGE OF GUTHOLOGY · 2v2</span>
+      <span class="chip">Rodada ${G.round}</span>
+      <span class="chip">Arena única · ${LANE_CAP} espaços/time</span>
+      <span class="chip">Catch-up: ${G.doubleCoin?'calibrado':'original'}</span>
+      <span class="chip turn" role="status" aria-live="polite">▶ ${esc(p.name)} — ${roleLabel(p.role)} · ${teamLabel(teamOf(G.active))}</span>
+      ${me?`<span class="net-status ${NET.status==='online'?'online':'warn'}">Sala ${esc(NET.roomCode)} · Você: ${esc(me.name)} · ${teamLabel(teamOf(me.seat))} ${roleLabel(me.role)}</span>`:''}
+      <span class="spacer"></span>
+      <button class="btn ghost" onclick="toggleSound()" aria-label="${soundOn?'Desligar':'Ligar'} sons">${soundOn?'🔊':'🔇'}</button>
+      <button class="btn ghost" onclick="confirmNew()">${NET.mode==='host'?'Encerrar sala':NET.mode==='guest'?'Sair da sala':'Reiniciar mesa'}</button>
+    </div>
+    ${lobbyMessage?`<div class="notice" role="status" aria-live="polite"><span>${esc(lobbyMessage)}</span><button class="btn ghost" onclick="dismissNotice()">✕</button></div>`:''}
+    ${teamPanel(farTeam,'far')}
+    ${boardStage()}
+    ${teamPanel(viewTeam,'near')}
+    ${selBar()}
+    ${handWrap()}
+    ${historyPanel()}
+  </div>`;
+}
+function dismissNotice(){lobbyMessage='';render();}
+
+/* ---------------- INTERAÇÃO ---------------- */
+function clearSel(){ sel=null; render(); }
+function explainCardBlock(p,entry){
+  const c=CARDS[cardIdOf(entry)];
+  if(!isMyTurn())return 'Aguarde a sua vez para jogar cartas.';
+  if(c.cost>p.mana)return `Faltam ${c.cost-p.mana} de Mana para ${c.name}.`;
+  if(c.global)return c.onPlay?.k==='ratomanocu'?'Não há unidades para o Ratomanocu eliminar.':'Essa carta não pode ser usada agora.';
+  if(c.type==='unit'&&G.lanes.every((_,l)=>G.units.filter(u=>u.lane===l&&teamOf(u.owner)===teamOf(p.seat)).length>=LANE_CAP))return `Seu time ocupou os ${LANE_CAP} espaços da arena.`;
+  if(c.type==='tactic')return 'A arena não tem um alvo válido para esta tática.';
+  return 'A arena não tem espaço livre.';
+}
+function beginCardDrag(event,cardUid){
+  if(event?.button!=null&&event.button!==0)return;
+  if(typeof battleTable3D!=='undefined')battleTable3D.beginCardDrag(event,cardUid);
+}
+function onCard(cardUid){
+  if(typeof battleTable3D!=='undefined'&&battleTable3D.consumeSuppressedClick(cardUid))return;
+  if(G.over||!revealed)return;
+  const p=G.players[localSeat()],entry=p.hand?.find(e=>e.uid===cardUid);if(!entry)return;
+  const c=CARDS[cardIdOf(entry)],legal=c.targetUnit?validCardTargetUids(G,p.seat,c).some(uid=>canPlay(G,p.seat,cardUid,undefined,uid)):c.global?canPlay(G,p.seat,cardUid):G.lanes.some((_,l)=>canPlay(G,p.seat,cardUid,l));
+  if(!legal){lobbyMessage=explainCardBlock(p,entry);render();return;}
+  const mode=c.targetUnit?'cardTarget':'card';sel=(sel&&sel.mode===mode&&sel.cardUid===cardUid)?null:{mode,cardUid};
+  render();
+}
+function onLane(lane){
+  if(sel?.mode==='card')return dispatchGameAction({type:'play',cardUid:sel.cardUid,lane});
+  if(sel?.mode==='hero')return dispatchGameAction({type:'hero',lane,choice:sel.choice});
+}
+function onGlobalCard(){if(sel?.mode==='card')dispatchGameAction({type:'play',cardUid:sel.cardUid});}
+function onHero(){
+  if(!isMyTurn()){lobbyMessage='Aguarde a sua vez para usar a ação heroica.';render();return;}
+  const p=G.players[localSeat()],w=WARLORDS[p.warlordId];
+  if(!canUseHeroPower(G,p.seat)){
+    lobbyMessage=p.heroSpent?'Essa ação heroica única já foi usada.':p.heroUsed?'A ação heroica já foi usada nesta vez.':p.mana<w.power.cost?`Faltam ${w.power.cost-p.mana} de Mana para ${w.power.name}.`:'Não há alvo válido para essa ação.';render();return;
+  }
+  if(w.power.choices)sel=sel?.mode==='heroChoice'?null:{mode:'heroChoice'};else sel=sel?.mode==='hero'?null:{mode:'hero'};render();
+}
+function chooseHeroChoice(choice){const w=WARLORDS[G.players[localSeat()].warlordId];if(!w.power.choices?.some(x=>x.id===choice))return;sel={mode:'hero',choice};render();}
+function onUnit(uid){
+  if(G.over || !revealed || !isMyTurn()) return;
+  const u = G.units.find(x=>x.uid===uid); if(!u) return;
+  if(sel?.mode==='cardTarget'){
+    const entry=G.players[localSeat()]?.hand?.find(e=>e.uid===sel.cardUid),card=CARDS[cardIdOf(entry)];
+    if(validCardTargetUids(G,localSeat(),card).includes(uid)&&canPlay(G,localSeat(),sel.cardUid,undefined,uid)){dispatchGameAction({type:'play',cardUid:sel.cardUid,targetUid:uid});return;}
+  }
+  if(sel?.mode==='hero'&&heroTargetUids(G,localSeat()).includes(uid)){dispatchGameAction({type:'hero',targetUid:uid});return;}
+  // meu? entra em modo ataque
+  if(u.owner===localSeat() && canAttackWith(G, localSeat(), uid)){
+    sel = (sel && sel.mode==='attack' && sel.uid===uid) ? null : {mode:'attack', uid};
+    render(); return;
+  }
+  // alvo de ataque?
+  if(sel && sel.mode==='attack'){
+    const src = G.units.find(x=>x.uid===sel.uid); if(!src) { sel=null; render(); return; }
+    const tg = attackTargets(G, src);
+    if(tg.units.includes(uid)){
+      dispatchGameAction({type:'attack',uid:sel.uid,targetUid:uid});
+    }
+  }
+}
+function onFace(){
+  if(!(sel && sel.mode==='attack')) return;
+  dispatchGameAction({type:'attack',uid:sel.uid,targetUid:null});
+}
+function onInspire(){
+  const p=G.players[localSeat()];
+  if(!isMyTurn()){lobbyMessage='Aguarde a sua vez para Inspirar.';render();return;}
+  if(p.inspired){lobbyMessage='Você já Inspirou nesta vez.';render();return;}
+  if(p.mana-(p.tempMana||0)<1){lobbyMessage='Inspirar exige 1 Mana normal; a Mana temporária da Moeda não pode ser doada.';render();return;}
+  if((G.players[partnerOf(p.seat)].pendingMana||0)>=2){lobbyMessage='A reserva de Inspiração do parceiro já está cheia (+2).';render();return;}
+  dispatchGameAction({type:'inspire'});
+}
+function onEnd(){
+  hideCardPreview(true);if(NET.mode==='local')revealed=false;dispatchGameAction({type:'end'});
+}
+function confirmNew(){
+  const question=NET.mode==='host'?'Fechar a sala para todos e voltar ao menu?':NET.mode==='guest'?'Sair desta sala? Seu time perderá por desistência.':'Reiniciar a mesa e voltar à seleção?';
+  if(!confirm(question))return;
+  if(NET.mode==='guest'&&NET.hostConn?.open){safeSend(NET.hostConn,netEnvelope('forfeit',{}));setTimeout(()=>{closeNetwork();G=null;sel=null;render();},100);return;}
+  if(NET.mode!=='local')closeNetwork();G=null;sel=null;render();
+}
+function newGame(){if(NET.mode!=='local')closeNetwork();G=null;sel=null;render();}
+
+// executa após uma ação que muda o jogo: re-render + vfx
+function afterAction(){ render(); flushVFX(); }
+
+/* pass-e-joga */
+function networkPauseGate(){
+  return `<div class="gate"><div class="gate-card"><div class="gate-emblem">📡</div><h2>Partida pausada</h2>
+    <p>Um jogador perdeu a conexão. O assento está reservado e a batalha continua automaticamente quando ele voltar.</p>
+    <div style="margin-top:12px"><span class="net-status warn">aguardando reconexão</span></div></div></div>`;
+}
+function passGate(){
+  const p = G.players[G.active]; const w = WARLORDS[p.warlordId];
+  return `<div class="gate"><div class="gate-card">
+    <div class="gate-emblem">${w.icon}</div>
+    <h2>Vez de ${esc(p.name)}</h2>
+    <span class="role-badge ${p.role}">${roleLabel(p.role)} · ${teamLabel(teamOf(G.active))}</span>
+    <p>Passe o aparelho para ${esc(p.name)}. Ninguém mais deve ver a mão.</p>
+    <div style="margin-top:16px"><button class="btn primary" style="font-size:15px;padding:12px 20px" onclick="revealTurn()">Sou ${esc(p.name)} — revelar mão</button></div>
+  </div></div>`;
+}
+function revealTurn(){ unlockAudio();revealed = true; render(); flushVFX(); }
+
+/* win */
+function winOverlay(){
+  const wt = G.over.winnerTeam;
+  const emblem = wt==null ? '⚖️' : (wt===0 ? '🟥' : '🟦');
+  const title = wt==null ? 'Empate' : `${teamLabel(wt)} venceu!`;
+  return `<div class="overlay"><div class="overlay-card">
+    <div class="overlay-emblem">${emblem}</div>
+    <h2>${title}</h2>
+    <p>${esc(G.over.reason)}</p>
+    <p>Vida final — Time A: <b>${G.teams[0].life}</b> · Time B: <b>${G.teams[1].life}</b></p>
+    <div style="margin-top:16px"><button class="btn primary" onclick="newGame()">Novo jogo</button></div>
+  </div></div>`;
+}
+
+/* ---------------- VFX (leve) ---------------- */
+function spawnFloat(el, text, tone){
+  if(!el) return;
+  const r = el.getBoundingClientRect();
+  const d = document.createElement('div');
+  d.className = 'vfx-float '+tone; d.textContent = text;
+  d.style.left = (r.left + r.width/2) + 'px';
+  d.style.top = (r.top + r.height/2) + 'px';
+  document.getElementById('vfx').appendChild(d);
+  setTimeout(()=>d.remove(), 1050);
+}
+function elUnit(uid){ return (typeof battleTable3D!=='undefined'&&battleTable3D.anchorForUid(uid))||document.querySelector(`[data-uid="${uid}"]`); }
+function elLane(lane){ return (typeof battleTable3D!=='undefined'&&battleTable3D.anchorForBoard())||document.querySelector('[data-board-stage]'); }
+function elLife(team){ return document.querySelector(`[data-team="${team}"]`); }
+function elSeat(seat){ return document.querySelector(`[data-seat="${seat}"]`); }
+function flushVFX(){
+  if(!G) return;
+  const evs = (G.events||[]).filter(e => (e.seq||0) > lastSeq).sort((a,b)=>a.seq-b.seq);
+  if(!evs.length) return;
+  lastSeq = Math.max(lastSeq, ...evs.map(e=>e.seq||0));
+  let i = 0;
+  for(const e of evs){
+    const delay = Math.min(i*70, 350); i++;
+    const at = (getEl, text, tone) => setTimeout(()=>spawnFloat(getEl(), text, tone), delay);
+    if(e.type==='hit'){ at(()=>elUnit(e.uid)||elLane(e.lane), '−'+e.amount+' Vida', 'dmg'); }
+    else if(e.type==='shieldhit'){ at(()=>elUnit(e.uid)||elLane(e.lane), '🛡 absorveu '+e.amount, 'shield'); }
+    else if(e.type==='face'){ at(()=>elLife(e.team), '💥 −'+e.amount, 'face'); }
+    else if(e.type==='heal'){ at(()=>elUnit(e.uid)||elLane(e.lane), '✚ '+e.amount, 'heal'); }
+    else if(e.type==='buff'){ at(()=>elUnit(e.uid)||elLane(e.lane), '↑ '+e.amount+' ATQ', 'buff'); }
+    else if(e.type==='fortify'){ at(()=>elUnit(e.uid)||elLane(e.lane), '⬟ '+e.amount+' DEF', 'buff'); }
+    else if(e.type==='shield'){ at(()=>elUnit(e.uid)||elLane(e.lane), '🛡 '+e.amount, 'shield'); }
+    else if(e.type==='death'){ at(()=>elLane(e.lane), '☠', 'dmg'); }
+    else if(e.type==='inspire'){ at(()=>elSeat(e.to), '✨ +1 Mana', 'mana'); }
+    else if(e.type==='coin'){ at(()=>elSeat(e.owner), '🪙 +'+e.amount+' Mana', 'mana'); }
+    else if(e.type==='teamheal'){ at(()=>elLife(e.team), '✚ '+e.amount+' Vida', 'heal'); }
+    else if(e.type==='hero'){ at(()=>elUnit(e.uid)||elLane(e.lane), '✦ Heróica!', 'buff'); }
+    else if(e.type==='boardwipe'){ at(()=>document.querySelector('.lanes'), '💥 CAMPO LIMPO', 'face'); }
+    else if(e.type==='ward'){at(()=>elUnit(e.uid)||elLane(e.lane),'✨ Proteção','shield');}
+    else if(e.type==='wardblock'){at(()=>elUnit(e.uid)||elLane(e.lane),'✨ Dano ignorado','shield');}
+    else if(e.type==='reduced'){at(()=>elUnit(e.uid)||elLane(e.lane),'↓ '+e.amount+' dano','shield');}
+    else if(e.type==='assumptio'){at(()=>elUnit(e.uid)||elLane(e.lane),'Assumptio −'+e.amount,'shield');}
+    else if(e.type==='ready'){at(()=>elUnit(e.uid)||elLane(e.lane),'⚡ Pronta!','buff');}
+    else if(e.type==='bloodcost'){at(()=>elLife(e.team),'🩸 −'+e.amount,'dmg');}
+    else if(e.type==='drain'){at(()=>elUnit(e.uid)||elLane(e.lane),'🩸 Dreno '+e.amount,'heal');}
+    else if(e.type==='forcedFight'){at(()=>elLane(e.lane),'⚔ Briga!','face');}
+    if(e.type==='death')setTimeout(()=>tinySound('death'),delay);
+    else if(e.type==='turn')setTimeout(()=>tinySound('turn'),delay);
+    if(typeof battleTable3D!=='undefined'){
+      const burstTeam=e.team==null?(e.uid!=null?teamOf(G.units.find(u=>u.uid===e.uid)?.owner??0):null):e.team;
+      setTimeout(()=>battleTable3D.burst(e.type,burstTeam),delay);
+    }
+  }
+}
+
+/* ---------------- MESA 3D (visual; o motor e a rede continuam autoritativos) ---------------- */
+class BattleTable3D{
+  constructor(mount){
+    this.mount=mount;this.ready=false;this.visible=false;this.unitMeshes=new Map();this.textureCache=new Map();this.sparks=[];
+    this.pointer={x:0,y:0};this.clock=0;this.reduced=matchMedia?.('(prefers-reduced-motion: reduce)')?.matches||false;
+    this.viewAngle=0;this.targetViewAngle=0;this.cameraRadius=17;this.targetCameraRadius=17;this.cameraHeight=11.5;this.targetCameraHeight=11.5;this.lookZ=0;this.targetLookZ=0;this.viewInitialized=false;this.viewTeam=0;this.enemyFocus=false;
+    this.hoveredUid=null;this.drag=null;this.canvasPress=null;this.suppressClickUid=null;this.zoneMaterials=[];
+    if(!mount||typeof THREE==='undefined')return;
+    try{this.build();this.ready=true;this.loop();}catch(err){console.warn('Mesa 3D indisponível:',err);}
+  }
+  build(){
+    const T=THREE;this.scene=new T.Scene();this.scene.fog=new T.FogExp2(0x080706,.032);
+    this.camera=new T.PerspectiveCamera(42,innerWidth/innerHeight,.1,100);this.camera.position.set(0,11.5,17);this.camera.lookAt(0,0,0);
+    this.renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
+    this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));this.renderer.setSize(innerWidth,innerHeight);this.renderer.shadowMap.enabled=true;
+    this.renderer.shadowMap.type=T.PCFSoftShadowMap;this.renderer.outputEncoding=T.sRGBEncoding;this.mount.appendChild(this.renderer.domElement);
+    this.renderer.domElement.setAttribute('aria-hidden','true');
+    this.scene.add(new T.HemisphereLight(0xb8d9ff,0x2d1309,.55));
+    const key=new T.DirectionalLight(0xffe4b0,1.15);key.position.set(4,13,8);key.castShadow=true;key.shadow.mapSize.set(1024,1024);this.scene.add(key);
+    this.teamLights=[new T.PointLight(0xff7d3f,1.15,22),new T.PointLight(0x5aaeff,1.15,22)];
+    this.teamLights[0].position.set(-7,3,5);this.teamLights[1].position.set(7,3,-5);this.teamLights.forEach(l=>this.scene.add(l));
+    this.table=new T.Group();this.scene.add(this.table);
+    const slab=new T.Mesh(new T.BoxGeometry(19,.55,12.7),new T.MeshStandardMaterial({color:0x24170f,roughness:.73,metalness:.12}));
+    slab.position.y=-.35;slab.receiveShadow=true;this.table.add(slab);
+    const inset=new T.Mesh(new T.BoxGeometry(17.8,.18,11.55),new T.MeshStandardMaterial({color:0x111722,roughness:.82,metalness:.06}));
+    inset.position.y=.01;inset.receiveShadow=true;this.table.add(inset);
+    const railMat=new T.MeshStandardMaterial({color:0x6b4525,roughness:.42,metalness:.34});
+    [[19.6,.45,.42,0,0,-6.35],[19.6,.45,.42,0,0,6.35],[.42,.45,12.3,-9.55,0,0],[.42,.45,12.3,9.55,0,0]].forEach(([w,h,d,x,y,z])=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),railMat);m.position.set(x,y,z);m.castShadow=true;this.table.add(m);});
+    const zoneGeo=new T.PlaneGeometry(17.2,4.6),zoneA=new T.MeshBasicMaterial({color:0xb95228,transparent:true,opacity:.12,side:T.DoubleSide}),zoneB=new T.MeshBasicMaterial({color:0x327ab4,transparent:true,opacity:.13,side:T.DoubleSide});
+    this.zoneMaterials=[zoneA,zoneB];
+    [[zoneA,2.75],[zoneB,-2.75]].forEach(([mat,z])=>{const m=new T.Mesh(zoneGeo,mat);m.rotation.x=-Math.PI/2;m.position.set(0,.12,z);this.table.add(m);});
+    const line=new T.Mesh(new T.PlaneGeometry(17.1,.065),new T.MeshBasicMaterial({color:0xf1c86c,transparent:true,opacity:.72,side:T.DoubleSide}));line.rotation.x=-Math.PI/2;line.position.y=.135;this.table.add(line);
+    this.centerLine=line;
+    const grid=new T.GridHelper(17,10,0x8b6d3e,0x253344);grid.scale.z=.67;grid.position.y=.14;grid.material.transparent=true;grid.material.opacity=.2;this.table.add(grid);
+    this.dropSurface=new T.Mesh(new T.PlaneGeometry(17.4,11.5),new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide}));
+    this.dropSurface.rotation.x=-Math.PI/2;this.dropSurface.position.y=.22;this.table.add(this.dropSurface);
+    this.raycaster=new T.Raycaster();this.pointerNdc=new T.Vector2();
+    this.lifeCrystals=[this.makeCrystal(0xff7d3f,-8.25,5.15),this.makeCrystal(0x5aaeff,8.25,-5.15)];
+    const dustGeo=new T.BufferGeometry(),dust=new Float32Array(210*3);for(let i=0;i<dust.length;i+=3){dust[i]=(Math.random()-.5)*25;dust[i+1]=Math.random()*9;dust[i+2]=(Math.random()-.5)*18;}
+    dustGeo.setAttribute('position',new T.BufferAttribute(dust,3));this.dust=new T.Points(dustGeo,new T.PointsMaterial({color:0xe8c277,size:.035,transparent:true,opacity:.42,depthWrite:false}));this.scene.add(this.dust);
+    const canvas=this.renderer.domElement;
+    canvas.addEventListener('pointermove',e=>this.onCanvasMove(e));
+    canvas.addEventListener('pointerdown',e=>this.onCanvasDown(e));
+    canvas.addEventListener('pointerup',e=>this.onCanvasUp(e));
+    canvas.addEventListener('pointerleave',()=>{if(!this.drag){this.hoveredUid=null;hideCardPreview();}});
+    addEventListener('resize',()=>this.resize(),{passive:true});
+    addEventListener('pointermove',e=>{this.pointer.x=e.clientX/innerWidth*2-1;this.pointer.y=e.clientY/innerHeight*2-1;if(this.drag){e.preventDefault();this.updateDrag(e);}},{passive:false});
+    addEventListener('pointerup',e=>{if(this.drag)this.finishDrag(e);});
+    addEventListener('pointercancel',e=>{if(this.drag)this.finishDrag(e,true);});
+  }
+  makeCrystal(color,x,z){
+    const T=THREE,g=new T.Group(),core=new T.Mesh(new T.OctahedronGeometry(.42,0),new T.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.85,roughness:.22,metalness:.25}));
+    core.castShadow=true;g.add(core);const ring=new T.Mesh(new T.TorusGeometry(.62,.035,8,32),new T.MeshBasicMaterial({color,transparent:true,opacity:.65}));ring.rotation.x=Math.PI/2;g.add(ring);g.position.set(x,.75,z);this.table.add(g);return g;
+  }
+  cardTexture(cardId,team){
+    const key=cardId+':'+team;if(this.textureCache.has(key))return this.textureCache.get(key);const c=CARDS[cardId],cv=document.createElement('canvas');cv.width=256;cv.height=360;const x=cv.getContext('2d');
+    const grad=x.createLinearGradient(0,0,0,360);grad.addColorStop(0,team?'#234e70':'#71381f');grad.addColorStop(1,'#100d0b');x.fillStyle=grad;x.fillRect(0,0,256,360);x.strokeStyle=team?'#78b8e6':'#e2a05f';x.lineWidth=7;x.strokeRect(5,5,246,350);
+    x.fillStyle='#f6e6bb';x.textAlign='center';x.font='700 19px Georgia';const name=(c?.name||'Carta').slice(0,24);x.fillText(name,128,34);x.font='64px Segoe UI Emoji';x.fillText(c?.icon||'✦',128,145);
+    x.fillStyle='rgba(0,0,0,.35)';x.fillRect(18,184,220,112);x.fillStyle='#dacbad';x.font='15px Segoe UI';x.fillText(c?.type==='unit'?'UNIDADE':'TÁTICA',128,209);if(c?.type==='unit'){x.fillStyle='#ffb09c';x.font='700 28px Georgia';x.fillText('⚔ '+c.atk,65,329);x.fillStyle='#a7dbf1';x.fillText('♥ '+c.hp,191,329);}const tex=new THREE.CanvasTexture(cv);tex.anisotropy=this.renderer.capabilities.getMaxAnisotropy();tex.encoding=THREE.sRGBEncoding;this.textureCache.set(key,tex);return tex;
+  }
+  makeUnitMesh(u){
+    const T=THREE,team=teamOf(u.owner),side=new T.MeshStandardMaterial({color:team?0x5b8fb7:0xa65c35,roughness:.3,metalness:.55}),face=new T.MeshStandardMaterial({map:this.cardTexture(u.cardId,team),roughness:.42,metalness:.08});
+    const mesh=new T.Mesh(new T.BoxGeometry(1.56,2.18,.11),[side,side,side,side,face,side]);mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.target=new T.Vector3();mesh.userData.team=team;mesh.userData.uid=u.uid;mesh.rotation.order='YXZ';this.table.add(mesh);return mesh;
+  }
+  makeFloatingCard(cardId,team){
+    const T=THREE,side=new T.MeshStandardMaterial({color:team?0x5b8fb7:0xa65c35,roughness:.24,metalness:.62}),face=new T.MeshStandardMaterial({map:this.cardTexture(cardId,team),roughness:.35,metalness:.08,emissive:0x1d1208,emissiveIntensity:.25});
+    const mesh=new T.Mesh(new T.BoxGeometry(1.62,2.26,.12),[side,side,side,side,face,side]);mesh.castShadow=true;mesh.renderOrder=12;mesh.rotation.set(-Math.PI/2+.12,0,0);this.table.add(mesh);return mesh;
+  }
+  setRay(clientX,clientY){
+    const r=this.renderer.domElement.getBoundingClientRect();this.pointerNdc.set(((clientX-r.left)/r.width)*2-1,-((clientY-r.top)/r.height)*2+1);this.raycaster.setFromCamera(this.pointerNdc,this.camera);this.table.updateMatrixWorld(true);
+  }
+  clientToBoard(clientX,clientY){
+    this.setRay(clientX,clientY);return this.raycaster.intersectObject(this.dropSurface,false)[0]?.point||null;
+  }
+  hitUnit(clientX,clientY){
+    if(!this.unitMeshes.size)return null;this.setRay(clientX,clientY);const hit=this.raycaster.intersectObjects([...this.unitMeshes.values()],false)[0];return hit?.object?.userData?.uid??null;
+  }
+  stageContains(clientX,clientY){
+    const r=document.querySelector('[data-board-stage]')?.getBoundingClientRect();return !!r&&clientX>=r.left&&clientX<=r.right&&clientY>=r.top&&clientY<=r.bottom;
+  }
+  virtualAnchor(x,y){return {getBoundingClientRect:()=>({left:x,right:x,top:y,bottom:y,width:0,height:0})};}
+  anchorForUid(uid){
+    const mesh=this.unitMeshes.get(Number(uid));if(!mesh)return null;return {getBoundingClientRect:()=>{const v=new THREE.Vector3();mesh.getWorldPosition(v);v.project(this.camera);const x=(v.x+1)*innerWidth/2,y=(1-v.y)*innerHeight/2;return {left:x-35,right:x+35,top:y-48,bottom:y+48,width:70,height:96};}};
+  }
+  anchorForBoard(){
+    const stage=document.querySelector('[data-board-stage]');if(stage)return stage;return this.virtualAnchor(innerWidth/2,innerHeight/2);
+  }
+  alignToStage(){
+    if(!this.ready)return;const canvas=this.renderer.domElement,stage=document.querySelector('[data-board-stage]');
+    if(this.drag){canvas.style.transform='';return;}
+    if(!this.visible||!stage){canvas.style.transform='';return;}
+    const r=stage.getBoundingClientRect(),offset=Math.round(r.top+r.height/2-innerHeight/2);canvas.style.transform=`translate3d(0,${offset}px,0)`;
+  }
+  beginCardDrag(event,cardUid){
+    if(!this.ready||!this.visible||this.drag||!G||!revealed||!isMyTurn())return;
+    const p=G.players[localSeat()],entry=p?.hand?.find(e=>String(e.uid)===String(cardUid));if(!entry)return;const cardId=cardIdOf(entry),card=CARDS[cardId];
+    const legal=card.targetUnit?validCardTargetUids(G,p.seat,card).some(uid=>canPlay(G,p.seat,cardUid,undefined,uid)):card.global?canPlay(G,p.seat,cardUid):canPlay(G,p.seat,cardUid,0);
+    if(!legal)return;
+    this.renderer.domElement.style.transform='';
+    const team=teamOf(p.seat),mesh=this.makeFloatingCard(cardId,team),baseRotationZ=viewTeamForClient()?Math.PI:0;mesh.position.set(0,1.25,viewTeamForClient()?-5.1:5.1);mesh.rotation.z=baseRotationZ;mesh.userData.baseRotationZ=baseRotationZ;
+    this.drag={cardUid:String(cardUid),cardId,card,team,mesh,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,moved:false,valid:false,targetUid:null};
+    try{event.currentTarget?.setPointerCapture?.(event.pointerId);}catch(e){}
+    hideCardPreview(true);document.body.classList.add('dragging-card');this.updateDrag(event);
+  }
+  dragResult(clientX,clientY){
+    if(!this.drag)return {valid:false,targetUid:null,point:null,overStage:false};const point=this.clientToBoard(clientX,clientY),overStage=!!point,d=this.drag;
+    if(!point)return {valid:false,targetUid:null,point,overStage:false};
+    if(d.card.targetUnit){const uid=this.hitUnit(clientX,clientY),valid=uid!=null&&validCardTargetUids(G,localSeat(),d.card).includes(uid)&&canPlay(G,localSeat(),d.cardUid,undefined,uid);return {valid,targetUid:uid,point,overStage:true};}
+    if(d.card.global)return {valid:canPlay(G,localSeat(),d.cardUid),targetUid:null,point,overStage:true};
+    return {valid:canPlay(G,localSeat(),d.cardUid,0),targetUid:null,point,overStage:true};
+  }
+  updateDrag(event){
+    const d=this.drag;if(!d||event.pointerId!==d.pointerId)return;const dist=Math.hypot(event.clientX-d.startX,event.clientY-d.startY);if(dist>7)d.moved=true;
+    const result=this.dragResult(event.clientX,event.clientY);d.valid=result.valid;d.targetUid=result.targetUid;
+    if(result.point){const local=this.table.worldToLocal(result.point.clone());local.y=1.1;d.mesh.position.lerp(local,.38);const rot=(d.mesh.userData.baseRotationZ||0)+this.pointer.x*.1;d.mesh.rotation.z+=(rot-d.mesh.rotation.z)*.16;}
+    const front=d.mesh.material[4];front.emissive.setHex(d.valid?0x245a31:0x5c1712);front.emissiveIntensity=d.valid?0.62:0.5;this.setDropFeedback(result.overStage,d.valid);
+  }
+  setDropFeedback(active,valid=false){
+    const stage=document.querySelector('[data-board-stage]');stage?.classList.toggle('drop-ready',active&&valid);stage?.classList.toggle('drop-blocked',active&&!valid);
+    const own=this.drag?.team??teamOf(G?.active??0);this.zoneMaterials.forEach((m,i)=>{m.opacity=active?(i===own?(valid?0.34:0.2):0.09):(i?0.13:0.12);});
+    if(this.centerLine){this.centerLine.material.color.setHex(active?(valid?0x8fffaa:0xff665c):0xf1c86c);this.centerLine.material.opacity=active?0.95:0.72;}
+  }
+  finishDrag(event,cancel=false){
+    const d=this.drag;if(!d||event.pointerId!==d.pointerId)return;this.updateDrag(event);const moved=d.moved,play=!cancel&&moved&&d.valid;
+    let action=null;if(play){if(d.card.targetUnit)action={type:'play',cardUid:d.cardUid,targetUid:d.targetUid};else if(d.card.global)action={type:'play',cardUid:d.cardUid};else action={type:'play',cardUid:d.cardUid,lane:0};}
+    this.table.remove(d.mesh);d.mesh.geometry.dispose();d.mesh.material.forEach(m=>m.dispose());this.drag=null;this.setDropFeedback(false);document.body.classList.remove('dragging-card');this.alignToStage();
+    if(moved){this.suppressClickUid=d.cardUid;setTimeout(()=>{if(this.suppressClickUid===d.cardUid)this.suppressClickUid=null;},0);}if(action)dispatchGameAction(action);
+  }
+  consumeSuppressedClick(cardUid){
+    if(this.suppressClickUid!=null&&String(cardUid)===String(this.suppressClickUid)){this.suppressClickUid=null;return true;}return false;
+  }
+  onCanvasMove(event){
+    if(this.drag||!G)return;const uid=this.hitUnit(event.clientX,event.clientY);if(uid!==this.hoveredUid){this.hoveredUid=uid;hideCardPreview();if(uid!=null){const u=G.units.find(x=>x.uid===uid);if(u)showCardPreview(u.cardId,this.virtualAnchor(event.clientX,event.clientY),uid);}}
+    else if(uid!=null)placeCardPreview(document.getElementById('card-preview'),this.virtualAnchor(event.clientX,event.clientY));
+    this.renderer.domElement.style.cursor=uid!=null||sel?.mode==='card'||sel?.mode==='hero'||sel?.mode==='attack'?'pointer':'default';
+  }
+  onCanvasDown(event){
+    if(event.button!==0||this.drag)return;this.canvasPress={x:event.clientX,y:event.clientY,uid:this.hitUnit(event.clientX,event.clientY),pointerId:event.pointerId};
+  }
+  onCanvasUp(event){
+    const press=this.canvasPress;this.canvasPress=null;if(!press||press.pointerId!==event.pointerId||Math.hypot(event.clientX-press.x,event.clientY-press.y)>7)return;
+    const uid=this.hitUnit(event.clientX,event.clientY);if(uid!=null){onUnit(uid);return;}if(!this.clientToBoard(event.clientX,event.clientY))return;if(sel?.mode==='card'){const entry=G.players[localSeat()]?.hand?.find(e=>String(e.uid)===String(sel.cardUid)),card=CARDS[cardIdOf(entry)];card?.global?onGlobalCard():onLane(0);}
+    else if(sel?.mode==='hero'&&heroTargetLanes(G,localSeat()).includes(0))onLane(0);else if(sel?.mode==='attack'){const src=G.units.find(u=>u.uid===sel.uid);if(src&&attackTargets(G,src).face)onFace();}
+  }
+  selectionFlags(uid){
+    const u=G?.units?.find(x=>x.uid===uid);if(!u)return {selected:false,target:false};let target=this.drag?.targetUid===uid&&this.drag?.valid;
+    if(sel?.mode==='attack'){const src=G.units.find(x=>x.uid===sel.uid);if(src)target=target||attackTargets(G,src).units.includes(uid);}
+    if(sel?.mode==='hero')target=target||heroTargetUids(G,localSeat()).includes(uid);
+    if(sel?.mode==='cardTarget'){const entry=G.players[localSeat()]?.hand?.find(e=>String(e.uid)===String(sel.cardUid)),card=CARDS[cardIdOf(entry)];if(card)target=target||(validCardTargetUids(G,localSeat(),card).includes(uid)&&canPlay(G,localSeat(),sel.cardUid,undefined,uid));}
+    return {selected:sel?.mode==='attack'&&sel.uid===uid,target};
+  }
+  setVisible(on){
+    if(!on&&this.visible){this.viewInitialized=false;this.hoveredUid=null;}this.visible=!!on;document.body.classList.toggle('battle-mode',this.visible);if(!this.visible){this.renderer.domElement.style.transform='';document.body.classList.remove('enemy-turn-view');delete document.body.dataset.viewTeam;delete document.body.dataset.cameraFocus;}
+  }
+  sync(game){
+    this.setVisible(!!game);if(!this.ready||!game)return;const live=new Set(game.units.map(u=>u.uid));
+    for(const [uid,mesh] of this.unitMeshes)if(!live.has(uid)){this.table.remove(mesh);mesh.geometry.dispose();mesh.material.forEach(m=>m.dispose());this.unitMeshes.delete(uid);}
+    for(const team of [0,1]){
+      const units=game.units.filter(u=>teamOf(u.owner)===team),gap=Math.min(1.82,14/Math.max(1,units.length));
+      units.forEach((u,i)=>{let mesh=this.unitMeshes.get(u.uid);if(!mesh){mesh=this.makeUnitMesh(u);mesh.scale.setScalar(.05);this.unitMeshes.set(u.uid,mesh);}mesh.userData.target.set((i-(units.length-1)/2)*gap,.42,team?-1.85:1.85);mesh.userData.exhausted=!!u.exhausted;mesh.userData.ready=u.owner===localSeat()&&isMyTurn()&&canAttackWith(game,localSeat(),u.uid);mesh.rotation.set(-Math.PI/2+(team?-.08:.08),0,team?Math.PI:0);});
+    }
+    const activeTeam=teamOf(game.active),viewTeam=viewTeamForClient(),online=NET.mode!=='local',enemyFocus=online&&activeTeam!==viewTeam&&!game.over;
+    const baseAngle=viewTeam?Math.PI:0,nudge=enemyFocus?(viewTeam?-0.055:0.055):0;this.targetViewAngle=baseAngle+nudge;this.targetCameraRadius=enemyFocus?16.15:17;this.targetCameraHeight=enemyFocus?11.05:11.5;this.targetLookZ=enemyFocus?(activeTeam?-.58:.58):0;this.viewTeam=viewTeam;this.enemyFocus=enemyFocus;
+    document.body.dataset.viewTeam=String(viewTeam);document.body.dataset.cameraFocus=enemyFocus?'enemy':'own';document.body.classList.toggle('enemy-turn-view',enemyFocus);
+    if(!this.viewInitialized){this.viewAngle=this.targetViewAngle;this.cameraRadius=this.targetCameraRadius;this.cameraHeight=this.targetCameraHeight;this.lookZ=this.targetLookZ;this.viewInitialized=true;}
+    game.teams.forEach((t,i)=>{const pct=Math.max(.08,t.life/t.maxLife);this.lifeCrystals[i].userData.lifeScale=pct;});
+  }
+  burst(type,team){
+    if(!this.ready||!this.visible||this.reduced)return;const T=THREE,color=type==='heal'||type==='teamheal'?0x70e18a:type==='shield'||type==='ward'?0x8bdcff:type==='mana'||type==='inspire'?0x77bdff:0xff7652,count=type==='boardwipe'?55:22;
+    for(let i=0;i<count;i++){const m=new T.Mesh(new T.TetrahedronGeometry(.045,0),new T.MeshBasicMaterial({color,transparent:true}));m.position.set((Math.random()-.5)*5,1+Math.random()*1.4,team==null?0:(team? -3.7:3.7));m.userData.v=new T.Vector3((Math.random()-.5)*.12,.035+Math.random()*.09,(Math.random()-.5)*.12);m.userData.life=1;this.scene.add(m);this.sparks.push(m);}
+  }
+  resize(){if(!this.ready)return;this.camera.aspect=innerWidth/innerHeight;this.camera.updateProjectionMatrix();this.renderer.setSize(innerWidth,innerHeight);this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));this.alignToStage();}
+  loop(){
+    requestAnimationFrame(()=>this.loop());if(!this.ready||!this.visible)return;this.clock+=.012;const ease=this.reduced?1:.045;
+    const angleDelta=Math.atan2(Math.sin(this.targetViewAngle-this.viewAngle),Math.cos(this.targetViewAngle-this.viewAngle));this.viewAngle+=angleDelta*ease;this.cameraRadius+=(this.targetCameraRadius-this.cameraRadius)*ease;this.cameraHeight+=(this.targetCameraHeight-this.cameraHeight)*ease;this.lookZ+=(this.targetLookZ-this.lookZ)*ease;
+    const angle=this.viewAngle+this.pointer.x*.012;this.camera.position.x=Math.sin(angle)*this.cameraRadius;this.camera.position.z=Math.cos(angle)*this.cameraRadius;this.camera.position.y=this.cameraHeight+this.pointer.y*.18;this.camera.lookAt(0,0,this.lookZ);
+    this.table.rotation.y+=(0-this.table.rotation.y)*.05;this.dust.rotation.y+=.00035;this.teamLights.forEach((light,i)=>{const wanted=i===teamOf(G?.active??0)?1.42:.72;light.intensity+=(wanted-light.intensity)*.06;});
+    for(const mesh of this.unitMeshes.values()){
+      mesh.position.lerp(mesh.userData.target,this.reduced?1:.09);const flags=this.selectionFlags(mesh.userData.uid),hover=this.hoveredUid===mesh.userData.uid,targetScale=flags.selected||flags.target?1.1:hover?1.065:1;
+      const s=mesh.scale.x+(targetScale-mesh.scale.x)*.12;mesh.scale.setScalar(s);mesh.position.y+=Math.sin(this.clock*2+mesh.userData.uid)*.008;
+      if(Array.isArray(mesh.material)){const front=mesh.material[4],color=flags.target?0x8b211b:flags.selected?0x7a5515:hover?0x174f72:mesh.userData.ready?0x12351d:0x000000;front.emissive?.setHex(color);front.emissiveIntensity=flags.target?0.9:flags.selected?0.75:hover?0.55:mesh.userData.ready?0.32:0;}
+    }
+    this.lifeCrystals.forEach((c,i)=>{c.rotation.y+=i?0.009:-0.009;c.children[1].rotation.z+=i?0.014:-0.014;const s=.65+.5*(c.userData.lifeScale??1);c.scale.lerp(new THREE.Vector3(s,s,s),.05);});
+    for(let i=this.sparks.length-1;i>=0;i--){const s=this.sparks[i];s.position.add(s.userData.v);s.userData.v.y-=.003;s.userData.life-=.025;s.scale.setScalar(Math.max(0,s.userData.life));s.material.opacity=Math.max(0,s.userData.life);if(s.userData.life<=0){this.scene.remove(s);s.geometry.dispose();s.material.dispose();this.sparks.splice(i,1);}}
+    this.renderer.render(this.scene,this.camera);
+  }
+}
+const battleTable3D=new BattleTable3D(document.getElementById('battle3d'));
+function syncBattle3D(){battleTable3D?.sync(G||null);}
+
+/* ---------------- boot ---------------- */
+if(typeof document!=='undefined'&&document.addEventListener){
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')hideCardPreview(true);});
+  document.addEventListener('pointerdown',e=>{
+    if(previewPinned&&!e.target?.closest?.('.history-card-ref'))hideCardPreview(true);
+  });
+  document.addEventListener('scroll',()=>{hideCardPreview(true);battleTable3D?.alignToStage();},true);
+}
+renderSetup();
+syncBattle3D();
+</script>
+</body>
+</html>
