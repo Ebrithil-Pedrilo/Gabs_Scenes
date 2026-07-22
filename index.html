@@ -103,6 +103,7 @@ input.name{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100
 
 /* ---------- Game shell ---------- */
 .shell{width:min(1500px,100%);margin:0 auto;min-height:100vh;padding:8px;display:grid;gap:8px;grid-template-columns:minmax(180px,230px) minmax(0,1fr) minmax(180px,230px);grid-template-areas:"top top top" "notice notice notice" "near board far" "near actions far" "near hand far" "history history history";align-items:start;perspective:1500px;transform-style:preserve-3d}
+body.battle-mode .shell{width:100%;max-width:none;padding-inline:clamp(6px,1vw,18px);grid-template-columns:clamp(168px,12vw,230px) minmax(0,1fr) clamp(168px,12vw,230px)}
 .topbar{grid-area:top;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;background:rgba(20,17,14,.95);padding:7px 10px;box-shadow:0 8px 24px rgba(0,0,0,.26)}
 .brand{font-weight:900;color:#efd69d;letter-spacing:.12em;font-size:15px}
 .chip{border:1px solid #6b5636;border-radius:999px;padding:3px 9px;font-size:11px;font-weight:900;color:#e9d2a0;background:#241d13}
@@ -1146,7 +1147,7 @@ const setup = {
 const CARRY_OPTS = ['raven','viking','druid','succubus','pirate','bloodlord','rats'];
 const SUPPORT_OPTS = ['vale','miku','priest','enchantress','arena','druid','rats'];
 
-const NET_PROTOCOL='gutho-2v2-v6', BUILD_ID='2026-07-22-guesswho1', ROOM_PREFIX='gutho-2v2-v6-';
+const NET_PROTOCOL='gutho-2v2-v6', BUILD_ID='2026-07-22-tabletop2', ROOM_PREFIX='gutho-2v2-v6-';
 const NET={mode:'local',phase:'menu',peer:null,hostConn:null,connections:new Map(),roomCode:'',
   clientId:'',resumeToken:'',localSeat:null,status:'offline',revision:0,pending:null,retry:0,retryTimer:null};
 const HOST={lobby:null,game:null,revision:0,requestCache:new Map()};
@@ -2010,14 +2011,14 @@ class BattleTable3D{
   constructor(mount){
     this.mount=mount;this.ready=false;this.visible=false;this.unitMeshes=new Map();this.textureCache=new Map();this.sparks=[];
     this.pointer={x:0,y:0};this.clock=0;this.reduced=matchMedia?.('(prefers-reduced-motion: reduce)')?.matches||false;
-    this.viewAngle=0;this.targetViewAngle=0;this.cameraRadius=17;this.targetCameraRadius=17;this.cameraHeight=11.5;this.targetCameraHeight=11.5;this.lookZ=0;this.targetLookZ=0;this.viewInitialized=false;this.viewTeam=0;this.enemyFocus=false;
+    this.viewAngle=0;this.targetViewAngle=0;this.cameraRadius=15.2;this.targetCameraRadius=15.2;this.cameraHeight=16.8;this.targetCameraHeight=16.8;this.lookZ=0;this.targetLookZ=0;this.viewInitialized=false;this.viewTeam=0;this.enemyFocus=false;
     this.hoveredUid=null;this.drag=null;this.canvasPress=null;this.suppressClickUid=null;this.zoneMaterials=[];
     if(!mount||typeof THREE==='undefined')return;
     try{this.build();this.ready=true;this.loop();}catch(err){console.warn('Mesa 3D indisponível:',err);}
   }
   build(){
     const T=THREE;this.scene=new T.Scene();this.scene.fog=new T.FogExp2(0x080706,.032);
-    this.camera=new T.PerspectiveCamera(42,innerWidth/innerHeight,.1,100);this.camera.position.set(0,11.5,17);this.camera.lookAt(0,0,0);
+    this.camera=new T.PerspectiveCamera(42,innerWidth/innerHeight,.1,100);this.camera.position.set(0,16.8,15.2);this.camera.lookAt(0,0,0);
     this.renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
     this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));this.renderer.setSize(innerWidth,innerHeight);this.renderer.shadowMap.enabled=true;
     this.renderer.shadowMap.type=T.PCFSoftShadowMap;this.renderer.outputEncoding=T.sRGBEncoding;this.mount.appendChild(this.renderer.domElement);
@@ -2085,8 +2086,7 @@ class BattleTable3D{
   }
   makeUnitMesh(u,game){
     const T=THREE,team=teamOf(u.owner),side=new T.MeshStandardMaterial({color:team?0x5b8fb7:0xa65c35,roughness:.3,metalness:.55}),face=new T.MeshStandardMaterial({map:this.unitTexture(u,game),roughness:.36,metalness:.08,emissive:0x000000,emissiveIntensity:0});
-    const mesh=new T.Mesh(new T.BoxGeometry(2,2.88,.14),[side,side,side,side,face,side]);mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.target=new T.Vector3();mesh.userData.team=team;mesh.userData.uid=u.uid;mesh.rotation.order='YXZ';
-    const foot=new T.Mesh(new T.BoxGeometry(2.2,.14,.54),side);foot.position.set(0,-1.49,.02);foot.castShadow=true;foot.receiveShadow=true;mesh.add(foot);this.table.add(mesh);return mesh;
+    const mesh=new T.Mesh(new T.BoxGeometry(2,2.88,.14),[side,side,side,side,face,side]);mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData.target=new T.Vector3();mesh.userData.team=team;mesh.userData.uid=u.uid;mesh.rotation.order='YXZ';this.table.add(mesh);return mesh;
   }
   disposeUnitMesh(mesh){
     this.table.remove(mesh);const geometries=new Set(),materials=new Set();mesh.traverse(o=>{if(o.geometry&&!geometries.has(o.geometry)){geometries.add(o.geometry);o.geometry.dispose?.();}const list=Array.isArray(o.material)?o.material:[o.material];list.filter(Boolean).forEach(m=>{if(materials.has(m))return;materials.add(m);m.map?.dispose?.();m.dispose?.();});});
@@ -2181,15 +2181,21 @@ class BattleTable3D{
   setVisible(on){
     if(!on&&this.visible){this.viewInitialized=false;this.hoveredUid=null;}this.visible=!!on;document.body.classList.toggle('battle-mode',this.visible);if(!this.visible){this.renderer.domElement.style.transform='';document.body.classList.remove('enemy-turn-view');delete document.body.dataset.viewTeam;delete document.body.dataset.cameraFocus;}
   }
+  cameraProfile(){
+    const aspect=innerWidth/Math.max(1,innerHeight),short=innerHeight<760,narrow=innerWidth<1100;
+    if(short)return {radius:16.1,height:15.2,look:0};
+    if(narrow||aspect<1.45)return {radius:15.8,height:16.1,look:0};
+    return {radius:15.2,height:16.8,look:0};
+  }
   sync(game){
     this.setVisible(!!game);if(!this.ready||!game)return;const live=new Set(game.units.map(u=>u.uid)),viewTeam=viewTeamForClient();
     for(const [uid,mesh] of this.unitMeshes)if(!live.has(uid)){this.disposeUnitMesh(mesh);this.unitMeshes.delete(uid);}
     for(const team of [0,1]){
       const units=game.units.filter(u=>teamOf(u.owner)===team),gap=Math.min(1.86,14.5/Math.max(1,units.length));
-      units.forEach((u,i)=>{let mesh=this.unitMeshes.get(u.uid);if(!mesh){mesh=this.makeUnitMesh(u,game);this.unitMeshes.set(u.uid,mesh);}this.paintUnitTexture(mesh.material[4].map,u,game);mesh.userData.target.set((i-(units.length-1)/2)*gap,1.7,team?-2.2:2.2);mesh.position.copy(mesh.userData.target);mesh.scale.setScalar(1);mesh.userData.exhausted=!!u.exhausted;mesh.userData.ready=u.owner===localSeat()&&isMyTurn()&&canAttackWith(game,localSeat(),u.uid);mesh.rotation.set(0,viewTeam?Math.PI:0,0);});
+      units.forEach((u,i)=>{let mesh=this.unitMeshes.get(u.uid);if(!mesh){mesh=this.makeUnitMesh(u,game);this.unitMeshes.set(u.uid,mesh);}this.paintUnitTexture(mesh.material[4].map,u,game);mesh.userData.target.set((i-(units.length-1)/2)*gap,.34,team?-2.4:2.4);mesh.position.copy(mesh.userData.target);mesh.scale.setScalar(1);mesh.userData.exhausted=!!u.exhausted;mesh.userData.ready=u.owner===localSeat()&&isMyTurn()&&canAttackWith(game,localSeat(),u.uid);mesh.rotation.set(-Math.PI/2,0,viewTeam?Math.PI:0);});
     }
-    const activeTeam=teamOf(game.active),online=NET.mode!=='local',enemyFocus=online&&activeTeam!==viewTeam&&!game.over;
-    const baseAngle=viewTeam?Math.PI:0,nudge=enemyFocus?(viewTeam?-0.055:0.055):0;this.targetViewAngle=baseAngle+nudge;this.targetCameraRadius=enemyFocus?16.15:17;this.targetCameraHeight=enemyFocus?11.05:11.5;this.targetLookZ=enemyFocus?(activeTeam?-.58:.58):0;this.viewTeam=viewTeam;this.enemyFocus=enemyFocus;
+    const activeTeam=teamOf(game.active),online=NET.mode!=='local',enemyFocus=online&&activeTeam!==viewTeam&&!game.over,profile=this.cameraProfile();
+    const baseAngle=viewTeam?Math.PI:0,nudge=enemyFocus?(viewTeam?-0.035:0.035):0;this.targetViewAngle=baseAngle+nudge;this.targetCameraRadius=profile.radius-(enemyFocus ? .25 : 0);this.targetCameraHeight=profile.height-(enemyFocus ? .15 : 0);this.targetLookZ=profile.look+(enemyFocus?(activeTeam?-.32:.32):0);this.viewTeam=viewTeam;this.enemyFocus=enemyFocus;
     document.body.dataset.viewTeam=String(viewTeam);document.body.dataset.cameraFocus=enemyFocus?'enemy':'own';document.body.classList.toggle('enemy-turn-view',enemyFocus);
     if(!this.viewInitialized){this.viewAngle=this.targetViewAngle;this.cameraRadius=this.targetCameraRadius;this.cameraHeight=this.targetCameraHeight;this.lookZ=this.targetLookZ;this.viewInitialized=true;}
     game.teams.forEach((t,i)=>{const pct=Math.max(.08,t.life/t.maxLife);this.lifeCrystals[i].userData.lifeScale=pct;});
@@ -2198,7 +2204,7 @@ class BattleTable3D{
     if(!this.ready||!this.visible||this.reduced)return;const T=THREE,color=type==='heal'||type==='teamheal'?0x70e18a:type==='shield'||type==='ward'?0x8bdcff:type==='mana'||type==='inspire'?0x77bdff:0xff7652,count=type==='boardwipe'?55:22;
     for(let i=0;i<count;i++){const m=new T.Mesh(new T.TetrahedronGeometry(.045,0),new T.MeshBasicMaterial({color,transparent:true}));m.position.set((Math.random()-.5)*5,1+Math.random()*1.4,team==null?0:(team? -3.7:3.7));m.userData.v=new T.Vector3((Math.random()-.5)*.12,.035+Math.random()*.09,(Math.random()-.5)*.12);m.userData.life=1;this.scene.add(m);this.sparks.push(m);}
   }
-  resize(){if(!this.ready)return;this.camera.aspect=innerWidth/innerHeight;this.camera.updateProjectionMatrix();this.renderer.setSize(innerWidth,innerHeight);this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));this.alignToStage();}
+  resize(){if(!this.ready)return;this.camera.aspect=innerWidth/innerHeight;this.camera.updateProjectionMatrix();this.renderer.setSize(innerWidth,innerHeight);this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.75));if(G)this.sync(G);this.alignToStage();}
   loop(){
     requestAnimationFrame(()=>this.loop());if(!this.ready||!this.visible)return;this.clock+=.012;const ease=this.reduced?1:.045;
     const angleDelta=Math.atan2(Math.sin(this.targetViewAngle-this.viewAngle),Math.cos(this.targetViewAngle-this.viewAngle));this.viewAngle+=angleDelta*ease;this.cameraRadius+=(this.targetCameraRadius-this.cameraRadius)*ease;this.cameraHeight+=(this.targetCameraHeight-this.cameraHeight)*ease;this.lookZ+=(this.targetLookZ-this.lookZ)*ease;
