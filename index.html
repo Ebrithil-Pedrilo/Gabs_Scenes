@@ -145,6 +145,15 @@ body.enemy-turn-view #battle3d canvas{filter:saturate(1.07) contrast(1.025)}
 .ribbon-stats b{color:#ffe6ac}
 .mana-pip{color:#9fd2ff}
 .hand-mini{display:flex;gap:2px;margin-top:2px}.mini-back{width:9px;height:13px;border-radius:2px;background:repeating-linear-gradient(135deg,#442e1e 0 4px,#22170f 4px 8px)}
+.power-dock{display:flex;gap:4px;min-width:0;margin-top:1px}
+.power-chip{height:23px;min-width:0;flex:1 1 0;border:1px solid #5c4b35;border-radius:7px;background:rgba(18,14,11,.82);padding:2px 4px;display:flex;align-items:center;gap:3px;color:#d8c7a5;overflow:hidden;box-shadow:inset 0 1px rgba(255,255,255,.04)}
+.power-chip:hover,.power-chip:focus-visible{border-color:#d5ac61;background:#2a2117;color:#fff0c7}
+.power-chip .power-symbol{flex:0 0 auto;color:#e9bd68;font-weight:900}.power-chip.passive .power-symbol{color:#9ed8ef}
+.power-chip .power-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;font-weight:800;text-align:left}
+.power-chip .power-cost{flex:0 0 auto;min-width:15px;height:15px;border-radius:999px;display:grid;place-items:center;background:#17364a;border:1px solid #5c97bd;color:#cbeaff;font-size:8px;font-weight:900}
+.power-chip.ready{border-color:#d5b15f;box-shadow:0 0 9px rgba(221,179,84,.22),inset 0 1px rgba(255,255,255,.05)}
+.power-chip.used,.power-chip.spent{filter:saturate(.45);opacity:.58}.power-chip.spent{text-decoration:line-through}
+.power-chip.blocked{border-color:#49433a;color:#a99f90}.power-chip.none{opacity:.42}
 
 /* lanes */
 .lanes{width:min(900px,100%);margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;min-height:0;perspective:1250px;transform-style:preserve-3d}
@@ -259,6 +268,12 @@ body.enemy-turn-view #battle3d canvas{filter:saturate(1.07) contrast(1.025)}
 .card-preview .preview-card .art{height:82px;font-size:44px}.card-preview .preview-card .ctype{font-size:9px}.card-preview .preview-card .cname{font-size:16px;min-height:0}.card-preview .preview-card .ctext{font-size:12px;line-height:1.4;margin-top:3px}
 .preview-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}.preview-tag{border:1px solid #67553e;border-radius:999px;background:rgba(0,0,0,.25);padding:2px 5px;color:#c8b99d;font-size:8px;font-weight:800}
 .preview-live{margin-top:6px;border-top:1px solid rgba(255,255,255,.1);padding-top:5px;color:#bde4f5;font-size:9px;line-height:1.35}
+.warlord-preview{width:210px;border:2px solid #d8ad5c;border-radius:14px;background:linear-gradient(155deg,#302417,#121013 72%);padding:11px;color:#eee2cb;box-shadow:0 0 0 1px rgba(255,226,157,.18),0 20px 44px rgba(0,0,0,.78)}
+.warlord-preview.carry .crest{background:linear-gradient(180deg,#8a3c35,#481d1c)}.warlord-preview.support .crest{background:linear-gradient(180deg,#7c5e2a,#3c2c12)}
+.warlord-head{display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:8px;margin-bottom:8px}.warlord-head .crest{width:38px;height:42px;font-size:22px}.warlord-head b{display:block;color:#ffe5aa;font:700 15px Georgia,serif;line-height:1.1}.warlord-head span{font-size:9px;color:#b9aa91}
+.warlord-ability{border:1px solid #5d4c37;border-radius:9px;background:rgba(0,0,0,.25);padding:7px;margin-top:6px}.warlord-ability.passive{border-color:#365968}.warlord-ability-title{display:flex;align-items:center;gap:5px;color:#f3d48c;font-size:10px}.warlord-ability.passive .warlord-ability-title{color:#b8e3f2}.warlord-ability-title b{font-size:11px}.warlord-ability-title .power-cost{margin-left:auto}
+.warlord-ability-title .power-cost{min-width:20px;height:20px;border-radius:999px;display:grid;place-items:center;background:#17364a;border:1px solid #5c97bd;color:#cbeaff;font-size:9px;font-weight:900}
+.warlord-ability p{margin:5px 0 0;color:#c9bca7;font-size:10px;line-height:1.4}.power-status{margin-top:7px;border-radius:999px;padding:3px 7px;background:#24201a;color:#c9b994;font-size:9px;font-weight:800;text-align:center}.power-status.ready{background:#29351d;color:#bde993}.power-status.used,.power-status.spent{background:#382422;color:#e4a9a0}.power-status.blocked{background:#252a30;color:#aec7da}
 .waiting-hand{border:1px dashed #594c3b;border-radius:9px;padding:12px;color:#a99d8b;font-size:11px}
 
 /* pass gate + win overlay */
@@ -292,7 +307,7 @@ body.enemy-turn-view #battle3d canvas{filter:saturate(1.07) contrast(1.025)}
   .lobby-grid{grid-template-columns:1fr}
   .selbar{position:sticky;bottom:0;z-index:30}
   .hand-card .ctext{font-size:10px}.hand-card .cname{font-size:12px}.unit .uname b{font-size:11px}.history-item{font-size:11px}
-  .card-preview,.card-preview .preview-card{width:180px}.card-preview .preview-card{min-height:216px}.card-preview .preview-card .art{height:66px}
+  .card-preview,.card-preview .preview-card,.card-preview .warlord-preview{width:180px}.card-preview .preview-card{min-height:216px}.card-preview .preview-card .art{height:66px}
   .lane{transform:none;backdrop-filter:blur(5px)}.team-panel,.hand-wrap{transform:none}.unit{transform:none}.unit.mine:hover{transform:translateY(-2px)}
   .board-stage{height:clamp(330px,50vh,500px)}.hand-wrap{margin-top:0}
 }
@@ -1118,6 +1133,31 @@ function cardPreviewMarkup(cardId,unitUid){
     ${tags.length?`<div class="preview-tags">${tags.map(t=>`<span class="preview-tag">${esc(t)}</span>`).join('')}</div>`:''}${live}
   </div>`;
 }
+function heroPowerDisplay(seat){
+  const p=G?.players?.[seat],w=p&&WARLORDS[p.warlordId],active=G?.active===seat&&!G?.over;if(!p||!w?.power)return {key:'blocked',label:'Poder indisponível'};
+  if(p.heroSpent)return {key:'spent',label:'Poder único já consumido nesta partida'};
+  if(p.heroUsed)return {key:'used',label:'Já usado; recarrega na próxima vez deste jogador'};
+  if(active&&canUseHeroPower(G,seat))return {key:'ready',label:'Disponível para usar agora'};
+  if(active&&p.mana<w.power.cost)return {key:'blocked',label:`Mana insuficiente: faltam ${w.power.cost-p.mana}`};
+  if(active)return {key:'blocked',label:'Sem alvo válido neste momento'};
+  return {key:'idle',label:`Aguardando a vez de ${p.name}`};
+}
+function warlordPreviewMarkup(seat){
+  const p=G?.players?.[seat],w=p&&WARLORDS[p.warlordId];if(!p||!w)return '';
+  const status=heroPowerDisplay(seat),passive=w.passive||'Este Warlord não possui um passivo adicional.',passiveName=w.passive?String(w.passive).split(':')[0]:'Sem passivo';
+  return `<div class="warlord-preview ${p.role}">
+    <div class="warlord-head"><div class="crest">${w.icon}</div><div><b>${esc(w.name)}</b><span>${esc(p.name)} · ${roleLabel(p.role)} · ${teamLabel(teamOf(seat))}</span></div></div>
+    <div class="warlord-ability"><div class="warlord-ability-title"><span>✦</span><b>${esc(w.power.name)}</b><span class="power-cost">${w.power.cost}</span></div><p>${esc(w.power.text)}</p><div class="power-status ${status.key}">${esc(status.label)}</div></div>
+    <div class="warlord-ability passive"><div class="warlord-ability-title"><span>◆</span><b>${esc(passiveName)}</b></div><p>${esc(passive)}</p></div>
+  </div>`;
+}
+function showWarlordPreview(seat,anchor,pinned=false){
+  const el=document.getElementById('card-preview'),key=`warlord:${seat}`;if(!el?.classList||!G?.players?.[seat])return;
+  previewPinned=!!pinned;previewCardId=key;el.innerHTML=warlordPreviewMarkup(seat);el.setAttribute('aria-hidden','false');el.classList.add('show');document.body.classList.add('card-previewing');placeCardPreview(el,anchor);
+}
+function toggleWarlordPreview(seat,anchor){
+  const key=`warlord:${seat}`;if(previewPinned&&previewCardId===key){hideCardPreview(true);return;}showWarlordPreview(seat,anchor,true);
+}
 function placeCardPreview(el,anchor){
   const r=anchor?.getBoundingClientRect?.(),vw=globalThis.innerWidth||1024,vh=globalThis.innerHeight||768,gap=12,w=el.offsetWidth||184,h=el.offsetHeight||230;
   if(!r){el.style.left=Math.max(8,vw-w-12)+'px';el.style.top='12px';return;}
@@ -1147,7 +1187,7 @@ const setup = {
 const CARRY_OPTS = ['raven','viking','druid','succubus','pirate','bloodlord','rats'];
 const SUPPORT_OPTS = ['vale','miku','priest','enchantress','arena','druid','rats'];
 
-const NET_PROTOCOL='gutho-2v2-v6', BUILD_ID='2026-07-22-tabletop3', ROOM_PREFIX='gutho-2v2-v6-';
+const NET_PROTOCOL='gutho-2v2-v6', BUILD_ID='2026-07-22-warlord-powers1', ROOM_PREFIX='gutho-2v2-v6-';
 const NET={mode:'local',phase:'menu',peer:null,hostConn:null,connections:new Map(),roomCode:'',
   clientId:'',resumeToken:'',localSeat:null,status:'offline',revision:0,pending:null,retry:0,retryTimer:null};
 const HOST={lobby:null,game:null,revision:0,requestCache:new Map()};
@@ -1617,7 +1657,7 @@ function lifeBox(team){
 function ribbon(seat){
   const p = G.players[seat]; const w = WARLORDS[p.warlordId]; const t = teamOf(seat);
   const active = G.active===seat && !G.over;
-  const hc=playerHandCount(p);
+  const hc=playerHandCount(p),powerState=heroPowerDisplay(seat),passiveName=w.passive?String(w.passive).split(':')[0]:'Sem passivo';
   return `<div class="ribbon ${p.role} ${t===1?'teamB':''} ${active?'act':''}" data-seat="${seat}">
     <div class="ribbon-top">
       <div class="crest">${w.icon}</div>
@@ -1631,7 +1671,10 @@ function ribbon(seat){
       <span>🂠 <b>${playerDeckCount(p)}</b></span>
       ${active?'<span style="color:#ffe3a4">▶ na vez</span>':''}
     </div>
-    <div class="hand-mini">${Array.from({length:Math.min(hc,7)},()=>'<span class="mini-back"></span>').join('')}</div>
+    <div class="power-dock">
+      <button type="button" class="power-chip active-power ${powerState.key}" aria-label="Poder ativo ${esc(w.power.name)}, custo ${w.power.cost}. ${esc(powerState.label)}" onmouseenter="showWarlordPreview(${seat},this)" onmouseleave="hideCardPreview()" onfocus="showWarlordPreview(${seat},this)" onblur="hideCardPreview()" onclick="event.stopPropagation();toggleWarlordPreview(${seat},this)"><span class="power-symbol">✦</span><span class="power-name">${esc(w.power.name)}</span><span class="power-cost">${w.power.cost}</span></button>
+      <button type="button" class="power-chip passive ${w.passive?'':'none'}" aria-label="Passivo ${esc(passiveName)}. ${esc(w.passive||'Sem passivo adicional.')}" onmouseenter="showWarlordPreview(${seat},this)" onmouseleave="hideCardPreview()" onfocus="showWarlordPreview(${seat},this)" onblur="hideCardPreview()" onclick="event.stopPropagation();toggleWarlordPreview(${seat},this)"><span class="power-symbol">◆</span><span class="power-name">${esc(passiveName)}</span></button>
+    </div>
   </div>`;
 }
 function viewTeamForClient(){
