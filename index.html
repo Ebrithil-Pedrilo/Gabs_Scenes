@@ -74,6 +74,10 @@ h1,h2,h3,.serif{font-family:Georgia,"Times New Roman",serif}
 .wl-opt.pirate{background:linear-gradient(150deg,#183840,#0b171b);border-color:#3e8490}
 .wl-opt.bloodlord{background:linear-gradient(150deg,#481b22,#1b0b0e);border-color:#a84251}
 .wl-opt.rats{background:linear-gradient(150deg,#3b3420,#17150d);border-color:#7b7134}
+.wl-opt.seyren{background:linear-gradient(150deg,#4b241d,#190d0b);border-color:#a84e37}
+.wl-opt.flamel{background:linear-gradient(150deg,#143f47,#07191c);border-color:#318b98}
+.wl-opt.margaretha{background:linear-gradient(150deg,#4b4534,#18150e);border-color:#bda76b}
+.wl-opt.dravos{background:linear-gradient(150deg,#4a351d,#191107);border-color:#ad7135}
 input.name{width:100%;border:1px solid #5c4f40;border-radius:9px;background:#100e0c;color:var(--ink);padding:9px 10px;margin-top:4px}
 .setup-foot{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:20px}
 .toggle{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:rgba(0,0,0,.2);font-size:12px;color:#cabfa8}
@@ -182,6 +186,10 @@ body.enemy-turn-view #battle3d canvas{filter:saturate(1.07) contrast(1.025)}
 .unit.pirate{background:linear-gradient(150deg,#17343a,#0a1619)}
 .unit.bloodlord{background:linear-gradient(150deg,#3e1820,#190a0d)}
 .unit.rats{background:linear-gradient(150deg,#38321c,#17150c)}
+.unit.seyren{background:linear-gradient(150deg,#4a211a,#170b09)}
+.unit.flamel{background:linear-gradient(150deg,#16434a,#07191c)}
+.unit.margaretha{background:linear-gradient(150deg,#484333,#17140e)}
+.unit.dravos{background:linear-gradient(150deg,#4a341c,#181006)}
 .unit .uic{font-size:18px;text-align:center}
 .unit .uname{min-width:0}.unit .uname b{display:block;font:700 10px Georgia,serif;color:#f0dcae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .unit .utag{font-size:7px;color:#9a8e7c;letter-spacing:.06em;text-transform:uppercase}
@@ -320,13 +328,12 @@ body.enemy-turn-view #battle3d canvas{filter:saturate(1.07) contrast(1.025)}
 .hand-card.calm .art{background:radial-gradient(circle at 50% 30%,rgba(255,250,235,.24),transparent 36%),linear-gradient(145deg,#6f6a5c,#1d1c18)}
 .hand-card.valor{background:linear-gradient(160deg,#3d2a14,#17110a 72%);border-color:#9a6528}
 .hand-card.valor .art{background:radial-gradient(circle at 50% 30%,rgba(255,190,120,.22),transparent 36%),linear-gradient(145deg,#8a5420,#241708)}
-.hand-card.fear{background:linear-gradient(160deg,#2c2340,#131018 72%);border-color:#6a5493}
-.hand-card.fear{border-color:#6a5493}
-.hand-card.fear .art{background:radial-gradient(circle at 50% 30%,rgba(200,170,255,.2),transparent 36%),linear-gradient(145deg,#54407e,#181222)}
-.hand-card.joy{background:linear-gradient(160deg,#3d3415,#171408 72%);border-color:#a08a2c}
-.hand-card.joy .art{background:radial-gradient(circle at 50% 30%,rgba(255,235,150,.24),transparent 36%),linear-gradient(145deg,#8d7623,#231d09)}
-.hand-card.sorrow{background:linear-gradient(160deg,#1e2c3f,#0d1219 72%);border-color:#3f6591}
-.hand-card.sorrow .art{background:radial-gradient(circle at 50% 30%,rgba(160,200,255,.2),transparent 36%),linear-gradient(145deg,#2f5480,#101a26)}
+.hand-card.fear{background:linear-gradient(160deg,#242329,#0b0b0d 72%);border-color:#5c5964}
+.hand-card.fear .art{background:radial-gradient(circle at 50% 30%,rgba(175,170,185,.18),transparent 36%),linear-gradient(145deg,#3b3942,#0e0d11)}
+.hand-card.serenity{background:linear-gradient(160deg,#173b42,#09181b 72%);border-color:#2c8e9b}
+.hand-card.serenity .art{background:radial-gradient(circle at 50% 30%,rgba(130,235,245,.22),transparent 36%),linear-gradient(145deg,#1e6974,#0b2227)}
+.hand-card.sorrow{background:linear-gradient(160deg,#302544,#120e19 72%);border-color:#725c9d}
+.hand-card.sorrow .art{background:radial-gradient(circle at 50% 30%,rgba(200,180,255,.2),transparent 36%),linear-gradient(145deg,#5b4783,#191225)}
 
 .col-wrap{max-width:1180px;margin:0 auto;padding:20px 14px 70px}
 .col-head{text-align:center;margin-bottom:16px}
@@ -411,17 +418,16 @@ const roleOfSeat = s => (s % 2 === 0 ? 'carry' : 'support');
 
 /* ---------------- AS SEIS CORES (emoção · verbo mecânico · opostos) ----------------
    Estrela de 6 pontas: 3 eixos de oposição cruzando o centro.
-   Triângulo EXPRESSIVO (vão pra cima): rage, valor, joy
-   Triângulo RECOLHIDO (puxam pra dentro): calm, fear, sorrow          */
+   Cores do revamp: Ira, Bravura, Calma, Serenidade, Tristeza e Medo. */
 const COLORS = {
   rage:   {id:'rage',   name:'Ira',      icon:'🔥', hex:'#d8463b', soft:'#f08072', verb:'Queimar',    triangle:'expressiva', opposite:'calm',   blurb:'Dano direto e fúria: quanto mais ferido, mais perigoso.'},
   calm:   {id:'calm',   name:'Calma',    icon:'🕊️', hex:'#dcd6c6', soft:'#f4eede', verb:'Proteger',   triangle:'recolhida',  opposite:'rage',   blurb:'Escudo, cura e Provocar: segura a linha e não deixa cair.'},
   valor:  {id:'valor',  name:'Bravura',  icon:'🦁', hex:'#e0862f', soft:'#ffb877', verb:'Enfrentar',  triangle:'expressiva', opposite:'fear',   blurb:'Ímpeto e confronto: age na hora e força a briga.'},
-  fear:   {id:'fear',   name:'Medo',     icon:'🌫️', hex:'#7d5fb0', soft:'#b79ae0', verb:'Esquivar',   triangle:'recolhida',  opposite:'valor',  blurb:'Sabotagem e evasão: fere o que ameaça e some.'},
-  joy:    {id:'joy',    name:'Alegria',  icon:'☀️', hex:'#e6c03a', soft:'#ffe07a', verb:'Multiplicar',triangle:'expressiva', opposite:'sorrow', blurb:'Enxame e cartas: cresce em número e levanta o time junto.'},
-  sorrow: {id:'sorrow', name:'Tristeza', icon:'🌧️', hex:'#4674b3', soft:'#8fb6e6', verb:'Sacrificar', triangle:'recolhida',  opposite:'joy',    blurb:'Valor na perda: aguenta, desgasta e cobra caro no fim.'},
+  serenity:{id:'serenity',name:'Serenidade',icon:'🌊',hex:'#22bfd0',soft:'#8ce7ef',verb:'Antecipar',triangle:'recolhida',opposite:'rage',blurb:'Controle, conhecimento e preparação: muda o combate antes que ele termine.'},
+  sorrow: {id:'sorrow', name:'Tristeza', icon:'🌧️', hex:'#8067b7', soft:'#b9a5e8', verb:'Sacrificar', triangle:'recolhida',  opposite:'valor',  blurb:'Valor na perda: sacrifica, retorna e transforma o cemitério em recurso.'},
+  fear:   {id:'fear',   name:'Medo',     icon:'🌑', hex:'#24232b', soft:'#777482', verb:'Debilitar',   triangle:'recolhida', opposite:'calm',   blurb:'Exaustão, maldições e descarte: reduz as opções até não restar saída.'},
 };
-const COLOR_ORDER = ['rage','valor','joy','calm','fear','sorrow'];
+const COLOR_ORDER = ['rage','valor','calm','serenity','sorrow','fear'];
 
 /* ---------------- WARLORDS (facções mapeadas em carry/suporte) ---------------- */
 const WARLORDS = {
@@ -438,7 +444,7 @@ const WARLORDS = {
     hp: 20, blurb: 'Valebruma — muralha, formação e provocar; segura a linha.',
     power:{name:'Ordem do Bastião',cost:1,target:'ally',text:'Conceda +2 de Escudo a uma unidade aliada.',kind:'vale'},
     deck: ['vale_page','vale_scout','vale_shield','vale_spear','vale_sister','vale_guard','vale_marshal','vale_rally','vale_barricade','vale_laststand'] },
-  miku: { id: 'miku',color:'joy', name: 'Gabs Kimiko Kikamuito', icon: '🎧', roles: ['support'], faction: 'miku',
+  miku: { id: 'miku',color:'serenity', name: 'Gabs Kimiko Kikamuito', icon: '🎧', roles: ['support'], faction: 'miku',
     hp: 16, blurb: 'Concerto — cura o time, buffa e escuda; salva no fio.',
     power:{name:'Refrão Impossível',cost:2,target:'ally',text:'Cure 2 de uma unidade aliada; cura excedente vira Escudo.',kind:'miku'},
     deck: ['miku_note','miku_backup','miku_duet','miku_dancer','miku_sonic','miku_arranger','miku_diva','miku_encore','miku_leek','miku_world'] },
@@ -450,7 +456,7 @@ const WARLORDS = {
     blurb:'Ressonância — escudos preparados se transformam em cura e poder permanente.',
     power:{name:'Ponto de Ressonância',cost:1,target:'ally',text:'Dê +2 Escudo; se o alvo já tinha Escudo, também recebe +1 ATQ.',kind:'enchantPower'},
     deck:['ench_threadling','ench_rune_apprentice','ench_mirror_guard','ench_heartweaver','ench_prism_familiar','ench_archweaver','ench_silver_thread','ench_giant_stitch','ench_vital_mending','ench_prism_barrier']},
-  druid:{id:'druid',color:'joy',name:'Aldren, Guardião das Duas Luas',icon:'🌿',roles:['carry','support'],faction:'druid',hp:16,hpByRole:{carry:15,support:16},
+  druid:{id:'druid',color:'serenity',name:'Aldren, Guardião das Duas Luas',icon:'🌿',roles:['carry','support'],faction:'druid',hp:16,hpByRole:{carry:15,support:16},
     blurb:'Bosque — cria feras, fortalece a matilha e segura lanes com plantas antigas.',
     power:{name:'Chamado das Duas Luas',cost:2,target:'lane',choices:[{id:'wolf',name:'Lobo 2/1 · Ímpeto',icon:'🐺'},{id:'vulture',name:'Urubu 1/2 · Provocar',icon:'🦅'}],text:'Escolha: Lobo 2/1 com Ímpeto ou Urubu 1/2 exausto com Provocar.',kind:'druid'},
     deck:['druid_acorn_scout','druid_clearing_cub','druid_bark_guard','druid_moon_tender','druid_packcaller','druid_rootweaver','druid_ancient_bear','druid_grove_titan','druid_wild_growth','druid_call_pair']},
@@ -474,6 +480,22 @@ const WARLORDS = {
     hp:15, hpByRole:{carry:13,support:17}, blurb:'Homens-Rato — enxame híbrido, sucata, buffs de matilha e um botão nuclear.',
     power:{name:'Hora do Pump',cost:7,target:'lane',onceGame:true,text:'Uma vez por partida: invoque o Avatar Gym Rat 7/7 exausto e dê +2 ATQ aos outros Ratos aliados em campo.',kind:'ratsAvatar'},
     deck:['rats_runner','rats_scrounger','rats_shield','rats_alchemist','rats_pack','rats_assassin','rats_abomination','rats_coach','rats_scraprain','ratomanocu'] },
+  seyren:{id:'seyren',color:'rage',name:'Seyren Windsor',icon:'🗡️',roles:['carry'],faction:'seyren',hp:15,
+    blurb:'Cavaleiro Rúnico — fúria, investidas e golpes que atravessam a defesa.',
+    power:{name:'Comando de Seyren',cost:1,target:'ally',text:'Conceda +1 ATQ permanente a uma criatura aliada.',kind:'seyren'},
+    deck:['seyren_lord','seyren_peco','seyren_poring','seyren_orc','seyren_minouros','seyren_majouros','seyren_doppel','seyren_guardian','seyren_raydric','seyren_khalitz','seyren_ferus','seyren_city_knight','seyren_maximize','seyren_stun','seyren_breath','seyren_pierce','seyren_parry','seyren_frenzy']},
+  flamel:{id:'flamel',color:'serenity',name:'Flamel Emure',icon:'⚗️',roles:['carry','support'],faction:'flamel',hp:16,
+    blurb:'Alquimista — cria Homunculi, impõe estados e prepara reações em cadeia.',
+    power:{name:'Criar Homunculus',cost:2,target:'lane',text:'Invoque um Homunculus 1/1 exausto. No começo da vez do dono, ele recebe +1/+1.',kind:'flamel'},
+    deck:['flamel_creator','flamel_poring','flamel_peco','flamel_raydric','flamel_harpy','flamel_chimera','flamel_bathory','flamel_vesper','flamel_salamander','flamel_maximize','flamel_flora','flamel_sphere','flamel_acid_terror','flamel_catalyst','flamel_acid_bomb','flamel_proton','flamel_chemical','flamel_wall','flamel_stone','flamel_feast','flamel_scorpion']},
+  margaretha:{id:'margaretha',color:'calm',name:'Margaretha Sorin',icon:'✨',roles:['support'],faction:'margaretha',hp:20,
+    blurb:'Sumo-Sacerdotisa — cura, escudos, silêncio e ressurreição.',
+    power:{name:'Cura Maior',cost:2,target:'ally',text:'Cure 2 de uma criatura aliada.',kind:'margaretha'},
+    deck:['marga_high_priest','marga_randgris','marga_poring_noel','marga_poring','marga_laurel','marga_evil_druid','marga_sentinel','marga_angeling','marga_maximize','marga_magnus','marga_resurrection','marga_divine_light','marga_lex_divina','marga_lex_aeterna','marga_assumptio','marga_magic_shield','marga_blessing']},
+  dravos:{id:'dravos',color:'valor',name:'Dravos, o Boêmio Escarlate',icon:'🍻',roles:['carry','support'],faction:'dravos',hp:16,
+    blurb:'Patrulha Boêmia — enche o campo, fortalece a tribo e transforma a ressaca em vitória.',
+    power:{name:'Convocar a Patrulha',cost:2,target:'lane',text:'Invoque um Recruta Boêmio 1/1 exausto.',kind:'dravos'},
+    deck:['dravos_thirsty','dravos_bard','dravos_sergeant','dravos_veteran','dravos_leader','dravos_commander','dravos_tab','dravos_brog','dravos_master','dravos_baco','dravos_last_round']},
 };
 
 /* ---------------- CARTAS (subconjunto curado, nomes/números fiéis) ----------------
@@ -617,6 +639,90 @@ const CARDS = {
   rats_scraprain:{f:'rats',name:'Chuva de Sucata',type:'tactic',cost:2,icon:'🔩',text:'Seus aliados em campo recebem +1 ATQ e +1 Escudo.',onPlay:{k:'packBuff',n:1}},
   ratomanocu:{f:'rats',name:'Ratomanocu',type:'tactic',global:true,cost:5,icon:'💥',text:'Limpa TODAS as unidades da arena. Não causa dano à vida dos times.',onPlay:{k:'ratomanocu'}},
   rats_avatar:{f:'rats',tribe:'rat',token:true,name:'Avatar do Gym Rat',type:'unit',cost:7,atk:7,hp:7,icon:'🏋️',text:'7/7 exausto. Veio direto da área dos Warlords.'},
+
+  // ---- Seyren Windsor ----
+  seyren_lord:{f:'seyren',name:'Lorde Seyren',type:'unit',cost:4,atk:3,hp:5,icon:'🗡️',text:'Enquanto estiver ferido, recebe +4 ATQ.',woundedAtk:4},
+  seyren_peco:{f:'seyren',name:'PecoPeco',type:'unit',cost:2,atk:2,hp:2,icon:'🐤',text:'Montaria fiel.'},
+  seyren_poring:{f:'seyren',name:'Poring',type:'unit',cost:1,atk:1,hp:1,icon:'🫧',text:'Pequeno e insistente.'},
+  seyren_orc:{f:'seyren',name:'Guerreiro Orc',type:'unit',cost:3,atk:1,hp:4,icon:'👹',text:'No fim da vez do dono, sofre 1. Fúria: +2 ATQ sempre que recebe dano.',painAtk:2,endTurnSelfDamage:1},
+  seyren_minouros:{f:'seyren',name:'Minouros',type:'unit',cost:2,atk:2,hp:3,icon:'🐂',text:'Combatente robusto.'},
+  seyren_majouros:{f:'seyren',name:'Majouros',type:'unit',cost:4,atk:4,hp:4,icon:'🐃',text:'Ímpeto.',passive:'charge'},
+  seyren_doppel:{f:'seyren',name:'Doppelganger',type:'unit',cost:6,atk:4,hp:5,icon:'👥',text:'Ao entrar, invoque um Pesadelo 2/2 com Ímpeto.',onPlay:{k:'summon',cardId:'seyren_nightmare_token',count:1,exhausted:false}},
+  seyren_nightmare_token:{f:'seyren',token:true,name:'Pesadelo',type:'unit',cost:0,atk:2,hp:2,icon:'🐎',text:'Ímpeto.',passive:'charge'},
+  seyren_guardian:{f:'seyren',name:'Espadachim Guardião',type:'unit',targetUnit:'ally',targetFilter:'survive1',cost:6,atk:7,hp:7,icon:'⚔️',text:'Ao entrar, cause 1 de dano a outra criatura aliada.',onPlay:{k:'targetDamage',n:1}},
+  seyren_raydric:{f:'seyren',name:'Raydric',type:'unit',cost:3,atk:4,hp:3,icon:'🛡️',text:'Cavaleiro disciplinado.'},
+  seyren_khalitz:{f:'seyren',name:'Khalitzburg',type:'unit',cost:5,atk:5,hp:6,icon:'🗿',text:'Defensora da guarda real.'},
+  seyren_ferus:{f:'seyren',name:'Ferus Verde',type:'unit',cost:4,atk:4,hp:3,icon:'🐲',text:'Quando ataca, cause 1 a outro inimigo.',onAttackPing:1},
+  seyren_city_knight:{f:'seyren',name:'Cavaleiro da Cidade',type:'unit',cost:3,atk:2,hp:3,icon:'🏰',text:'Ao entrar, aliados recebem +1 Escudo.',onPlay:{k:'allyShield',n:1,t:'all'}},
+  seyren_maximize:{f:'seyren',name:'Maximizar Poder',type:'tactic',speed:'slow',global:true,cost:6,icon:'⬆️',text:'Transforme o poder: cause 1 a um aliado e dê +2 ATQ.',onPlay:{k:'upgradeHero',mode:'seyren'}},
+  seyren_stun:{f:'seyren',name:'Golpe Fulminante',type:'tactic',speed:'fast',targetUnit:'enemy',cost:3,icon:'💫',text:'Cause 2 de dano e deixe a criatura exausta.',onPlay:{k:'damageExhaust',n:2}},
+  seyren_breath:{f:'seyren',name:'Sopro do Dragão',type:'tactic',speed:'fast',targetUnit:'enemy',cost:5,icon:'🐉',text:'Cause 3 ao alvo e 2 aos outros inimigos.',onPlay:{k:'splashDamage',main:3,other:2}},
+  seyren_pierce:{f:'seyren',name:'Perfurar',type:'tactic',speed:'fast',targetUnit:'enemy',cost:2,icon:'🗡️',text:'Cause 2 de dano penetrante, ignorando Escudo.',onPlay:{k:'targetDamage',n:2,penetrating:true}},
+  seyren_parry:{f:'seyren',name:'Aparar Golpe',type:'tactic',speed:'fast',targetUnit:'ally',cost:3,icon:'🛡️',text:'Conceda 3 Escudo e Provocar.',onPlay:{k:'shieldTaunt',n:3}},
+  seyren_frenzy:{f:'seyren',name:'Frenesi',type:'tactic',speed:'slow',targetUnit:'ally',cost:5,icon:'😤',text:'Prepare, cure totalmente e dê +2 ATQ nesta vez; recebe dano dobrado.',onPlay:{k:'frenzy',n:2}},
+
+  // ---- Flamel Emure ----
+  flamel_creator:{f:'flamel',name:'Criador Flamel',type:'unit',cost:4,atk:2,hp:3,icon:'⚗️',text:'Ao entrar, invoque dois Homunculi 1/1.',onPlay:{k:'summonTokens',ids:['flamel_homunculus','flamel_homunculus'],exhausted:true}},
+  flamel_homunculus:{f:'flamel',token:true,tribe:'homunculus',name:'Homunculus',type:'unit',cost:0,atk:1,hp:1,icon:'🧬',text:'No começo da vez do dono, recebe +1/+1.',growEachTurn:1},
+  flamel_homunculus_s:{f:'flamel',token:true,tribe:'homunculus',name:'Homunculus S',type:'unit',cost:0,atk:2,hp:2,icon:'🧪',text:'No começo da vez do dono, recebe +2/+2.',growEachTurn:2},
+  flamel_poring:{f:'flamel',name:'Poring',type:'unit',cost:1,atk:1,hp:1,icon:'🫧',text:'Matéria-prima simpática.'},
+  flamel_peco:{f:'flamel',name:'PecoPeco',type:'unit',cost:2,atk:2,hp:2,icon:'🐤',text:'Montaria de laboratório.'},
+  flamel_raydric:{f:'flamel',name:'Raydric',type:'unit',cost:3,atk:4,hp:3,icon:'🛡️',text:'Guarda alquímico.'},
+  flamel_harpy:{f:'flamel',name:'Harpia',type:'unit',targetUnit:'any',cost:3,atk:2,hp:3,icon:'🦅',text:'Ao entrar, cause 1 a outra criatura.',onPlay:{k:'targetDamage',n:1}},
+  flamel_chimera:{f:'flamel',name:'Quimera',type:'unit',targetUnit:'enemy',cost:5,atk:4,hp:5,icon:'🦁',text:'Ao entrar, cause 2 e deixe o inimigo exausto.',onPlay:{k:'damageExhaust',n:2}},
+  flamel_bathory:{f:'flamel',name:'Bathory',type:'unit',cost:5,atk:4,hp:4,icon:'🧹',text:'Ao morrer, compre 2.',deathDraw:2},
+  flamel_vesper:{f:'flamel',name:'Vesper',type:'unit',cost:5,atk:3,hp:7,icon:'🤖',text:'Penetrante: ataques ignoram Escudo.',penetrating:true},
+  flamel_salamander:{f:'flamel',name:'Salamandra',type:'unit',cost:6,atk:6,hp:6,icon:'🦎',text:'No fim da vez do dono, cause 1 às duas duplas.',endTurnBothTeams:1},
+  flamel_maximize:{f:'flamel',name:'Maximizar Poder',type:'tactic',speed:'slow',global:true,cost:6,icon:'⬆️',text:'Seu poder passa a criar um Homunculus S 2/2.',onPlay:{k:'upgradeHero',mode:'flamel'}},
+  flamel_flora:{f:'flamel',name:'Criar Flora',type:'tactic',speed:'slow',cost:3,icon:'🌱',text:'Invoque duas Plantas Carnívoras 2/2.',onPlay:{k:'summonTokens',ids:['flamel_flora_token','flamel_flora_token'],exhausted:true}},
+  flamel_flora_token:{f:'flamel',token:true,tribe:'plant',name:'Planta Carnívora',type:'unit',cost:0,atk:2,hp:2,icon:'🌿',text:'Token 2/2.'},
+  flamel_sphere:{f:'flamel',name:'Criar Esfera Marinha',type:'tactic',speed:'slow',cost:2,icon:'🔵',text:'Invoque uma Esfera 0/6; na próxima vez do dono, explode por 3 nos inimigos.',onPlay:{k:'summon',cardId:'flamel_sphere_token',count:1,exhausted:true}},
+  flamel_sphere_token:{f:'flamel',token:true,name:'Esfera Marinha',type:'unit',cost:0,atk:0,hp:6,icon:'🫧',text:'Explode na próxima vez do dono.',explodeNextTurn:3,cannotAttack:true},
+  flamel_acid_terror:{f:'flamel',name:'Terror Ácido',type:'tactic',speed:'fast',targetUnit:'enemy',cost:2,icon:'🧪',text:'Cause 1 e aplique Frágil.',onPlay:{k:'damageFragile',n:1}},
+  flamel_catalyst:{f:'flamel',name:'Catalisador Alquímico',type:'tactic',speed:'slow',targetUnit:'enemy',cost:4,icon:'⚗️',text:'Cause 2; enquanto matar, repita no maior inimigo.',onPlay:{k:'chainDamage',n:2}},
+  flamel_acid_bomb:{f:'flamel',name:'Bomba Ácida',type:'tactic',speed:'slow',targetUnit:'enemy',cost:3,icon:'💣',text:'Dano baseado na Vida máxima do alvo: 1/2/6.',onPlay:{k:'acidBomb'}},
+  flamel_proton:{f:'flamel',name:'Canhão de Prótons',type:'tactic',speed:'fast',targetUnit:'enemy',cost:4,icon:'☄️',text:'Cause 4 ao alvo e 1 aos outros inimigos.',onPlay:{k:'splashDamage',main:4,other:1}},
+  flamel_chemical:{f:'flamel',name:'Proteção Química',type:'tactic',speed:'slow',targetUnit:'ally',cost:6,icon:'🧫',text:'A criatura reduz todo dano recebido em 2.',onPlay:{k:'permanentReduction',n:2}},
+  flamel_wall:{f:'flamel',name:'Muralha de Espinhos',type:'tactic',speed:'slow',cost:5,icon:'🌵',text:'Invoque uma Muralha 2/8 com Provocar que não pode atacar.',onPlay:{k:'summon',cardId:'flamel_wall_token',count:1,exhausted:true}},
+  flamel_wall_token:{f:'flamel',token:true,name:'Muralha de Espinhos',type:'unit',cost:0,atk:2,hp:8,icon:'🌵',text:'Provocar. Não pode atacar.',passive:'taunt',cannotAttack:true},
+  flamel_stone:{f:'flamel',name:'Pedra Filosofal',type:'tactic',speed:'slow',targetUnit:'ally',targetFilter:'homunculus',cost:3,icon:'💎',text:'Evolua um Homunculus para Homunculus S.',onPlay:{k:'evolveHomunculus'}},
+  flamel_feast:{f:'flamel',name:'Banquete Revigorante',type:'tactic',speed:'fast',targetUnit:'ally',cost:2,icon:'🍲',text:'Conceda +3/+3.',onPlay:{k:'targetStats',atk:3,hp:3}},
+  flamel_scorpion:{f:'flamel',name:'Escorpião no Vapor',type:'tactic',speed:'fast',targetUnit:'ally',cost:1,icon:'🦂',text:'Conceda Ímpeto e prepare a criatura.',onPlay:{k:'grantReady'}},
+
+  // ---- Margaretha Sorin ----
+  marga_high_priest:{f:'margaretha',name:'Sumo-Sacerdotisa Margaretha',type:'unit',cost:6,atk:4,hp:6,icon:'✨',text:'Ao entrar, cure 4 de todos; quem já estava cheio recebe +2 Escudo.',onPlay:{k:'healAllOverflowShield',heal:4,shield:2}},
+  marga_randgris:{f:'margaretha',name:'Valquíria Randgris',type:'unit',cost:7,atk:6,hp:6,icon:'🪽',text:'Ao entrar, remova Escudos e bônus dos inimigos.',onPlay:{k:'purgeEnemies'}},
+  marga_poring_noel:{f:'margaretha',name:'Poring Noel',type:'unit',cost:2,atk:1,hp:2,icon:'🎄',text:'Sempre que um aliado for curado, recebe +1 ATQ.',onAllyHealedAtk:1},
+  marga_poring:{f:'margaretha',name:'Poring',type:'unit',cost:1,atk:1,hp:1,icon:'🫧',text:'Uma pequena bênção.'},
+  marga_laurel:{f:'margaretha',name:'Laurel Weinder',type:'unit',targetUnit:'ally',targetFilter:'wounded',cost:2,atk:1,hp:3,icon:'🕯️',text:'Ao entrar, cure 2 de um aliado.',onPlay:{k:'targetHeal',n:2}},
+  marga_evil_druid:{f:'margaretha',name:'Druida Maligno',type:'unit',targetUnit:'enemy',cost:4,atk:3,hp:3,icon:'🧟',text:'O inimigo escolhido recebe dano em vez de cura.',cannotBeHealed:true,onPlay:{k:'invertHealing'}},
+  marga_sentinel:{f:'margaretha',name:'Dama da Sentinela',type:'unit',targetUnit:'enemy',cost:5,atk:4,hp:5,icon:'⚖️',text:'Troque os atributos do alvo com o outro inimigo mais forte.',onPlay:{k:'swapEnemyStats'}},
+  marga_angeling:{f:'margaretha',name:'Angeling',type:'unit',cost:3,atk:2,hp:3,icon:'😇',text:'No fim da vez do dono, conceda 1 Escudo a um aliado.',endTurnShield:1},
+  marga_maximize:{f:'margaretha',name:'Maximizar Poder',type:'tactic',speed:'slow',global:true,cost:6,icon:'⬆️',text:'Seu poder também concede +1/+1 a criaturas curadas.',onPlay:{k:'upgradeHero',mode:'margaretha'}},
+  marga_magnus:{f:'margaretha',name:'Magnus Exorcismus',type:'tactic',speed:'slow',global:true,cost:7,icon:'✝️',text:'Cause 4 a todos inimigos; 6 se você curou nesta vez.',onPlay:{k:'magnus'}},
+  marga_resurrection:{f:'margaretha',name:'Ressurreição',type:'tactic',speed:'slow',cost:8,icon:'🕊️',text:'Retorne a criatura aliada de maior custo e dê 2 Escudo.',onPlay:{k:'resurrectHighest',shield:2}},
+  marga_divine_light:{f:'margaretha',name:'Luz Divina',type:'tactic',speed:'fast',targetUnit:'any',cost:2,icon:'🌟',text:'Cause 2 a um inimigo ou cure 2 de um aliado.',onPlay:{k:'damageOrHeal',n:2}},
+  marga_lex_divina:{f:'margaretha',name:'Lex Divina',type:'tactic',speed:'slow',targetUnit:'enemy',cost:1,icon:'🤫',text:'Silencie uma criatura inimiga.',onPlay:{k:'silence'}},
+  marga_lex_aeterna:{f:'margaretha',name:'Lex Aeterna',type:'tactic',speed:'fast',targetUnit:'enemy',cost:4,icon:'⚡',text:'O próximo dano recebido pelo alvo é dobrado.',onPlay:{k:'doubleNextDamage'}},
+  marga_assumptio:{f:'margaretha',name:'Assumptio',type:'tactic',speed:'slow',targetUnit:'ally',cost:4,icon:'🕊️',text:'Dobre a Vida máxima e atual de uma criatura.',onPlay:{k:'doubleHealth'}},
+  marga_magic_shield:{f:'margaretha',name:'Escudo Mágico',type:'tactic',speed:'fast',targetUnit:'ally',targetFilter:'noWard',cost:2,icon:'✨',text:'A próxima fonte de dano é reduzida a zero.',onPlay:{k:'ward'}},
+  marga_blessing:{f:'margaretha',name:'Bênção',type:'tactic',speed:'fast',targetUnit:'ally',cost:2,icon:'🙏',text:'Conceda +2/+2.',onPlay:{k:'targetStats',atk:2,hp:2}},
+
+  // ---- Dravos e a Patrulha Boêmia ----
+  dravos_recruit:{f:'dravos',token:true,tribe:'bohemian',name:'Recruta Boêmio',type:'unit',cost:0,atk:1,hp:1,icon:'🍺',text:'Recruta 1/1 exausto.'},
+  dravos_thirsty:{f:'dravos',tribe:'bohemian',name:'Patrulheiro com Sede',type:'unit',cost:1,atk:1,hp:2,icon:'🍻',text:'Sempre que outro Boêmio aliado é invocado, recebe +1 ATQ.',onBohemianSummonAtk:1},
+  dravos_bard:{f:'dravos',tribe:'bohemian',name:'Bardo da Patrulha',type:'unit',cost:1,atk:1,hp:1,icon:'🎶',text:'Ao entrar, invoque um Recruta Boêmio 1/1 exausto.',onPlay:{k:'summon',cardId:'dravos_recruit',count:1,exhausted:true}},
+  dravos_sergeant:{f:'dravos',tribe:'bohemian',name:'Sargento de Copo Cheio',type:'unit',cost:2,atk:2,hp:2,icon:'🍺',text:'Aura: outros Boêmios aliados recebem +2 ATQ.',auraBohemianAtk:2},
+  dravos_veteran:{f:'dravos',tribe:'bohemian',name:'Boêmio Veterano',type:'unit',cost:2,atk:2,hp:3,icon:'🧔',text:'Ao entrar, outros Boêmios recebem +1 Vida máxima e curam 1.',onPlay:{k:'tribePack',tribe:'bohemian',atk:0,hp:1}},
+  dravos_leader:{f:'dravos',tribe:'bohemian',name:'Líder da Multidão',type:'unit',targetUnit:'enemy',cost:3,atk:3,hp:3,icon:'📣',text:'Ao entrar, cause dano igual ao número de Boêmios aliados.',onPlay:{k:'tribeCountDamage',tribe:'bohemian'}},
+  dravos_commander:{f:'dravos',tribe:'bohemian',name:'Comandante do Distrito',type:'unit',cost:4,atk:4,hp:4,icon:'🎖️',text:'Aura: outros Boêmios aliados recebem +1/+1.',auraBohemianAtk:1,onBohemianSummonHp:1},
+  dravos_song:{f:'dravos',name:'A Canção da Taverna',type:'tactic',speed:'fast',cost:1,icon:'🎵',text:'Boêmios aliados recebem +1 Escudo.',onPlay:{k:'tribeShield',tribe:'bohemian',n:1}},
+  dravos_tab:{f:'dravos',name:'A Conta da Taverna',type:'tactic',speed:'slow',global:true,cost:3,icon:'🧾',text:'Compre 1 para cada 2 Boêmios aliados.',onPlay:{k:'drawPerTribe',tribe:'bohemian',per:2}},
+  dravos_brog:{f:'dravos',tribe:'bohemian',name:'Brog, o Capitão da Guarda',type:'unit',cost:6,atk:6,hp:8,icon:'🪓',text:'Custa 1 a menos para cada Boêmio aliado.',costPerTribe:'bohemian'},
+  dravos_master:{f:'dravos',tribe:'bohemian',name:'Mestre de Cerimônias',type:'unit',cost:8,atk:6,hp:6,icon:'🎩',text:'Ao entrar, Boêmios aliados ganham Fúria +2 e Ímpeto.',onPlay:{k:'tribeRageCharge',tribe:'bohemian',n:2}},
+  dravos_baco:{f:'dravos',tribe:'bohemian',name:'Baco, o Inimigo do Fim',type:'unit',cost:5,atk:4,hp:6,icon:'🍷',text:'Aura: aliados ignoram debuffs e exaustão mágica.',auraStatusImmune:true},
+  dravos_last_round:{f:'dravos',name:'A Terceira Saideira',type:'tactic',speed:'fast',global:true,cost:6,icon:'🥂',text:'Prepare aliados; cada um recebe +2/+2 e a dupla cura 1.',onPlay:{k:'thirdRound'}},
+
   // ---- carta neutra de recuperação ----
   neutral_coin:{f:'neutral',name:'A Moeda',type:'tactic',global:true,cost:0,icon:'🪙',text:'Ganhe +1 Mana nesta vez.',onPlay:{k:'coin',n:1}},
 };
@@ -625,7 +731,8 @@ const CARDS = {
 /* ---------------- CARTAS GERAIS COLORIDAS (pool aberto por cor) ----------------
    Qualquer warlord pode usar cartas da própria cor + de UMA cor escolhida.
    Marcadas com general:true e color:'<id da cor>'.                            */
-const GENERAL_CARDS = {
+// Catálogo anterior preservado apenas como referência de migração; não entra em nenhum deck.
+const LEGACY_GENERAL_CARDS = {
   /* 🔥 IRA — Queimar */
   g_rage_spark:{f:'rage',general:true,color:'rage',name:'Fagulha Iracunda',type:'tactic',cost:1,icon:'🔥',text:'Cause 2 de dano ao maior inimigo em campo.',onPlay:{k:'damage',n:2,t:'big'}},
   g_rage_torch:{f:'rage',general:true,color:'rage',name:'Portadora da Tocha',type:'unit',cost:1,atk:2,hp:1,icon:'🕯️',text:'Ímpeto: pode agir na hora.',passive:'charge'},
@@ -686,6 +793,76 @@ const GENERAL_CARDS = {
   g_sorrow_revenant:{f:'sorrow',general:true,color:'sorrow',name:'Retornado',type:'unit',cost:4,atk:5,hp:3,icon:'👤',text:'Fúria 2: +2 ATQ ao atacar se estiver ferido.',rage:2},
   g_sorrow_end:{f:'sorrow',general:true,color:'sorrow',name:'Guardiã do Último Adeus',type:'unit',cost:5,atk:5,hp:6,icon:'⚱️',text:'Provocar: inimigos miram nela primeiro. Ao entrar: cure 2 de todos os aliados em campo.',passive:'taunt',onPlay:{k:'heal',n:2,t:'all'}},
 };
+const GENERAL_CARDS = {
+  g_rage_spark:{f:'rage',general:true,color:'rage',name:'Fagulha de Raiva',type:'tactic',speed:'fast',targetUnit:'any',cost:2,icon:'🔥',text:'Cause 3 de dano a qualquer unidade.',onPlay:{k:'targetDamage',n:3}},
+  g_rage_raw:{f:'rage',general:true,color:'rage',name:'Apressado que Come Cru',type:'unit',cost:1,atk:2,hp:1,icon:'🍖',text:'Ímpeto.',passive:'charge'},
+  g_rage_brute:{f:'rage',general:true,color:'rage',name:'Bruto Enfurecido',type:'unit',cost:2,atk:3,hp:2,icon:'👹',text:'Fúria +2 ao receber dano.',painAtk:2},
+  g_rage_spell:{f:'rage',general:true,color:'rage',name:'Raiva',type:'tactic',speed:'fast',targetUnit:'any',cost:3,icon:'💢',text:'Cause 1 de dano; a unidade recebe +2 ATQ.',onPlay:{k:'damageAndAtk',damage:1,atk:2}},
+  g_rage_fanatic:{f:'rage',general:true,color:'rage',name:'Fanática da Guerra',type:'unit',cost:3,atk:4,hp:3,icon:'⚔️',text:'Fúria +2 ao receber dano.',painAtk:2},
+  g_rage_gruto:{f:'rage',general:true,color:'rage',name:'Gruto, o Bruto',type:'unit',cost:4,atk:5,hp:5,icon:'🪓',text:'Fúria +2 ao receber dano.',painAtk:2},
+  g_rage_boar:{f:'rage',general:true,color:'rage',name:'Javali Enfurecido',type:'unit',cost:2,atk:3,hp:2,icon:'🐗',text:'Ímpeto.',passive:'charge'},
+  g_rage_pain:{f:'rage',general:true,color:'rage',name:'Dor para Todos',type:'tactic',speed:'slow',global:true,cost:3,icon:'🌋',text:'Cause 1 a todas as unidades e às duas duplas.',onPlay:{k:'damageAll',n:1,faces:true}},
+  g_rage_crusher:{f:'rage',general:true,color:'rage',name:'Bruto Esmagador',type:'unit',cost:6,atk:6,hp:6,icon:'🦬',text:'Ímpeto e Atropelar.',passive:'charge',trample:true},
+  g_rage_allin:{f:'rage',general:true,color:'rage',name:'Tudo ou Nada',type:'tactic',speed:'slow',global:true,cost:6,icon:'💥',text:'Criaturas da dupla ganham Atropelar nesta rodada.',onPlay:{k:'grantTeamTrample'}},
+
+  g_valor_recruit:{f:'valor',general:true,color:'valor',name:'Recruta do Alvorecer',type:'unit',cost:1,atk:1,hp:2,icon:'🌅',text:'Ao entrar, ganha 1 de Escudo.',onPlay:{k:'selfShield',n:1}},
+  g_valor_knight:{f:'valor',general:true,color:'valor',name:'Cavaleira do Alvorecer',type:'unit',cost:2,atk:2,hp:2,icon:'🐎',text:'Ao entrar, ganha 2 de Escudo.',onPlay:{k:'selfShield',n:2}},
+  g_valor_bastion:{f:'valor',general:true,color:'valor',name:'Bastião da Luz',type:'unit',cost:4,atk:3,hp:3,icon:'🏰',text:'Ao entrar, ganha 4 de Escudo.',onPlay:{k:'selfShield',n:4}},
+  g_valor_squire:{f:'valor',general:true,color:'valor',name:'Escudeiro da Luz',type:'unit',targetUnit:'ally',cost:2,atk:2,hp:2,icon:'🛡️',text:'Ao entrar, conceda 2 de Escudo a um aliado.',onPlay:{k:'targetShield',n:2}},
+  g_valor_banner:{f:'valor',general:true,color:'valor',name:'Estandarte Erguido',type:'tactic',speed:'slow',global:true,cost:2,icon:'🚩',text:'Aliados recebem +1 ATQ e +1 Escudo.',onPlay:{k:'teamAtkShield',atk:1,shield:1}},
+  g_valor_duelist:{f:'valor',general:true,color:'valor',name:'Frio e Duelista',type:'unit',cost:3,atk:3,hp:3,icon:'🤺',text:'Iniciativa: causa dano antes de receber.',initiative:true},
+  g_valor_crusader:{f:'valor',general:true,color:'valor',name:'Cruzado da Aurora',type:'unit',cost:3,atk:4,hp:4,icon:'☀️',text:'Ao entrar, ganha 2 de Escudo.',onPlay:{k:'selfShield',n:2}},
+  g_valor_grace:{f:'valor',general:true,color:'valor',name:'Escudo da Graça',type:'tactic',speed:'slow',targetUnit:'ally',cost:5,icon:'✨',text:'Um aliado ignora todo dano até o fim da vez.',onPlay:{k:'turnWard'}},
+  g_valor_wall:{f:'valor',general:true,color:'valor',name:'Parede de Escudos',type:'unit',cost:3,atk:2,hp:4,icon:'🧱',text:'Não pode atacar.',cannotAttack:true},
+  g_valor_lion:{f:'valor',general:true,color:'valor',name:'Leão da Aliança',type:'unit',cost:4,atk:5,hp:5,icon:'🦁',text:'Escudo 2. Ignora Provocar.',ignoreTaunt:true,onPlay:{k:'selfShield',n:2}},
+  g_valor_drunk_scout:{f:'valor',general:true,color:'valor',name:'Batedor Embriagado',type:'unit',cost:1,atk:2,hp:1,icon:'🍺',text:'Boêmio. Ímpeto.',tribe:'bohemian',passive:'charge'},
+  g_valor_mug_squire:{f:'valor',general:true,color:'valor',name:'Escudeiro de Caneca',type:'unit',cost:2,atk:2,hp:3,icon:'🍻',text:'Boêmio. Ao entrar, dê 1 de Escudo aos Boêmios.',tribe:'bohemian',onPlay:{k:'tribeShield',tribe:'bohemian',n:1}},
+  g_valor_memories:{f:'valor',general:true,color:'valor',name:'Memórias da Noite mais Épica',type:'tactic',speed:'slow',global:true,cost:3,icon:'📜',text:'Compre 1 para cada 2 Boêmios aliados.',onPlay:{k:'drawPerTribe',tribe:'bohemian',per:2}},
+
+  g_calm_cleric:{f:'calm',general:true,color:'calm',name:'Clériga da Vila',type:'unit',cost:1,atk:1,hp:3,icon:'⛪',text:'Quando um aliado é curado, compre 1 (uma vez por turno).',onAllyHealedDraw:true},
+  g_calm_cure:{f:'calm',general:true,color:'calm',name:'Cura pela Calma',type:'tactic',speed:'fast',cost:1,icon:'💧',text:'Cure 2 da criatura aliada mais ferida.',onPlay:{k:'heal',n:2,t:'most'}},
+  g_calm_barrier:{f:'calm',general:true,color:'calm',name:'Barreira de Luz',type:'unit',cost:2,atk:1,hp:5,icon:'🔆',text:'Provocar. Não pode atacar.',passive:'taunt',cannotAttack:true},
+  g_calm_praefatio:{f:'calm',general:true,color:'calm',name:'Praefatio',type:'tactic',speed:'slow',global:true,cost:3,icon:'🙏',text:'Todos os aliados recebem 2 de Escudo.',onPlay:{k:'teamShield',n:2}},
+  g_calm_peco:{f:'calm',general:true,color:'calm',name:'Grand Peco',type:'unit',targetUnit:'ally',cost:2,atk:1,hp:3,icon:'🐤',text:'Provocar. Ao entrar, conceda 2 de Escudo.',passive:'taunt',onPlay:{k:'targetShield',n:2}},
+  g_calm_magic:{f:'calm',general:true,color:'calm',name:'Escudo Mágico',type:'tactic',speed:'fast',targetUnit:'ally',targetFilter:'noWard',cost:2,icon:'🔮',text:'Um aliado ignora a próxima fonte de dano.',onPlay:{k:'ward'}},
+  g_calm_laurel:{f:'calm',general:true,color:'calm',name:'Laurel Weinder',type:'unit',targetUnit:'ally',cost:2,atk:1,hp:3,icon:'🌿',text:'Ao entrar, cure 2 de um aliado.',onPlay:{k:'targetHeal',n:2}},
+  g_calm_templar:{f:'calm',general:true,color:'calm',name:'Templária da Primeira Cruzada',type:'unit',cost:5,atk:5,hp:6,icon:'⚜️',text:'Provocar. Ao entrar, cure 2 de todos os aliados.',passive:'taunt',onPlay:{k:'healTeamUnits',n:2}},
+  g_calm_noel:{f:'calm',general:true,color:'calm',name:'Poring Noel',type:'unit',cost:2,atk:1,hp:2,icon:'🎄',text:'Quando um aliado é curado, recebe +1 ATQ.',onAllyHealedAtk:1},
+  g_calm_juice:{f:'calm',general:true,color:'calm',name:'Suco do Padre',type:'tactic',speed:'fast',targetUnit:'ally',cost:1,icon:'🥤',text:'Um aliado recebe +3/+3.',onPlay:{k:'targetStats',atk:3,hp:3}},
+
+  g_serenity_kraken:{f:'serenity',general:true,color:'serenity',name:'Kraken das Profundezas',type:'unit',cost:8,atk:8,hp:8,icon:'🐙',text:'Ao entrar, cause 3 a todos os inimigos.',onPlay:{k:'damageEnemies',n:3}},
+  g_serenity_parrot:{f:'serenity',general:true,color:'serenity',name:'Papagaio Tagarela',type:'unit',cost:1,atk:1,hp:1,icon:'🦜',text:'Ao entrar, inimigos recebem -1 ATQ.',onPlay:{k:'enemyAtk',n:-1}},
+  g_serenity_buccaneer:{f:'serenity',general:true,color:'serenity',name:'Bucaneiro Impulsivo',type:'unit',cost:3,atk:4,hp:1,icon:'🏴‍☠️',text:'Ímpeto.',passive:'charge'},
+  g_serenity_gunner:{f:'serenity',general:true,color:'serenity',name:'Artilheira do Convés',type:'unit',targetUnit:'any',cost:3,atk:4,hp:3,icon:'💣',text:'Ao entrar, cause 1 de dano.',onPlay:{k:'targetDamage',n:1}},
+  g_serenity_shot:{f:'serenity',general:true,color:'serenity',name:'Tiro de Bacamarte',type:'tactic',speed:'fast',targetUnit:'any',cost:2,icon:'🔫',text:'Cause 2 de dano.',onPlay:{k:'targetDamage',n:2}},
+  g_serenity_mutiny:{f:'serenity',general:true,color:'serenity',name:'Motim',type:'tactic',speed:'fast',targetUnit:'enemy',targetFilter:'atk4',cost:5,icon:'⚓',text:'Unidade inimiga de ATQ 4 ou menos ataca um aliado.',onPlay:{k:'mutiny'}},
+  g_serenity_future:{f:'serenity',general:true,color:'serenity',name:'Pensar no Futuro',type:'tactic',speed:'slow',global:true,cost:3,icon:'🧭',text:'Compre 1 e antecipe as próximas cartas.',onPlay:{k:'future'}},
+  g_serenity_clarity:{f:'serenity',general:true,color:'serenity',name:'Clareza',type:'tactic',speed:'slow',global:true,cost:0,icon:'💎',text:'Ganhe 1 Mana temporária.',onPlay:{k:'coin',n:1}},
+  g_serenity_disciple:{f:'serenity',general:true,color:'serenity',name:'Discípulo do Rio Amarelo',type:'unit',cost:3,atk:2,hp:3,icon:'🏞️',text:'Ao sobreviver a um combate, compre 1.',combatDraw:true},
+  g_serenity_turtle:{f:'serenity',general:true,color:'serenity',name:'Tartaruga do Templo Azul',type:'unit',cost:5,atk:4,hp:7,icon:'🐢',text:'Reduz cada fonte de dano em 1.',damageReduction:1},
+
+  g_sorrow_lament:{f:'sorrow',general:true,color:'sorrow',name:'Lamento da Viúva',type:'tactic',speed:'slow',global:true,cost:6,icon:'🕯️',text:'Ressuscite a unidade aliada mais recente com +2 ATQ.',onPlay:{k:'resurrectLatest',atk:2}},
+  g_sorrow_cry:{f:'sorrow',general:true,color:'sorrow',name:'Choro da Alma',type:'tactic',speed:'fast',targetUnit:'enemy',cost:2,icon:'💧',text:'Cause 2. Se morrer, a dupla inimiga sofre 2.',onPlay:{k:'executeTeamDamage',n:2,teamDamage:2}},
+  g_sorrow_absent:{f:'sorrow',general:true,color:'sorrow',name:'Amigo Ausente',type:'unit',cost:1,atk:3,hp:3,icon:'👤',text:'Não começa na mão inicial.',noOpeningHand:true},
+  g_sorrow_lastwish:{f:'sorrow',general:true,color:'sorrow',name:'Último Pedido',type:'tactic',speed:'slow',targetUnit:'ally',cost:3,icon:'📜',text:'Sacrifique; compre 2 e cure a dupla em 2.',onPlay:{k:'sacrificeDrawHeal',draw:2,heal:2}},
+  g_sorrow_collector:{f:'sorrow',general:true,color:'sorrow',name:'Colecionador de Nomes',type:'unit',cost:8,atk:2,hp:2,icon:'📚',text:'Recebe +1/+1 por carta diferente jogada pela dupla.',onPlay:{k:'differentCardsStats'}},
+  g_sorrow_memory:{f:'sorrow',general:true,color:'sorrow',name:'Recordação Encarnada',type:'unit',cost:5,atk:3,hp:4,icon:'🪞',text:'Copia habilidades da última unidade aliada morta.',onPlay:{k:'copyLastDead'}},
+  g_sorrow_trade:{f:'sorrow',general:true,color:'sorrow',name:'Troca Injusta',type:'tactic',speed:'slow',targetUnit:'enemy',cost:5,icon:'⚖️',text:'Sacrifique seu aliado mais frágil e destrua um inimigo.',onPlay:{k:'unfairTrade'}},
+  g_sorrow_goodbye:{f:'sorrow',general:true,color:'sorrow',name:'Despedida',type:'tactic',speed:'slow',global:true,cost:1,icon:'👋',text:'Descarte outra carta; seu parceiro compra 1.',onPlay:{k:'partnerDrawDiscard'}},
+  g_sorrow_see_you:{f:'sorrow',general:true,color:'sorrow',name:'Até Logo',type:'tactic',speed:'fast',targetUnit:'any',cost:3,icon:'🌫️',text:'Devolva uma unidade à mão do dono.',onPlay:{k:'bounce'}},
+  g_sorrow_loss:{f:'sorrow',general:true,color:'sorrow',name:'Conviver com a Perda',type:'tactic',speed:'slow',targetUnit:'ally',cost:5,icon:'🌧️',text:'Sacrifique; a dupla ganha +1 Mana máxima permanente.',onPlay:{k:'sacrificeMana'}},
+
+  g_fear_gravedigger:{f:'fear',general:true,color:'fear',name:'Coveiro de Almas',type:'unit',cost:1,atk:2,hp:1,icon:'⛏️',text:'Unidade básica.'},
+  g_fear_spell:{f:'fear',general:true,color:'fear',name:'Medo',type:'tactic',speed:'fast',targetUnit:'enemy',cost:2,icon:'😨',text:'Exaura uma unidade até a próxima vez do controlador.',onPlay:{k:'magicExhaust'}},
+  g_fear_guardian:{f:'fear',general:true,color:'fear',name:'Guardião da Tumba',type:'unit',cost:2,atk:3,hp:3,icon:'⚰️',text:'Unidade básica.'},
+  g_fear_curse:{f:'fear',general:true,color:'fear',name:'Maldição Mortal',type:'tactic',speed:'slow',targetUnit:'enemy',cost:3,icon:'☠️',text:'Quando o inimigo morrer, sua dupla sofre 5.',onPlay:{k:'markDeathTeam',n:5}},
+  g_fear_rot:{f:'fear',general:true,color:'fear',name:'Putrefação',type:'tactic',speed:'fast',targetUnit:'any',cost:3,icon:'🦠',text:'Uma unidade recebe -3/-3; se morrer, descarte 1.',onPlay:{k:'decay',n:3}},
+  g_fear_black_knight:{f:'fear',general:true,color:'fear',name:'Cavaleiro Negro',type:'unit',cost:3,atk:5,hp:5,icon:'♞',text:'Ao entrar, descarte 1 carta.',onPlay:{k:'discardSelf',n:1}},
+  g_fear_run:{f:'fear',general:true,color:'fear',name:'Fuja Garotinha',type:'tactic',speed:'slow',targetUnit:'ally',cost:3,icon:'🏃',text:'O aliado não pode ser alvo de magias inimigas.',onPlay:{k:'magicUntargetable'}},
+  g_fear_blood:{f:'fear',general:true,color:'fear',name:'Cavaleiro Sanguinário',type:'unit',cost:4,atk:3,hp:5,icon:'🩸',text:'Provocar. Reduz dano de combate em 1.',passive:'taunt',combatReduction:1},
+  g_fear_zombie:{f:'fear',general:true,color:'fear',name:'Zumbi-mestre',type:'unit',cost:4,atk:4,hp:3,icon:'🧟',text:'Se houver aliado com Provocar, cause 2 a um inimigo.',onPlay:{k:'tauntPing',n:2}},
+  g_fear_vampire:{f:'fear',general:true,color:'fear',name:'Vampiro Ancião',type:'unit',cost:6,atk:4,hp:5,icon:'🧛',text:'Dreno de Vida.',drain:99,singleton:true},
+};
 Object.assign(CARDS, GENERAL_CARDS);
 const GENERAL_IDS = Object.keys(GENERAL_CARDS);
 const cardsOfColor = col => GENERAL_IDS.filter(id => GENERAL_CARDS[id].color === col);
@@ -701,11 +878,11 @@ function shuffle(list, rnd = Math.random) {
   for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
-/* ---------------- REGRAS DE DECK (12 assinatura + 8 coloridas = 20) ----------------
+/* ---------------- REGRAS DE DECK (18 assinatura + 12 coloridas = 30) ----------------
    - Assinatura: as cartas exclusivas do warlord. Até 2 cópias de cada.
    - Coloridas: pool geral da cor PRÓPRIA do warlord + de UMA cor aliada escolhida.
    - O deck padrão (sem montagem) continua sendo o do warlord, por compatibilidade. */
-const DECK_RULES = { total:20, signature:12, general:8, maxCopies:2 };
+const DECK_RULES = { total:30, signature:18, general:12, maxCopies:2 };
 
 function warlordColor(wid){ return (WARLORDS[wid]||{}).color || null; }
 function defaultAllyColor(wid){
@@ -717,7 +894,7 @@ function availableGeneral(wid, allyColor){
   const own=warlordColor(wid), cols=[own,allyColor].filter(Boolean);
   return GENERAL_IDS.filter(id=>cols.includes(GENERAL_CARDS[id].color));
 }
-// receita padrão: 12 assinatura (2 cópias das 6 mais baratas... na prática 2× das 10) + 8 coloridas da cor própria
+// Receita padrão: 18 cartas de assinatura + 12 cartas coloridas.
 function defaultRecipe(wid){
   const sig=signatureIds(wid), out=[];
   for(let i=0;out.length<DECK_RULES.signature;i++) out.push(sig[i%sig.length]);
@@ -758,7 +935,7 @@ function validateRecipe(wid, allyColor, recipe){
   if(nSig!==DECK_RULES.signature) errors.push(`São ${DECK_RULES.signature} cartas de assinatura (tem ${nSig}).`);
   if(nGen!==DECK_RULES.general) errors.push(`São ${DECK_RULES.general} cartas coloridas (tem ${nGen}).`);
   for(const id in counts){
-    const cap=(id==='ratomanocu')?1:DECK_RULES.maxCopies;
+    const cap=(id==='ratomanocu'||CARDS[id]?.singleton)?1:DECK_RULES.maxCopies;
     if(counts[id]>cap) errors.push(`"${(CARDS[id]||{}).name||id}": máximo de ${cap} cópia(s).`);
   }
   return {ok:errors.length===0, errors:[...new Set(errors)], counts};
@@ -769,8 +946,7 @@ function makeDeck(warlordId, rnd, makeEntry, custom) {
   if (Array.isArray(custom) && custom.length) {
     recipe = custom.filter(id => CARDS[id]);            // receita montada pelo jogador
   } else {
-    recipe = WARLORDS[warlordId].deck.flatMap(id => id==='ratomanocu' ? [id] : [id,id]);
-    if (warlordId==='rats') recipe.push('rats_runner'); // 20 cartas; Ratomanocu permanece singleton
+    recipe = automaticRecipe(warlordId,defaultAllyColor(warlordId));
   }
   return shuffle(recipe, rnd).map(makeEntry);
 }
@@ -790,7 +966,11 @@ function createGame(config, rnd = Math.random) {
     if(!checked.ok)throw new Error(`Deck inválido no assento ${seat+1}: ${checked.errors[0]}`);
     const deck = makeDeck(wid, rnd, makeEntry, deckConfig.recipe);
     const hand = [];
-    for (let i = 0; i < 4; i++) hand.push(deck.pop());
+    for (let i = 0; i < 4; i++) {
+      let entry=deck.pop(),guard=deck.length+1;
+      while(entry&&CARDS[entry.cardId]?.noOpeningHand&&guard-->0){deck.unshift(entry);entry=deck.pop();}
+      if(entry)hand.push(entry);
+    }
     // Recuperação do time que joga depois: o carry compra uma carta extra e
     // o suporte recebe a Moeda. Assim o bônus não se concentra em um só jogador.
     if (seat === 2 && deck.length) { hand.push(deck.pop()); if(config.doubleCoin)hand.push(makeEntry('neutral_coin')); }
@@ -812,6 +992,7 @@ function createGame(config, rnd = Math.random) {
     seq: 0, events: [], // eventos p/ VFX (a UI consome)
     crossPool: !!config.crossPool, // knob: doar mana ao parceiro (default on)
     doubleCoin: !!config.doubleCoin,
+    chain:null, playedIds:[new Set(),new Set(),new Set(),new Set()], teamManaBonus:[0,0],
   };
   logMsg(g,`Bônus do Time B: Carry com 5 cartas${config.doubleCoin?' + Moeda':''}; Suporte com 4 + Moeda.`);
   beginTurn(g, true);
@@ -819,7 +1000,7 @@ function createGame(config, rnd = Math.random) {
 }
 
 /* ---------------- helpers de combate/alvo ---------------- */
-const atkVal = u => Math.max(0, u.atk + (u.atkPerm || 0) + (u.atkTemp || 0));
+const atkVal = u => Math.max(0, u.atk + (u.atkPerm || 0) + (u.atkTemp || 0) + (u.woundedAtk&&u.hp<u.maxHp?u.woundedAtk:0));
 const unitsInLane = (g, lane) => g.units.filter(u => u.lane === lane);
 const alliesInLane = (g, seat, lane, excludeUid) =>
   g.units.filter(u => u.lane === lane && teamOf(u.owner) === teamOf(seat) && u.uid !== excludeUid);
@@ -850,14 +1031,41 @@ function logMsg(g, text, cardId=null) {
   g.log.unshift(row);g.log=g.log.slice(0,80);
 }
 function draw(g, seat, n = 1) { const p = g.players[seat]; for (let i = 0; i < n; i++) if (p.deck.length) p.hand.push(p.deck.pop()); }
+function grantShield(g,u,n){
+  if(!u||n<=0||u.fragile)return 0;
+  u.shield=(u.shield||0)+n;ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:n});return n;
+}
+function healUnit(g,u,n,sourceSeat=u?.owner){
+  if(!u||n<=0||u.cannotBeHealed)return 0;
+  if(u.invertHealing){dealToUnit(g,u,n);return 0;}
+  const before=u.hp;u.hp=Math.min(u.maxHp,u.hp+n);const healed=u.hp-before;
+  if(!healed)return 0;
+  if(g.players[sourceSeat])g.players[sourceSeat].healedThisTurn=true;
+  ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:healed});
+  const team=teamOf(u.owner);
+  for(const ally of g.units.filter(x=>teamOf(x.owner)===team)){
+    if(ally.onAllyHealedAtk){ally.atkPerm=(ally.atkPerm||0)+ally.onAllyHealedAtk;ev(g,{type:'buff',uid:ally.uid,owner:ally.owner,lane:ally.lane,amount:ally.onAllyHealedAtk});}
+    if(ally.onAllyHealedDraw&&ally.healDrawSerial!==g.turnSerial){ally.healDrawSerial=g.turnSerial;draw(g,ally.owner,1);}
+  }
+  return healed;
+}
+function effectiveCardCost(g,seat,card){
+  let cost=card?.cost||0;
+  if(card?.costPerTribe)cost-=g.units.filter(u=>teamOf(u.owner)===teamOf(seat)&&CARDS[u.cardId]?.tribe===card.costPerTribe).length;
+  return Math.max(0,cost);
+}
+function hasStatusImmunity(g,u){return !!u&&g.units.some(x=>teamOf(x.owner)===teamOf(u.owner)&&x.auraStatusImmune);}
 
 /* ---------------- dano ---------------- */
-function dealToUnit(g, u, amount) {
+function dealToUnit(g, u, amount, opts={}) {
   amount=Math.max(0,amount||0);const beforeHp=u.hp;
-  const reduced=Math.min(amount,u.damageReduction||0);let rem=amount-reduced;
+  if(u.turnWardUntil&&u.turnWardUntil>=g.turnSerial)return {absorbed:amount,hpDamage:0,reduced:0,warded:true,killed:false};
+  if(u.nextDamageDouble){amount*=2;u.nextDamageDouble=false;}
+  const reduction=(u.damageReduction||0)+(opts.combat?(u.combatReduction||0):0);
+  const reduced=Math.min(amount,reduction);let rem=amount-reduced;
   if(reduced>0)ev(g,{type:'reduced',uid:u.uid,owner:u.owner,lane:u.lane,amount:reduced});
   if(rem>0&&(u.ward||0)>0){u.ward--;ev(g,{type:'wardblock',uid:u.uid,owner:u.owner,lane:u.lane,amount:rem});return {absorbed:rem,hpDamage:0,reduced,warded:true,killed:false};}
-  const sh = Math.min(u.shield || 0, rem); u.shield -= sh; rem -= sh;
+  const sh = opts.penetrating?0:Math.min(u.shield || 0, rem); u.shield -= sh; rem -= sh;
   if(sh>0)ev(g,{type:'shieldhit',uid:u.uid,owner:u.owner,lane:u.lane,amount:sh});
   if (rem > 0) {u.hp -= rem;ev(g,{type:'hit',uid:u.uid,owner:u.owner,lane:u.lane,amount:Math.min(beforeHp,rem)});}
   const hpDamage=Math.min(beforeHp,Math.max(0,rem));
@@ -867,10 +1075,14 @@ function dealToUnit(g, u, amount) {
   return result;
 }
 function killUnit(g, u) {
+  if(u.auraBohemianAtk)for(const x of g.units.filter(x=>x.uid!==u.uid&&teamOf(x.owner)===teamOf(u.owner)&&CARDS[x.cardId]?.tribe==='bohemian'))x.atkTemp=Math.max(0,(x.atkTemp||0)-u.auraBohemianAtk);
   g.units = g.units.filter(x => x.uid !== u.uid);
   if(!u.drowned){g.graveyard.unshift({cardId:u.cardId,owner:u.owner,lane:u.lane,round:g.round});g.graveyard=g.graveyard.slice(0,30);}
   ev(g, { type: 'death', uid: u.uid, owner: u.owner, lane: u.lane, name: CARDS[u.cardId].name, icon: CARDS[u.cardId].icon });
   logMsg(g, `☠ ${CARDS[u.cardId].name} caiu.`,u.cardId);
+  if(u.deathDraw)draw(g,u.owner,u.deathDraw);
+  if(u.deathTeamDamage)dealToTeamLife(g,teamOf(u.owner),u.deathTeamDamage,u.owner);
+  if(u.deathBuffAll)for(const ally of g.units.filter(x=>teamOf(x.owner)===teamOf(u.owner))){ally.atkPerm=(ally.atkPerm||0)+u.deathBuffAll;ally.hp+=u.deathBuffAll;ally.maxHp+=u.deathBuffAll;}
   if(!g.suppressDeathrattles&&u.deathSummon&&g.units.filter(x=>x.lane===u.lane&&teamOf(x.owner)===teamOf(u.owner)).length<LANE_CAP)spawnUnit(g,u.owner,u.deathSummon,u.lane,true);
 }
 function dealToTeamLife(g, team, amount, sourceSeat) {
@@ -908,14 +1120,14 @@ function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
     const pool = alliesInLane(g, seat, lane, null); // inclui self p/ táticas; unidades: self também pode
     let targets = [];
     if (t === 'all') targets = pool; else if (t === 'fragile') { const x = mostFragile(pool); if (x) targets = [x]; }
-    for (const u of targets) { u.shield = (u.shield||0) + n; ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane,amount:n}); }
+    for (const u of targets) grantShield(g,u,n);
     return;
   }
   if (k === 'heal') {
     const pool = alliesInLane(g, seat, lane, null);
     let targets = [];
     if (t === 'all') targets = pool; else if (t === 'most') { const x = mostWounded(pool); if (x) targets = [x]; }
-    for (const u of targets) { const before = u.hp; u.hp = Math.min(u.maxHp, u.hp + n); if (u.hp>before) ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane,amount:u.hp-before}); }
+    for (const u of targets) healUnit(g,u,n,seat);
     return;
   }
   if (k === 'damage') {
@@ -926,12 +1138,12 @@ function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
   }
   if (k === 'encore') { // cura 1 + atk 1 em todos aliados da lane
     const pool = alliesInLane(g, seat, lane, selfUnit ? selfUnit.uid : null);
-    for (const u of pool) { const b=u.hp; u.hp=Math.min(u.maxHp,u.hp+1); if(u.hp>b) ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane,amount:1}); u.atkPerm=(u.atkPerm||0)+1; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:1}); }
+    for (const u of pool) { healUnit(g,u,1,seat); u.atkPerm=(u.atkPerm||0)+1; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:1}); }
     return;
   }
   if (k === 'worldbuff') { // tática: +1 atk e cura 1 em todos aliados da lane (inclui todos)
     const pool = alliesInLane(g, seat, lane, null);
-    for (const u of pool) { const b=u.hp; u.hp=Math.min(u.maxHp,u.hp+1); if(u.hp>b) ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane,amount:1}); u.atkPerm=(u.atkPerm||0)+1; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:1}); }
+    for (const u of pool) { healUnit(g,u,1,seat); u.atkPerm=(u.atkPerm||0)+1; ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane,amount:1}); }
     return;
   }
   if(k==='bless'&&explicitTarget){
@@ -940,8 +1152,8 @@ function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
   }
   if(k==='ward'&&explicitTarget){explicitTarget.ward=Math.max(1,explicitTarget.ward||0);ev(g,{type:'ward',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane});return;}
   if(k==='assumptio'&&explicitTarget){explicitTarget.damageReduction=Math.max(explicitTarget.damageReduction||0,n);explicitTarget.damageReductionExpires=Math.max(explicitTarget.damageReductionExpires||0,g.turnSerial+4);ev(g,{type:'assumptio',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
-  if(k==='targetHeal'&&explicitTarget){const before=explicitTarget.hp;explicitTarget.hp=Math.min(explicitTarget.maxHp,explicitTarget.hp+n);if(explicitTarget.hp>before)ev(g,{type:'heal',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:explicitTarget.hp-before});return;}
-  if(k==='targetShield'&&explicitTarget){explicitTarget.shield=(explicitTarget.shield||0)+n;ev(g,{type:'shield',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
+  if(k==='targetHeal'&&explicitTarget){healUnit(g,explicitTarget,n,seat);return;}
+  if(k==='targetShield'&&explicitTarget){grantShield(g,explicitTarget,n);return;}
   if(k==='targetAtk'&&explicitTarget){explicitTarget.atkPerm=(explicitTarget.atkPerm||0)+n;ev(g,{type:'buff',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
   if(k==='targetReady'&&explicitTarget){explicitTarget.exhausted=false;ev(g,{type:'ready',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane});return;}
   if(k==='bloodDrain'&&explicitTarget){const hit=dealToUnit(g,explicitTarget,n);if(hit.hpDamage>0)healTeamLife(g,teamOf(seat),Math.min(onPlay.h||1,hit.hpDamage));return;}
@@ -954,13 +1166,13 @@ function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
     for(let i=0;i<(onPlay.count||1);i++)if(g.units.filter(u=>u.lane===lane&&teamOf(u.owner)===teamOf(seat)).length<LANE_CAP)spawnUnit(g,seat,onPlay.cardId,lane,onPlay.exhausted!==false);return;
   }
   if(k==='grantDrain'&&explicitTarget){explicitTarget.drain=Math.max(explicitTarget.drain||0,n);ev(g,{type:'drain',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:n});return;}
-  if(k==='selfShield'&&selfUnit){selfUnit.shield=(selfUnit.shield||0)+n;ev(g,{type:'shield',uid:selfUnit.uid,owner:selfUnit.owner,lane:selfUnit.lane,amount:n});return;}
+  if(k==='selfShield'&&selfUnit){grantShield(g,selfUnit,n);return;}
   if(k==='allyStats'){
     const pool=alliesInLane(g,seat,lane,onPlay.excludeSelf&&selfUnit?selfUnit.uid:null),u=onPlay.t==='fragile'?mostFragile(pool):strongest(pool);if(!u)return;
     const a=onPlay.atk||0,h=onPlay.hp||0;u.atkPerm=(u.atkPerm||0)+a;u.hp+=h;u.maxHp+=h;if(a)ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:a});if(h)ev(g,{type:'fortify',uid:u.uid,owner:u.owner,lane:u.lane,amount:h});return;
   }
   if(k==='resonantHeal'){
-    const u=mostWounded(alliesInLane(g,seat,lane,null));if(!u)return;const amount=(onPlay.base||1)+((u.shield||0)>0?(onPlay.bonus||0):0),b=u.hp;u.hp=Math.min(u.maxHp,u.hp+amount);if(u.hp>b)ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:u.hp-b});return;
+    const u=mostWounded(alliesInLane(g,seat,lane,null));if(!u)return;const amount=(onPlay.base||1)+((u.shield||0)>0?(onPlay.bonus||0):0);healUnit(g,u,amount,seat);return;
   }
   if(k==='prismFamiliar'&&selfUnit){
     const shielded=alliesInLane(g,seat,lane,selfUnit.uid).filter(u=>(u.shield||0)>0),u=mostFragile(shielded);
@@ -969,11 +1181,11 @@ function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
   }
   if(k==='resonantLane'){
     const pool=alliesInLane(g,seat,lane,null),had=new Set(pool.filter(u=>(u.shield||0)>0).map(u=>u.uid));
-    for(const u of pool){const shield=onPlay.shield||0;if(shield){u.shield=(u.shield||0)+shield;ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:shield});}if(had.has(u.uid)&&onPlay.healExisting){const b=u.hp;u.hp=Math.min(u.maxHp,u.hp+onPlay.healExisting);if(u.hp>b)ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:u.hp-b});}if(had.has(u.uid)&&onPlay.atkExisting){u.atkPerm=(u.atkPerm||0)+onPlay.atkExisting;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:onPlay.atkExisting});}}return;
+    for(const u of pool){const shield=onPlay.shield||0;if(shield)grantShield(g,u,shield);if(had.has(u.uid)&&onPlay.healExisting)healUnit(g,u,onPlay.healExisting,seat);if(had.has(u.uid)&&onPlay.atkExisting){u.atkPerm=(u.atkPerm||0)+onPlay.atkExisting;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:onPlay.atkExisting});}}return;
   }
-  if(k==='resonantShield'&&explicitTarget){const had=(explicitTarget.shield||0)>0,shield=onPlay.shield||2;explicitTarget.shield=(explicitTarget.shield||0)+shield;ev(g,{type:'shield',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:shield});if(had&&onPlay.healExisting){const b=explicitTarget.hp;explicitTarget.hp=Math.min(explicitTarget.maxHp,explicitTarget.hp+onPlay.healExisting);if(explicitTarget.hp>b)ev(g,{type:'heal',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:explicitTarget.hp-b});}return;}
+  if(k==='resonantShield'&&explicitTarget){const had=(explicitTarget.shield||0)>0,shield=onPlay.shield||2;grantShield(g,explicitTarget,shield);if(had&&onPlay.healExisting)healUnit(g,explicitTarget,onPlay.healExisting,seat);return;}
   if(k==='resonantStats'&&explicitTarget){const had=(explicitTarget.shield||0)>0,a=(onPlay.atk||0)+(had?(onPlay.bonusAtk||0):0),h=onPlay.hp||0;explicitTarget.atkPerm=(explicitTarget.atkPerm||0)+a;explicitTarget.hp+=h;explicitTarget.maxHp+=h;if(a)ev(g,{type:'buff',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:a});if(h)ev(g,{type:'fortify',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:h});return;}
-  if(k==='healShield'&&explicitTarget){const b=explicitTarget.hp;explicitTarget.hp=Math.min(explicitTarget.maxHp,explicitTarget.hp+(onPlay.heal||0));if(explicitTarget.hp>b)ev(g,{type:'heal',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:explicitTarget.hp-b});explicitTarget.shield=(explicitTarget.shield||0)+(onPlay.shield||0);if(onPlay.shield)ev(g,{type:'shield',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:onPlay.shield});return;}
+  if(k==='healShield'&&explicitTarget){healUnit(g,explicitTarget,onPlay.heal||0,seat);grantShield(g,explicitTarget,onPlay.shield||0);return;}
   if(k==='tribeAtk'){
     const pool=alliesInLane(g,seat,lane,onPlay.excludeSelf&&selfUnit?selfUnit.uid:null).filter(u=>CARDS[u.cardId].tribe===onPlay.tribe);
     for(const u of pool){u.atkPerm=(u.atkPerm||0)+n;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:n});}return;
@@ -1024,6 +1236,59 @@ function applyEffect(g, seat, lane, selfUnit, onPlay, explicitTarget=null) {
     }
     return;
   }
+  if(k==='targetDamage'&&explicitTarget){dealToUnit(g,explicitTarget,n,{penetrating:!!onPlay.penetrating});return;}
+  if(k==='damageAndAtk'&&explicitTarget){dealToUnit(g,explicitTarget,onPlay.damage||0);const alive=g.units.find(x=>x.uid===explicitTarget.uid);if(alive){alive.atkPerm=(alive.atkPerm||0)+(onPlay.atk||0);ev(g,{type:'buff',uid:alive.uid,owner:alive.owner,lane:alive.lane,amount:onPlay.atk||0});}return;}
+  if(k==='targetStats'&&explicitTarget){const a=onPlay.atk||0,h=onPlay.hp||0;explicitTarget.atkPerm=(explicitTarget.atkPerm||0)+a;explicitTarget.hp+=h;explicitTarget.maxHp+=h;ev(g,{type:'buff',uid:explicitTarget.uid,owner:explicitTarget.owner,lane:explicitTarget.lane,amount:a});return;}
+  if(k==='teamShield'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat)))grantShield(g,u,n);return;}
+  if(k==='teamAtkShield'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat))){u.atkPerm=(u.atkPerm||0)+(onPlay.atk||0);grantShield(g,u,onPlay.shield||0);}return;}
+  if(k==='healTeamUnits'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat)))healUnit(g,u,n,seat);return;}
+  if(k==='damageEnemies'){for(const u of g.units.filter(x=>teamOf(x.owner)!==teamOf(seat)).slice())dealToUnit(g,u,n);return;}
+  if(k==='enemyAtk'){for(const u of g.units.filter(x=>teamOf(x.owner)!==teamOf(seat)&&!hasStatusImmunity(g,x)))u.atkPerm=(u.atkPerm||0)+n;return;}
+  if(k==='damageAll'){for(const u of g.units.slice())dealToUnit(g,u,n);if(onPlay.faces){dealToTeamLife(g,0,n,seat);dealToTeamLife(g,1,n,seat);}return;}
+  if(k==='grantTeamTrample'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat)))u.trampleUntilRound=g.round;return;}
+  if(k==='turnWard'&&explicitTarget){explicitTarget.turnWardUntil=g.turnSerial;return;}
+  if(k==='future'){draw(g,seat,1);const p=g.players[seat],top=p.deck.splice(Math.max(0,p.deck.length-2));p.deck.push(...top.reverse());return;}
+  if(k==='mutiny'&&explicitTarget){const pool=g.units.filter(x=>teamOf(x.owner)===teamOf(explicitTarget.owner)&&x.uid!==explicitTarget.uid),victim=pool[Math.floor(Math.random()*pool.length)];if(victim){const a=combatAtk(explicitTarget),b=combatAtk(victim);dealToUnit(g,victim,a,{combat:true,penetrating:!!explicitTarget.penetrating});dealToUnit(g,explicitTarget,b,{combat:true,penetrating:!!victim.penetrating});}return;}
+  if(k==='executeTeamDamage'&&explicitTarget){const uid=explicitTarget.uid;dealToUnit(g,explicitTarget,n);if(!g.units.some(x=>x.uid===uid))dealToTeamLife(g,teamOf(explicitTarget.owner),onPlay.teamDamage||0,seat);return;}
+  if(k==='sacrificeDrawHeal'&&explicitTarget){const owner=explicitTarget.owner;killUnit(g,explicitTarget);draw(g,seat,onPlay.draw||0);healTeamLife(g,teamOf(owner),onPlay.heal||0);return;}
+  if(k==='differentCardsStats'&&selfUnit){const ids=new Set();for(const s of teamSeats(teamOf(seat)))for(const id of g.playedIds?.[s]||[])ids.add(id);const v=ids.size;selfUnit.atkPerm+=v;selfUnit.hp+=v;selfUnit.maxHp+=v;return;}
+  if(k==='copyLastDead'&&selfUnit){const dead=g.graveyard.find(x=>teamOf(x.owner)===teamOf(seat)&&CARDS[x.cardId]?.type==='unit');if(dead){const c=CARDS[dead.cardId];for(const prop of ['passive','rage','painAtk','drain','damageReduction','combatReduction','initiative','trample','ignoreTaunt','deathDraw','deathSummon'])if(c[prop]!=null)selfUnit[prop]=c[prop];}return;}
+  if(k==='unfairTrade'&&explicitTarget){const sacrifice=mostFragile(g.units.filter(x=>teamOf(x.owner)===teamOf(seat)));if(sacrifice){killUnit(g,sacrifice);if(g.units.some(x=>x.uid===explicitTarget.uid))killUnit(g,explicitTarget);}return;}
+  if(k==='partnerDrawDiscard'){const p=g.players[seat];if(p.hand.length){p.hand.splice(Math.floor(Math.random()*p.hand.length),1);draw(g,partnerOf(seat),1);}return;}
+  if(k==='bounce'&&explicitTarget){const owner=g.players[explicitTarget.owner];owner.hand.push({uid:'c'+g.nextCardUid++,cardId:explicitTarget.cardId});g.units=g.units.filter(x=>x.uid!==explicitTarget.uid);ev(g,{type:'bounce',uid:explicitTarget.uid,owner:explicitTarget.owner});return;}
+  if(k==='sacrificeMana'&&explicitTarget){killUnit(g,explicitTarget);g.teamManaBonus[teamOf(seat)]=(g.teamManaBonus[teamOf(seat)]||0)+1;return;}
+  if(k==='magicExhaust'&&explicitTarget){if(!hasStatusImmunity(g,explicitTarget)){explicitTarget.exhausted=true;explicitTarget.magicExhaustUntil=g.turnSerial+4;}return;}
+  if(k==='markDeathTeam'&&explicitTarget){if(!hasStatusImmunity(g,explicitTarget))explicitTarget.deathTeamDamage=(explicitTarget.deathTeamDamage||0)+n;return;}
+  if(k==='decay'&&explicitTarget){if(hasStatusImmunity(g,explicitTarget))return;const owner=explicitTarget.owner,uid=explicitTarget.uid;explicitTarget.atkPerm=(explicitTarget.atkPerm||0)-n;explicitTarget.maxHp-=n;explicitTarget.hp-=n;if(explicitTarget.hp<=0){killUnit(g,explicitTarget);const p=g.players[owner];if(p.hand.length)p.hand.splice(Math.floor(Math.random()*p.hand.length),1);}return;}
+  if(k==='discardSelf'){const p=g.players[seat];for(let i=0;i<n&&p.hand.length;i++)p.hand.splice(Math.floor(Math.random()*p.hand.length),1);return;}
+  if(k==='magicUntargetable'&&explicitTarget){explicitTarget.magicUntargetableUntil=g.turnSerial+4;return;}
+  if(k==='tauntPing'){if(g.units.some(x=>teamOf(x.owner)===teamOf(seat)&&x.passive==='taunt')){const target=strongest(g.units.filter(x=>teamOf(x.owner)!==teamOf(seat)));if(target)dealToUnit(g,target,n);}return;}
+  if(k==='upgradeHero'){g.players[seat].heroUpgrade=onPlay.mode||true;return;}
+  if(k==='damageExhaust'&&explicitTarget){dealToUnit(g,explicitTarget,n);const alive=g.units.find(x=>x.uid===explicitTarget.uid);if(alive&&!hasStatusImmunity(g,alive))alive.exhausted=true;return;}
+  if(k==='splashDamage'&&explicitTarget){for(const x of g.units.filter(u=>teamOf(u.owner)===teamOf(explicitTarget.owner)).slice())dealToUnit(g,x,x.uid===explicitTarget.uid?(onPlay.main||0):(onPlay.other||0));return;}
+  if(k==='shieldTaunt'&&explicitTarget){grantShield(g,explicitTarget,n);explicitTarget.passive='taunt';return;}
+  if(k==='frenzy'&&explicitTarget){explicitTarget.exhausted=false;healUnit(g,explicitTarget,999,seat);explicitTarget.atkTemp=(explicitTarget.atkTemp||0)+n;explicitTarget.nextDamageDouble=true;return;}
+  if(k==='damageFragile'&&explicitTarget){dealToUnit(g,explicitTarget,n);const alive=g.units.find(x=>x.uid===explicitTarget.uid);if(alive&&!hasStatusImmunity(g,alive)){alive.fragile=true;alive.shield=0;}return;}
+  if(k==='chainDamage'&&explicitTarget){let target=explicitTarget;while(target){const uid=target.uid;dealToUnit(g,target,n);if(g.units.some(x=>x.uid===uid))break;target=strongest(g.units.filter(x=>teamOf(x.owner)!==teamOf(seat)));}return;}
+  if(k==='acidBomb'&&explicitTarget){dealToUnit(g,explicitTarget,explicitTarget.maxHp>=8?6:explicitTarget.maxHp>=5?2:1);return;}
+  if(k==='permanentReduction'&&explicitTarget){explicitTarget.damageReduction=(explicitTarget.damageReduction||0)+n;return;}
+  if(k==='evolveHomunculus'&&explicitTarget){explicitTarget.cardId='flamel_homunculus_s';explicitTarget.atk=2;explicitTarget.atkPerm=0;explicitTarget.hp=Math.max(2,explicitTarget.hp+1);explicitTarget.maxHp=Math.max(2,explicitTarget.maxHp+1);return;}
+  if(k==='grantReady'&&explicitTarget){explicitTarget.exhausted=false;return;}
+  if(k==='healAllOverflowShield'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat))){const wasFull=u.hp>=u.maxHp;healUnit(g,u,onPlay.heal||0,seat);if(wasFull)grantShield(g,u,onPlay.shield||0);}return;}
+  if(k==='purgeEnemies'){for(const u of g.units.filter(x=>teamOf(x.owner)!==teamOf(seat))){u.atkPerm=0;u.atkTemp=0;u.shield=0;u.ward=0;}return;}
+  if(k==='swapEnemyStats'&&explicitTarget){const other=strongest(g.units.filter(x=>teamOf(x.owner)===teamOf(explicitTarget.owner)&&x.uid!==explicitTarget.uid));if(other){[explicitTarget.atk,other.atk]=[other.atk,explicitTarget.atk];[explicitTarget.hp,other.hp]=[other.hp,explicitTarget.hp];[explicitTarget.maxHp,other.maxHp]=[other.maxHp,explicitTarget.maxHp];}return;}
+  if(k==='magnus'){const dmg=g.players[seat].healedThisTurn?6:4;for(const u of g.units.filter(x=>teamOf(x.owner)!==teamOf(seat)).slice())dealToUnit(g,u,dmg);return;}
+  if(k==='resurrectHighest'||k==='resurrectLatest'){const dead=(k==='resurrectHighest'?g.graveyard.filter(x=>teamOf(x.owner)===teamOf(seat)).sort((a,b)=>(CARDS[b.cardId]?.cost||0)-(CARDS[a.cardId]?.cost||0)):g.graveyard.filter(x=>teamOf(x.owner)===teamOf(seat)))[0];if(dead&&g.units.filter(x=>teamOf(x.owner)===teamOf(seat)).length<LANE_CAP){g.graveyard.splice(g.graveyard.indexOf(dead),1);const u=spawnUnit(g,seat,dead.cardId,dead.lane,true);u.atkPerm+=(onPlay.atk||0);grantShield(g,u,onPlay.shield||0);}return;}
+  if(k==='damageOrHeal'&&explicitTarget){if(teamOf(explicitTarget.owner)===teamOf(seat))healUnit(g,explicitTarget,n,seat);else dealToUnit(g,explicitTarget,n);return;}
+  if(k==='invertHealing'&&explicitTarget){if(!hasStatusImmunity(g,explicitTarget))explicitTarget.invertHealing=true;return;}
+  if(k==='silence'&&explicitTarget){if(!hasStatusImmunity(g,explicitTarget))for(const prop of ['passive','rage','painAtk','drain','damageReduction','combatReduction','initiative','trample','ignoreTaunt','deathDraw','deathSummon','cannotAttack','magicUntargetableUntil'])delete explicitTarget[prop];return;}
+  if(k==='doubleNextDamage'&&explicitTarget){if(!hasStatusImmunity(g,explicitTarget))explicitTarget.nextDamageDouble=true;return;}
+  if(k==='doubleHealth'&&explicitTarget){explicitTarget.hp*=2;explicitTarget.maxHp*=2;return;}
+  if(k==='tribeShield'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat)&&CARDS[x.cardId]?.tribe===onPlay.tribe))grantShield(g,u,n);return;}
+  if(k==='drawPerTribe'){const count=g.units.filter(x=>teamOf(x.owner)===teamOf(seat)&&CARDS[x.cardId]?.tribe===onPlay.tribe).length;draw(g,seat,Math.floor(count/(onPlay.per||1)));return;}
+  if(k==='tribeCountDamage'&&explicitTarget){const count=g.units.filter(x=>teamOf(x.owner)===teamOf(seat)&&CARDS[x.cardId]?.tribe===onPlay.tribe).length;dealToUnit(g,explicitTarget,count);return;}
+  if(k==='tribeRageCharge'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat)&&CARDS[x.cardId]?.tribe===onPlay.tribe)){u.painAtk=Math.max(u.painAtk||0,n);u.exhausted=false;}return;}
+  if(k==='thirdRound'){for(const u of g.units.filter(x=>teamOf(x.owner)===teamOf(seat))){u.exhausted=false;u.atkPerm+=2;u.hp+=2;u.maxHp+=2;}healTeamLife(g,teamOf(seat),1);return;}
   if (k === 'ratomanocu') {
     const doomed = g.units.slice();
     ev(g,{type:'boardwipe',owner:seat,amount:doomed.length});
@@ -1054,7 +1319,7 @@ function heroTargetLanes(g,seat) {
   return g.lanes.map((_,lane)=>lane).filter(lane=>g.units.filter(u=>u.lane===lane&&teamOf(u.owner)===teamOf(seat)).length<LANE_CAP);
 }
 function canUseHeroPower(g, seat) {
-  if (g.over || g.active!==seat) return false;
+  if (g.over || g.chain || g.active!==seat) return false;
   const p=g.players[seat], w=WARLORDS[p.warlordId];
   const hasTarget=w?.power?.target==='lane' ? heroTargetLanes(g,seat).length : heroTargetUids(g,seat).length;
   const extraOk=w?.power?.kind!=='bloodlord'||g.teams[teamOf(seat)].life>1;
@@ -1076,6 +1341,11 @@ function useHeroPower(g, seat, targetRef, choice) {
     }else if(w.power.kind==='pirate'){
       const i=g.graveyard.findIndex(x=>teamOf(x.owner)===teamOf(seat)),dead=g.graveyard.splice(i,1)[0];
       summoned=spawnUnit(g,seat,'pirate_drowned_token',targetRef,false);detail=` Consumiu ${CARDS[dead.cardId].name} e invocou um Afogado com Ímpeto.`;
+    }else if(w.power.kind==='flamel'){
+      const token=p.heroUpgrade==='flamel'?'flamel_homunculus_s':'flamel_homunculus';
+      summoned=spawnUnit(g,seat,token,targetRef,true);detail=` Criou ${CARDS[token].name} exausto.`;
+    }else if(w.power.kind==='dravos'){
+      summoned=spawnUnit(g,seat,'dravos_recruit',targetRef,true);detail=' Convocou um Recruta Boêmio exausto.';
     }
     ev(g,{type:'hero',owner:seat,uid:summoned?.uid,lane:targetRef,name:w.power.name});
     logMsg(g,`${p.name} usou ${w.power.name} na ${g.lanes[targetRef].name}.${detail}`,summoned?.cardId||null);
@@ -1096,18 +1366,23 @@ function useHeroPower(g, seat, targetRef, choice) {
     u.shield=(u.shield||0)+2; ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:2});
   } else if (w.power.kind==='miku') {
     const missing=Math.max(0,u.maxHp-u.hp), healed=Math.min(2,missing), excess=2-healed;
-    if (healed) { u.hp+=healed; ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:healed}); }
-    if (excess) { u.shield=(u.shield||0)+excess; ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:excess}); }
+    if (healed) healUnit(g,u,healed,seat);
+    if (excess) grantShield(g,u,excess);
   } else if(w.power.kind==='priestHeal'){
-    const before=u.hp;u.hp=Math.min(u.maxHp,u.hp+1);if(u.hp>before)ev(g,{type:'heal',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});
+    healUnit(g,u,1,seat);
   } else if(w.power.kind==='succubus'){
     const hit=dealToUnit(g,u,1);if(hit.hpDamage>0&&g.units.some(x=>x.uid===u.uid)){u.atkPerm=(u.atkPerm||0)+1;u.hp+=1;u.maxHp+=1;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});ev(g,{type:'fortify',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});}
   } else if(w.power.kind==='bloodlord'){
-    g.teams[teamOf(seat)].life--;ev(g,{type:'bloodcost',team:teamOf(seat),amount:1});const hit=dealToUnit(g,u,w.power.damage||2);if(hit.hpDamage>0){const wounded=mostWounded(g.units.filter(x=>teamOf(x.owner)===teamOf(seat)));if(wounded){const b=wounded.hp;wounded.hp=Math.min(wounded.maxHp,wounded.hp+1);if(wounded.hp>b)ev(g,{type:'heal',uid:wounded.uid,owner:wounded.owner,lane:wounded.lane,amount:1});}}
+    g.teams[teamOf(seat)].life--;ev(g,{type:'bloodcost',team:teamOf(seat),amount:1});const hit=dealToUnit(g,u,w.power.damage||2);if(hit.hpDamage>0){const wounded=mostWounded(g.units.filter(x=>teamOf(x.owner)===teamOf(seat)));if(wounded)healUnit(g,wounded,1,seat);}
   } else if(w.power.kind==='enchantPower'){
     const had=(u.shield||0)>0;u.shield=(u.shield||0)+2;ev(g,{type:'shield',uid:u.uid,owner:u.owner,lane:u.lane,amount:2});if(had){u.atkPerm=(u.atkPerm||0)+1;ev(g,{type:'buff',uid:u.uid,owner:u.owner,lane:u.lane,amount:1});}
   } else if(w.power.kind==='arenaFight'){
     const target=mostFragile(legalFightEnemies(g,seat,u.lane));if(target)resolveFight(g,seat,u,target);
+  } else if(w.power.kind==='seyren'){
+    if(p.heroUpgrade==='seyren')dealToUnit(g,u,1);
+    const alive=g.units.find(x=>x.uid===u.uid);if(alive){alive.atkPerm=(alive.atkPerm||0)+(p.heroUpgrade==='seyren'?2:1);ev(g,{type:'buff',uid:alive.uid,owner:alive.owner,lane:alive.lane,amount:p.heroUpgrade==='seyren'?2:1});}
+  } else if(w.power.kind==='margaretha'){
+    const healed=healUnit(g,u,2,seat);if(healed&&p.heroUpgrade==='margaretha'){u.atkPerm=(u.atkPerm||0)+1;u.hp+=1;u.maxHp+=1;}
   }
   logMsg(g,`${p.name} usou ${w.power.name} em ${CARDS[u.cardId].name}, na ${g.lanes[u.lane].name}.`,u.cardId);
   return {ok:true};
@@ -1127,6 +1402,10 @@ function validCardTargetUids(g,seat,card){
   else if(card.targetFilter==='fightable')pool=pool.filter(u=>legalFightEnemies(g,seat,u.lane).some(e=>e.uid===u.uid)&&alliesInLane(g,seat,u.lane,null).some(a=>atkVal(a)>0&&a.lastForcedFightRound!==g.round));
   else if(card.targetFilter==='noWard')pool=pool.filter(u=>!(u.ward||0));
   else if(card.targetFilter==='noDrain')pool=pool.filter(u=>!(u.drain||0));
+  else if(card.targetFilter==='homunculus')pool=pool.filter(u=>u.cardId==='flamel_homunculus'||u.cardId==='flamel_homunculus_s');
+  else if(card.targetFilter==='atk4')pool=pool.filter(u=>atkVal(u)<=4);
+  if(card.onPlay?.k==='mutiny')pool=pool.filter(u=>g.units.some(x=>x.uid!==u.uid&&teamOf(x.owner)===teamOf(u.owner)));
+  if(card.type==='tactic')pool=pool.filter(u=>!(u.magicUntargetableUntil>=g.turnSerial&&teamOf(u.owner)!==teamOf(seat)));
   return pool.map(u=>u.uid);
 }
 function tacticHasEffect(g,seat,card,lane){
@@ -1145,16 +1424,25 @@ function tacticHasEffect(g,seat,card,lane){
   if(k==='autoFight')return enemies.length>0&&allies.some(u=>atkVal(u)>0&&u.lastForcedFightRound!==g.round);
   return true;
 }
+function responseOrder(originSeat){return [...teamSeats(1-teamOf(originSeat)),partnerOf(originSeat),originSeat];}
+function currentActorSeat(g){return g.chain?g.chain.order[g.chain.cursor]:g.active;}
+function openChain(g,originSeat,item){
+  if(!g.chain)g.chain={originSeat,order:responseOrder(originSeat),cursor:0,passes:0,stack:[]};
+  g.chain.stack.push(item);g.chain.passes=0;
+  if(g.chain.stack.length>1)g.chain.cursor=(g.chain.cursor+1)%g.chain.order.length;
+  ev(g,{type:'priority',seat:currentActorSeat(g),depth:g.chain.stack.length});
+}
 function canPlay(g, seat, cardRef, lane, targetUid) {
-  if (g.over || g.active !== seat) return false;
+  if (g.over || currentActorSeat(g) !== seat) return false;
   const p = g.players[seat], i=handIndexFor(p,cardRef), entry=p.hand[i], id=cardIdOf(entry), card=CARDS[id];
   if (!card) return false;
+  if(g.chain&&(card.type!=='tactic'||card.speed!=='fast'))return false;
   let effectiveLane=lane;
   if(card.targetUnit){if(lane!==undefined||!validCardTargetUids(g,seat,card).includes(targetUid))return false;effectiveLane=g.units.find(u=>u.uid===targetUid)?.lane;}
   else if (card.global) { if (lane!==undefined||targetUid!==undefined) return false; }
   else if (!Number.isInteger(lane) || lane<0 || lane>=LANES.length) return false;
   if (card.type==='unit' && g.units.filter(u=>u.lane===effectiveLane && teamOf(u.owner)===teamOf(seat)).length>=LANE_CAP) return false;
-  return card.cost <= p.mana && tacticHasEffect(g,seat,card,effectiveLane);
+  return effectiveCardCost(g,seat,card) <= p.mana && tacticHasEffect(g,seat,card,effectiveLane);
 }
 function spendMana(p,cost) {
   const base=Math.max(0,p.mana-(p.tempMana||0)), fromBase=Math.min(cost,base), fromTemp=cost-fromBase;
@@ -1165,8 +1453,16 @@ function spawnUnit(g,seat,cardId,lane,forceExhausted=false,overrides={}) {
   const u={uid:g.nextUid++,owner:seat,cardId,lane,atk:card.atk,atkPerm:0,atkTemp:0,
     hp:card.hp,maxHp:card.hp,shield:0,exhausted:forceExhausted||card.passive!=='charge',
     enteredTurn:g.round,enteredSerial:g.turnSerial,passive:card.passive||null,rage:card.rage||0,
-    ward:0,damageReduction:0,damageReductionExpires:0,painAtk:card.painAtk||0,drain:card.drain||0,deathSummon:card.deathSummon||null,drowned:!!card.drowned,hasAttacked:false,...overrides};
+    ward:0,damageReduction:card.damageReduction||0,damageReductionExpires:0,painAtk:card.painAtk||0,drain:card.drain||0,deathSummon:card.deathSummon||null,drowned:!!card.drowned,hasAttacked:false,...overrides};
+  for(const prop of ['woundedAtk','endTurnSelfDamage','onAttackPing','upgradeHero','penetrating','initiative','cannotAttack','damageFragile','combatDraw','combatReduction','growEachTurn','deathDraw','endTurnBothTeams','explodeNextTurn','permanentReduction','onAllyHealedAtk','onAllyHealedDraw','cannotBeHealed','invertHealing','endTurnShield','auraBohemianAtk','onBohemianSummonAtk','onBohemianSummonHp','auraStatusImmune','trample','ignoreTaunt'])if(card[prop]!=null)u[prop]=card[prop];
   g.units.push(u); ev(g,{type:'summon',uid:u.uid,owner:seat,lane,name:card.name});
+  if(card.tribe==='bohemian'){
+    const allies=g.units.filter(x=>x.uid!==u.uid&&teamOf(x.owner)===teamOf(seat));
+    for(const x of allies)if(x.onBohemianSummonAtk){x.atkPerm=(x.atkPerm||0)+x.onBohemianSummonAtk;ev(g,{type:'buff',uid:x.uid,owner:x.owner,lane:x.lane,amount:x.onBohemianSummonAtk});}
+    const hpBuff=allies.reduce((n,x)=>n+(x.onBohemianSummonHp||0),0);if(hpBuff){u.hp+=hpBuff;u.maxHp+=hpBuff;}
+    u.atkTemp=(u.atkTemp||0)+allies.reduce((n,x)=>n+(x.auraBohemianAtk||0),0);
+  }
+  if(u.auraBohemianAtk)for(const x of g.units.filter(x=>x.uid!==u.uid&&teamOf(x.owner)===teamOf(seat)&&CARDS[x.cardId]?.tribe==='bohemian'))x.atkTemp=(x.atkTemp||0)+u.auraBohemianAtk;
   return u;
 }
 function playCard(g, seat, cardRef, lane, targetUid) {
@@ -1174,16 +1470,18 @@ function playCard(g, seat, cardRef, lane, targetUid) {
   const id=cardIdOf(entry), card=CARDS[id],explicitTarget=card?.targetUnit?g.units.find(u=>u.uid===targetUid):null;
   if(card?.targetUnit)lane=explicitTarget?.lane;
   if (!canPlay(g, seat, cardRef, card?.targetUnit?undefined:lane, targetUid)) return { ok: false, err: 'ilegal' };
-  spendMana(p,card.cost);
+  const cost=effectiveCardCost(g,seat,card);
+  spendMana(p,cost);
   p.hand.splice(handIndex, 1);
+  if(g.playedIds?.[seat])g.playedIds[seat].add(id);
   if (card.type === 'unit') {
     const u=spawnUnit(g,seat,id,lane);
     logMsg(g, `${p.name} jogou ${card.name} na ${g.lanes[lane].name}.`,id);
     applyEffect(g, seat, lane, u, card.onPlay,explicitTarget);
   } else {
     ev(g, { type: 'tactic', owner: seat, lane, name: card.name });
-    logMsg(g, `${p.name} usou ${card.name}${explicitTarget?' em '+CARDS[explicitTarget.cardId].name:Number.isInteger(lane)?' na '+g.lanes[lane].name:' (efeito global)'}.`,id);
-    applyEffect(g, seat, lane, null, card.onPlay,explicitTarget);
+    logMsg(g, `${p.name} colocou ${card.name} na pilha${explicitTarget?' mirando '+CARDS[explicitTarget.cardId].name:''}.`,id);
+    openChain(g,seat,{kind:'spell',seat,cardId:id,lane:Number.isInteger(lane)?lane:null,targetUid:explicitTarget?.uid??null});
   }
   return { ok: true };
 }
@@ -1191,14 +1489,14 @@ function playCard(g, seat, cardRef, lane, targetUid) {
 function attackTargets(g, u) {
   // Inimigos comuns não bloqueiam a vida; Provocar protege unidades e a vida da dupla.
   const enemies = enemiesInLane(g, u.owner, u.lane);
-  const taunts = enemies.filter(e => e.passive === 'taunt');
+  const taunts = u.ignoreTaunt?[]:enemies.filter(e => e.passive === 'taunt');
   const list = (taunts.length ? taunts : enemies).map(e => e.uid);
   return { units: list, face: taunts.length === 0 };
 }
 function canAttackWith(g, seat, uid) {
-  if (g.over || g.active !== seat) return false;
+  if (g.over || g.chain || g.active !== seat) return false;
   const u = g.units.find(x => x.uid === uid && x.owner === seat);
-  if (!u || u.exhausted) return false;
+  if (!u || u.exhausted||u.cannotAttack) return false;
   if (atkVal(u) <= 0) return false;
   const t = attackTargets(g, u);
   return t.units.length > 0 || t.face;
@@ -1207,31 +1505,72 @@ function attack(g, seat, uid, targetUid /* or null for face */) {
   if (!canAttackWith(g, seat, uid)) return { ok: false, err: 'ilegal' };
   const u = g.units.find(x => x.uid === uid);
   const t = attackTargets(g, u);
+  if(targetUid==null&&!t.face)return {ok:false,err:'face-bloqueada'};
+  if(targetUid!=null&&!t.units.includes(targetUid))return {ok:false,err:'alvo'};
+  u.exhausted=true;u.hasAttacked=true;
+  openChain(g,seat,{kind:'attack',seat,uid,targetUid:targetUid??null});
+  logMsg(g,`${g.players[seat].name} declarou ataque com ${CARDS[u.cardId].name}.`,u.cardId);
+  return {ok:true};
+}
+function resolveAttackItem(g,item) {
+  const seat=item.seat,u=g.units.find(x=>x.uid===item.uid);
+  if(!u||teamOf(u.owner)!==teamOf(seat)){logMsg(g,'O ataque perdeu seu atacante e foi cancelado.');return;}
+  const targetUid=item.targetUid;
   let dmg = combatAtk(u); // inclui Fúria quando a unidade está ferida
   if (targetUid == null) {
-    if (!t.face) return { ok: false, err: 'face-bloqueada' };
     const enemyTeam = 1 - teamOf(seat);
     ev(g, { type: 'attack', uid: u.uid, owner: seat, lane: u.lane, face: true });
     const dealt=dealToTeamLife(g, enemyTeam, dmg, seat);
     if(u.drain&&dealt>0)healTeamLife(g,teamOf(seat),Math.min(u.drain,dealt));
     logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} atacou diretamente a dupla: ${dealt} de dano${dealt<dmg?' (Couraça de Almas reduziu 1)':''}.`,u.cardId);
   } else {
-    if (!t.units.includes(targetUid)) return { ok: false, err: 'alvo' };
     const target = g.units.find(x => x.uid === targetUid);
+    if(!target||teamOf(target.owner)===teamOf(seat)){logMsg(g,'O alvo saiu do campo; o ataque foi cancelado.');return;}
     const counter=combatAtk(target);
     ev(g, { type: 'combat', uid: u.uid, owner: seat, lane: u.lane, targetUid, targetOwner: target.owner, amount: dmg, counterAmount:counter });
-    const hit=dealToUnit(g,target,dmg),back=dealToUnit(g,u,counter);
+    let hit={absorbed:0,hpDamage:0,reduced:0,warded:false,killed:false},back={absorbed:0,hpDamage:0,reduced:0,warded:false,killed:false};
+    if(target.initiative&&!u.initiative){
+      back=dealToUnit(g,u,counter,{combat:true,penetrating:!!target.penetrating});
+      if(g.units.some(x=>x.uid===u.uid))hit=dealToUnit(g,target,dmg,{combat:true,penetrating:!!u.penetrating});
+    }else{
+      hit=dealToUnit(g,target,dmg,{combat:true,penetrating:!!u.penetrating});
+      if(!u.initiative||g.units.some(x=>x.uid===target.uid))back=dealToUnit(g,u,counter,{combat:true,penetrating:!!target.penetrating});
+    }
     if(u.drain&&hit.hpDamage>0)healTeamLife(g,teamOf(seat),Math.min(u.drain,hit.hpDamage));
     if(target.drain&&back.hpDamage>0)healTeamLife(g,teamOf(target.owner),Math.min(target.drain,back.hpDamage));
+    if((u.trample||u.trampleUntilRound===g.round)&&hit.killed){const excess=Math.max(0,dmg-(hit.hpDamage+hit.absorbed+hit.reduced));if(excess)dealToTeamLife(g,1-teamOf(seat),excess,seat);}
+    if(u.onAttackPing){const other=strongest(g.units.filter(x=>teamOf(x.owner)!==teamOf(seat)&&x.uid!==targetUid));if(other)dealToUnit(g,other,u.onAttackPing);}
+    if(u.combatDraw&&g.units.some(x=>x.uid===u.uid))draw(g,u.owner,1);
+    if(target.combatDraw&&g.units.some(x=>x.uid===target.uid))draw(g,target.owner,1);
     logMsg(g, `${g.players[seat].name}: ${CARDS[u.cardId].name} enfrentou ${CARDS[target.cardId].name} na ${g.lanes[u.lane].name}: causou ${describeUnitHit(hit)} e recebeu ${describeUnitHit(back)}.`,u.cardId);
   }
-  u.exhausted = true;u.hasAttacked=true;
   maybeRoundCap(g);
-  return { ok: true };
+}
+function resolveChain(g){
+  const chain=g.chain;if(!chain)return;
+  while(chain.stack.length&&!g.over){
+    const item=chain.stack.pop();
+    if(item.kind==='attack')resolveAttackItem(g,item);
+    else if(item.kind==='spell'){
+      const card=CARDS[item.cardId],target=item.targetUid==null?null:g.units.find(x=>x.uid===item.targetUid);
+      if(item.targetUid!=null&&!target){logMsg(g,`${card.name} perdeu o alvo e não resolveu.`,item.cardId);continue;}
+      applyEffect(g,item.seat,item.lane??target?.lane??0,null,card.onPlay,target);
+      logMsg(g,`${g.players[item.seat].name} resolveu ${card.name}.`,item.cardId);
+    }
+  }
+  g.chain=null;ev(g,{type:'chainResolved'});
+}
+function passPriority(g,seat){
+  if(!g.chain||currentActorSeat(g)!==seat)return {ok:false,err:'prioridade'};
+  g.chain.passes++;
+  logMsg(g,`${g.players[seat].name} passou a prioridade.`);
+  if(g.chain.passes>=g.chain.order.length){resolveChain(g);return {ok:true,resolved:true};}
+  g.chain.cursor=(g.chain.cursor+1)%g.chain.order.length;ev(g,{type:'priority',seat:currentActorSeat(g),depth:g.chain.stack.length});
+  return {ok:true};
 }
 
 function inspire(g, seat) {
-  if (g.over || g.active !== seat || !g.crossPool) return { ok: false };
+  if (g.over || g.chain || g.active !== seat || !g.crossPool) return { ok: false };
   const p = g.players[seat]; if (p.inspired || p.mana-(p.tempMana||0) < 1) return { ok: false };
   const partner = g.players[partnerOf(seat)];
   if ((partner.pendingMana||0)>=2) return {ok:false,err:'reserva-cheia'};
@@ -1246,18 +1585,28 @@ function beginTurn(g, first) {
   const seat = g.active; const p = g.players[seat];
   g.turnSerial=(g.turnSerial||0)+1;
   for(const u of g.units)if(u.damageReductionExpires&&u.damageReductionExpires<=g.turnSerial){u.damageReduction=0;u.damageReductionExpires=0;}
-  p.maxMana = Math.min(g.round, MANA_CAP);
+  p.maxMana = Math.min(g.round+(g.teamManaBonus?.[teamOf(seat)]||0), MANA_CAP);
   p.mana = p.maxMana + (p.pendingMana||0); p.pendingMana=0; p.tempMana=0;
-  p.inspired = false; p.heroUsed=false;
+  p.inspired = false; p.heroUsed=false;p.healedThisTurn=false;
   // reset das unidades DESTE dono
-  for (const u of g.units) if (u.owner === seat) { u.exhausted = false; u.atkTemp = 0; u.hasAttacked=false; }
+  for (const u of g.units) if (u.owner === seat) {
+    if(u.growEachTurn){u.atkPerm+=u.growEachTurn;u.hp+=u.growEachTurn;u.maxHp+=u.growEachTurn;}
+    if(u.explodeNextTurn&&u.enteredSerial<g.turnSerial){const enemies=g.units.filter(x=>teamOf(x.owner)!==teamOf(u.owner)).slice();for(const x of enemies)dealToUnit(g,x,u.explodeNextTurn);killUnit(g,u);continue;}
+    u.exhausted = !!(u.magicExhaustUntil&&u.magicExhaustUntil>=g.turnSerial); u.atkTemp = 0; u.hasAttacked=false;
+  }
+  for(const u of g.units)if(CARDS[u.cardId]?.tribe==='bohemian')u.atkTemp=g.units.filter(x=>teamOf(x.owner)===teamOf(u.owner)).reduce((n,x)=>n+(x.auraBohemianAtk||0),0);
   // Todos pulam a compra na primeira vez individual. Isso elimina a assimetria
   // acidental do hotseat; apenas o catch-up declarado do Time B permanece.
   if (p.hasTakenTurn) draw(g, seat, 1); else p.hasTakenTurn=true;
   ev(g, { type: 'turn', seat });
 }
 function endTurn(g, seat) {
-  if (g.over || g.active !== seat) return { ok: false };
+  if (g.over || g.chain || g.active !== seat) return { ok: false };
+  for(const u of g.units.filter(x=>x.owner===seat).slice()){
+    if(u.endTurnSelfDamage)dealToUnit(g,u,u.endTurnSelfDamage);
+    if(u.endTurnShield)grantShield(g,u,u.endTurnShield);
+    if(u.endTurnBothTeams){dealToTeamLife(g,0,u.endTurnBothTeams,seat);dealToTeamLife(g,1,u.endTurnBothTeams,seat);}
+  }
   g.turnPtr = (g.turnPtr + 1) % TURN_ORDER.length;
   if (g.turnPtr === 0) { g.round += 1; maybeRoundCap(g); }
   g.active = TURN_ORDER[g.turnPtr];
@@ -1275,41 +1624,43 @@ function maybeRoundCap(g) {
 /* ---------------- ações legais (p/ simulação e UI) ---------------- */
 function legalActions(g) {
   if (g.over) return [];
-  const seat = g.active, p = g.players[seat], acts = [];
+  const seat = currentActorSeat(g), p = g.players[seat], acts = [];
   p.hand.forEach(entry => {
     const card=CARDS[cardIdOf(entry)];
     if(card.targetUnit){for(const targetUid of validCardTargetUids(g,seat,card))if(canPlay(g,seat,entry.uid,undefined,targetUid))acts.push({type:'play',cardUid:entry.uid,targetUid});}
     else if(card.global) { if(canPlay(g,seat,entry.uid)) acts.push({type:'play',cardUid:entry.uid}); }
     else for (let lane=0; lane<g.lanes.length; lane++) if (canPlay(g,seat,entry.uid,lane)) acts.push({type:'play',cardUid:entry.uid,lane});
   });
-  for (const u of g.units) if (u.owner === seat && canAttackWith(g, seat, u.uid)) {
+  for (const u of g.units) if (!g.chain&&u.owner === seat && canAttackWith(g, seat, u.uid)) {
     const t = attackTargets(g, u);
     for (const tu of t.units) acts.push({ type: 'attack', uid: u.uid, targetUid: tu });
     if (t.face) acts.push({ type: 'attack', uid: u.uid, targetUid: null });
   }
-  if (canUseHeroPower(g,seat)) {
+  if (!g.chain&&canUseHeroPower(g,seat)) {
     const w=WARLORDS[p.warlordId];
     if(w.power.target==='lane')for(const lane of heroTargetLanes(g,seat)){
       if(w.power.choices)for(const choice of w.power.choices)acts.push({type:'hero',lane,choice:choice.id});else acts.push({type:'hero',lane});
     }
     else for (const targetUid of heroTargetUids(g,seat)) acts.push({type:'hero',targetUid});
   }
-  if (g.crossPool && !p.inspired && p.mana-(p.tempMana||0)>=1 && (g.players[partnerOf(seat)].pendingMana||0)<2) acts.push({ type: 'inspire' });
-  acts.push({ type: 'end' });
+  if (!g.chain&&g.crossPool && !p.inspired && p.mana-(p.tempMana||0)>=1 && (g.players[partnerOf(seat)].pendingMana||0)<2) acts.push({ type: 'inspire' });
+  acts.push({ type:g.chain?'pass':'end' });
   return acts;
 }
 function doAction(g, a) {
-  if (a.type === 'play') return playCard(g, g.active, a.cardUid!=null?a.cardUid:a.handIndex, a.lane,a.targetUid);
-  if (a.type === 'attack') return attack(g, g.active, a.uid, a.targetUid);
-  if (a.type === 'hero') return useHeroPower(g,g.active,a.lane!=null?a.lane:a.targetUid,a.choice);
-  if (a.type === 'inspire') return inspire(g, g.active);
-  if (a.type === 'end') return endTurn(g, g.active);
+  const actor=currentActorSeat(g);
+  if (a.type === 'play') return playCard(g, actor, a.cardUid!=null?a.cardUid:a.handIndex, a.lane,a.targetUid);
+  if (a.type === 'attack') return attack(g, actor, a.uid, a.targetUid);
+  if (a.type === 'hero') return useHeroPower(g,actor,a.lane!=null?a.lane:a.targetUid,a.choice);
+  if (a.type === 'inspire') return inspire(g, actor);
+  if (a.type === 'pass') return passPriority(g,actor);
+  if (a.type === 'end') return endTurn(g, actor);
   return { ok: false };
 }
 
 const API = { TURN_ORDER, WARLORDS, CARDS, LANES, teamOf, partnerOf, enemySeats, teamSeats, roleOfSeat,
   createGame, playCard, attack, inspire, useHeroPower, heroTargetUids, heroTargetLanes, canUseHeroPower,
-  endTurn, legalActions, doAction, atkVal, cardIdOf, validCardTargetUids,
+  endTurn, legalActions, doAction, atkVal, cardIdOf, validCardTargetUids,currentActorSeat,passPriority,resolveChain,
   unitsInLane, alliesInLane, enemiesInLane, attackTargets, canAttackWith, canPlay };
 
 if (typeof module !== 'undefined' && module.exports) module.exports = API;
@@ -1335,6 +1686,7 @@ function cardPreviewMarkup(cardId,unitUid){
   const tags=[];
   if(c.passive==='charge')tags.push('Ímpeto');if(c.passive==='taunt')tags.push('Provocar');
   if(c.rage)tags.push(`Fúria +${c.rage}`);if(c.drain)tags.push(`Dreno ${c.drain}`);if(c.painAtk)tags.push(`Dor +${c.painAtk} ATQ`);
+  if(c.trample)tags.push('Atropelar');if(c.initiative)tags.push('Iniciativa');if(c.cannotAttack)tags.push('Não ataca');
   if(c.tribe)tags.push(c.tribe==='beast'?'Fera':c.tribe==='rat'?'Homem-Rato':c.tribe==='drowned'?'Afogado':c.tribe);
   if(c.token)tags.push('Token');
   const stats=c.type==='unit'?`<div class="cstats"><b class="a">⚔${c.atk}</b><b class="d">❤${c.hp}</b></div>`:'';
@@ -1351,7 +1703,7 @@ function cardPreviewMarkup(cardId,unitUid){
   const live=u?`<div class="preview-live"><b>Em campo agora</b> · ⚔ ${atkVal(u)} · ❤ ${u.hp}/${u.maxHp}${u.shield?` · 🛡 ${u.shield}`:''}${u.ward?' · ✨ Proteção':''}${u.damageReduction?` · ↓${u.damageReduction} dano`:''}<br><b>${esc(owner?.name||'Jogador')}</b> · ${esc(control)}</div>`:'';
   return `<div class="hand-card ${c.f} preview-card">
     <span class="cost">${c.cost}</span><div class="art">${c.icon}</div>${stats}
-    <div class="ctype">${c.type==='unit'?(c.token?'Token':'Unidade'):'Tática / Magia'}</div>
+    <div class="ctype">${c.type==='unit'?(c.token?'Token':'Unidade'):c.speed==='fast'?'Magia Rápida':'Magia Lenta'}</div>
     <div class="cname">${esc(c.name)}</div><div class="ctext">${esc(c.text||'Sem efeito adicional.')}</div>
     ${tags.length?`<div class="preview-tags">${tags.map(t=>`<span class="preview-tag">${esc(t)}</span>`).join('')}</div>`:''}${live}
   </div>`;
@@ -1360,6 +1712,7 @@ function heroPowerDisplay(seat){
   const p=G?.players?.[seat],w=p&&WARLORDS[p.warlordId],active=G?.active===seat&&!G?.over;if(!p||!w?.power)return {key:'blocked',label:'Poder indisponível'};
   if(p.heroSpent)return {key:'spent',label:'Poder único já consumido nesta partida'};
   if(p.heroUsed)return {key:'used',label:'Já usado; recarrega na próxima vez deste jogador'};
+  if(active&&G?.chain)return {key:'blocked',label:'Aguardando a pilha de respostas resolver'};
   if(active&&canUseHeroPower(G,seat))return {key:'ready',label:'Disponível para usar agora'};
   if(active&&p.mana<w.power.cost)return {key:'blocked',label:`Mana insuficiente: faltam ${w.power.cost-p.mana}`};
   if(active)return {key:'blocked',label:'Sem alvo válido neste momento'};
@@ -1435,10 +1788,10 @@ const setup = {
   crossPool: true,
   doubleCoin: true,
 };
-const CARRY_OPTS = ['raven','viking','druid','succubus','pirate','bloodlord','rats'];
-const SUPPORT_OPTS = ['vale','miku','priest','enchantress','arena','druid','rats'];
+const CARRY_OPTS = ['raven','viking','druid','succubus','pirate','bloodlord','rats','seyren','flamel','dravos'];
+const SUPPORT_OPTS = ['vale','miku','priest','enchantress','arena','druid','rats','flamel','margaretha','dravos'];
 
-const NET_PROTOCOL='gutho-2v2-v7', BUILD_ID='2026-07-23-deckbuilder1', ROOM_PREFIX='gutho-2v2-v7-';
+const NET_PROTOCOL='gutho-2v2-v9', BUILD_ID='2026-07-24-deck30-stack1', ROOM_PREFIX='gutho-2v2-v9-';
 const NET={mode:'local',phase:'menu',peer:null,hostConn:null,connections:new Map(),roomCode:'',
   clientId:'',resumeToken:'',localSeat:null,status:'offline',revision:0,pending:null,retry:0,retryTimer:null};
 const HOST={lobby:null,game:null,revision:0,requestCache:new Map()};
@@ -1452,16 +1805,16 @@ function ensureIdentity(){
   if(!NET.clientId)NET.clientId='p-'+randomToken(12);
   if(!NET.resumeToken)NET.resumeToken=randomToken(20);
 }
-function localSeat(){return NET.mode==='local'?G?.active:NET.localSeat;}
+function localSeat(){return NET.mode==='local'?(G?currentActorSeat(G):null):NET.localSeat;}
 function isNetworkPaused(){
   if(NET.mode==='guest'&&(!NET.hostConn?.open||NET.status!=='online'))return true;
   if(NET.mode==='host'&&NET.status!=='online')return true;
   if(NET.mode==='host'&&HOST.lobby?.phase==='game')return HOST.lobby.seats.some(id=>!HOST.lobby.members[id]?.connected);
   return !!G?.paused;
 }
-function isMyTurn(){return !!G&&!G.over&&!isNetworkPaused()&&(NET.mode==='local'||NET.localSeat===G.active)&&!NET.pending;}
+function isMyTurn(){return !!G&&!G.over&&!isNetworkPaused()&&(NET.mode==='local'||NET.localSeat===currentActorSeat(G))&&!NET.pending;}
 function selectionStillLegal(game,seat,selection){
-  if(!game||!selection||game.over||game.active!==seat)return false;
+  if(!game||!selection||game.over||currentActorSeat(game)!==seat)return false;
   if(selection.mode==='attack')return canAttackWith(game,seat,selection.uid);
   if(selection.mode==='hero'||selection.mode==='heroChoice')return canUseHeroPower(game,seat);
   if(selection.mode==='card'||selection.mode==='cardTarget'){
@@ -1471,7 +1824,7 @@ function selectionStillLegal(game,seat,selection){
   }
   return false;
 }
-function visibleHandPlayer(){return NET.mode==='local'?G.players[G.active]:G.players[NET.localSeat];}
+function visibleHandPlayer(){return NET.mode==='local'?G.players[currentActorSeat(G)]:G.players[NET.localSeat];}
 function playerHandCount(p){return Array.isArray(p.hand)?p.hand.length:(p.handCount||0);}
 function playerDeckCount(p){return Array.isArray(p.deck)?p.deck.length:(p.deckCount||0);}
 function unlockAudio(){
@@ -1690,8 +2043,9 @@ function buildGameView(game,viewerSeat){
   return {round:game.round,turnPtr:game.turnPtr,active:game.active,turnSerial:game.turnSerial,teams:game.teams.map(t=>({life:t.life,maxLife:t.maxLife})),
     lanes:game.lanes.map(l=>({...l})),units:game.units.map(u=>({...u})),graveyard:(game.graveyard||[]).map(x=>({...x})),over:game.over?{...game.over}:null,seq:game.seq,
     events:game.events.slice(-40).map(e=>({...e})),log:game.log.slice(0,50).map(x=>({...x})),crossPool:game.crossPool,doubleCoin:game.doubleCoin,paused:disconnected,
+    chain:game.chain?{...game.chain,order:game.chain.order.slice(),stack:game.chain.stack.map(x=>({...x}))}:null,teamManaBonus:(game.teamManaBonus||[0,0]).slice(),
     players:game.players.map(p=>({seat:p.seat,name:p.name,warlordId:p.warlordId,role:p.role,faction:p.faction,mana:p.mana,maxMana:p.maxMana,
-      pendingMana:p.pendingMana||0,tempMana:p.tempMana||0,inspired:!!p.inspired,heroUsed:!!p.heroUsed,heroSpent:!!p.heroSpent,
+      pendingMana:p.pendingMana||0,tempMana:p.tempMana||0,inspired:!!p.inspired,heroUsed:!!p.heroUsed,heroSpent:!!p.heroSpent,heroUpgrade:p.heroUpgrade||null,healedThisTurn:!!p.healedThisTurn,
       handCount:p.hand.length,deckCount:p.deck.length,hand:p.seat===viewerSeat?p.hand.map(e=>({uid:e.uid,cardId:e.cardId})):null}))};
 }
 function sendGameTo(clientId){
@@ -1708,7 +2062,7 @@ function sanitizeAction(a){
   if(type==='play')return {type,cardUid:String(a.cardUid||'').slice(0,24),lane:a.lane==null?undefined:Number(a.lane),targetUid:a.targetUid==null?undefined:Number(a.targetUid)};
   if(type==='attack')return {type,uid:Number(a.uid),targetUid:a.targetUid==null?null:Number(a.targetUid)};
   if(type==='hero')return {type,targetUid:a.targetUid==null?undefined:Number(a.targetUid),lane:a.lane==null?undefined:Number(a.lane),choice:a.choice==null?undefined:String(a.choice).slice(0,20)};
-  if(type==='inspire'||type==='end')return {type};return null;
+  if(type==='inspire'||type==='end'||type==='pass')return {type};return null;
 }
 function hostApplyGameAction(clientId,msgOrAction){
   if(!HOST.game||HOST.lobby.phase!=='game')return;
@@ -1721,7 +2075,7 @@ function hostApplyGameAction(clientId,msgOrAction){
   if(baseRevision!==HOST.revision){sendHostError(clientId,'O jogo avançou; sua tela foi atualizada.');sendGameTo(clientId);return;}
   if(HOST.lobby.seats.some(id=>!HOST.lobby.members[id]?.connected)){sendHostError(clientId,'Partida pausada enquanto um jogador reconecta.');return;}
   const seat=seatForClient(clientId),a=sanitizeAction(raw);
-  if(seat==null||seat!==HOST.game.active||!a){sendHostError(clientId,'Ação fora da vez ou inválida.');return;}
+  if(seat==null||seat!==currentActorSeat(HOST.game)||!a){sendHostError(clientId,'Ação fora da prioridade ou inválida.');return;}
   const result=doAction(HOST.game,a);
   if(!result?.ok){sendHostError(clientId,'Essa jogada não é mais válida.');sendGameTo(clientId);return;}
   HOST.revision++;HOST.requestCache.set(cacheKey,{revision:HOST.revision});
@@ -1877,7 +2231,7 @@ function deckBuilderCounts(){
 }
 function deckBuilderCanAdd(id){
   if(!deckBuilder||!CARDS[id])return false;
-  const c=deckBuilderCounts(),cap=id==='ratomanocu'?1:DECK_RULES.maxCopies;
+  const c=deckBuilderCounts(),cap=(id==='ratomanocu'||CARDS[id]?.singleton)?1:DECK_RULES.maxCopies;
   if(c.total>=DECK_RULES.total||(c.counts[id]||0)>=cap)return false;
   if(signatureIds(deckBuilder.warlordId).includes(id))return c.signature<DECK_RULES.signature;
   return availableGeneral(deckBuilder.warlordId,deckBuilder.allyColor).includes(id)&&c.general<DECK_RULES.general;
@@ -1917,8 +2271,9 @@ function deckPoolIds(){
 }
 function deckBuilderCard(id){
   const c=CARDS[id],count=deckBuilderCounts().counts[id]||0,can=deckBuilderCanAdd(id);
-  return `<button type="button" class="deck-choice ${can?'':'full'}" ${can?'':'disabled'} aria-label="Adicionar ${esc(c.name)} · ${count} de ${id==='ratomanocu'?1:DECK_RULES.maxCopies}" onclick="deckBuilderAdd('${id}')" onmouseenter="showCardPreview('${id}',this)" onmouseleave="hideCardPreview()">
-    ${collectionCard(id)}<span class="deck-count">${count}/${id==='ratomanocu'?1:DECK_RULES.maxCopies}</span>
+  const cap=(id==='ratomanocu'||c.singleton)?1:DECK_RULES.maxCopies;
+  return `<button type="button" class="deck-choice ${can?'':'full'}" ${can?'':'disabled'} aria-label="Adicionar ${esc(c.name)} · ${count} de ${cap}" onclick="deckBuilderAdd('${id}')" onmouseenter="showCardPreview('${id}',this)" onmouseleave="hideCardPreview()">
+    ${collectionCard(id)}<span class="deck-count">${count}/${cap}</span>
   </button>`;
 }
 function renderDeckBuilder(){
@@ -2073,7 +2428,7 @@ function lobbySeatCard(seat){
       <span class="ready-dot ${slot.ready?'yes':''}">${slot.connected?(slot.ready?'✓ pronto':'conectado'):'● offline'}</span></div>
     ${mine?`<input class="name" maxlength="18" value="${esc(slot.name)}" onchange="sendLobbyIntent('name',{name:this.value})">
       <div class="wl-picker">${opts.map(id=>lobbyWarlordOpt(seat,id,slot.warlordId,true)).join('')}</div>
-      <div class="deck-entry"><div class="deck-copy"><b>Deck de batalha</b><small>${slot.allyColor&&COLORS[slot.allyColor]?`${COLORS[slot.allyColor].icon} ${esc(COLORS[slot.allyColor].name)} como segunda cor`:'Escolha e valide suas 20 cartas'}</small></div>
+      <div class="deck-entry"><div class="deck-copy"><b>Deck de batalha</b><small>${slot.allyColor&&COLORS[slot.allyColor]?`${COLORS[slot.allyColor].icon} ${esc(COLORS[slot.allyColor].name)} como segunda cor`:'Escolha e valide suas 30 cartas'}</small></div>
         <span class="deck-badge ${slot.deckValid?'ok':'bad'}">${slot.deckCount||0}/20</span>
         <button class="btn secondary" onclick="openDeckBuilder('lobby',${seat},'${slot.warlordId}')">Editar deck</button></div>
       <div class="seat-line" style="margin-top:8px"><button class="btn ghost" onclick="sendLobbyIntent('release')">Trocar assento</button><span class="spacer"></span>
@@ -2160,7 +2515,7 @@ function lifeBox(team){
 }
 function ribbon(seat){
   const p = G.players[seat]; const w = WARLORDS[p.warlordId]; const t = teamOf(seat);
-  const active = G.active===seat && !G.over;
+  const active = currentActorSeat(G)===seat && !G.over;
   const hc=playerHandCount(p),powerState=heroPowerDisplay(seat),passiveName=w.passive?String(w.passive).split(':')[0]:'Sem passivo';
   return `<div class="ribbon ${p.role} ${t===1?'teamB':''} ${active?'act':''}" data-seat="${seat}">
     <div class="ribbon-top">
@@ -2182,7 +2537,7 @@ function ribbon(seat){
   </div>`;
 }
 function viewTeamForClient(){
-  const seat=NET.mode==='local'?G?.active:NET.localSeat;return Number.isInteger(seat)?teamOf(seat):teamOf(G?.active??0);
+  const seat=NET.mode==='local'?(G?currentActorSeat(G):null):NET.localSeat;return Number.isInteger(seat)?teamOf(seat):teamOf(G?.active??0);
 }
 function teamPanel(team,placement=''){
   const act = teamOf(G.active)===team && !G.over;
@@ -2257,15 +2612,15 @@ function boardStage(){
 
 function selBar(){
   if(G.over) return '';
-  const p = G.players[G.active];
+  const actor=currentActorSeat(G),p = G.players[actor],chain=G.chain;
   const mine=isMyTurn();
-  const canInspire = mine&&G.crossPool&&!p.inspired&&p.mana-(p.tempMana||0)>=1&&(G.players[partnerOf(G.active)].pendingMana||0)<2;
+  const canInspire = !chain&&mine&&G.crossPool&&!p.inspired&&p.mana-(p.tempMana||0)>=1&&(G.players[partnerOf(actor)].pendingMana||0)<2;
   const inspireBtn = G.crossPool?`<button class="btn secondary ${canInspire?'':'action-locked'}" aria-disabled="${!canInspire}" onclick="onInspire()">✨ Inspirar: +1 na próxima vez</button>`:'';
-  const w=WARLORDS[p.warlordId],powerReady=mine&&canUseHeroPower(G,G.active);
+  const w=WARLORDS[p.warlordId],powerReady=!chain&&mine&&canUseHeroPower(G,actor);
   const powerBtn=`<button class="hero-btn ${powerReady?'':'locked'}" aria-disabled="${!powerReady}" title="${esc(w.power.text)}" onclick="onHero()">✦ ${esc(w.power.name)} (${w.power.cost})</button>`;
-  const endBtn = mine?`<button class="btn primary" onclick="onEnd()">Encerrar vez ⏭</button>`:'';
+  const endBtn = mine?`<button class="btn primary" onclick="onEnd()">${chain?'Passar prioridade ✓':'Encerrar vez ⏭'}</button>`:'';
   if(NET.pending)return `<div class="selbar"><b>Validando jogada com o host...</b><div class="push"></div></div>`;
-  if(!mine)return `<div class="selbar">Aguardando <b>${esc(p.name)}</b> · ${roleLabel(p.role)} do ${teamLabel(teamOf(G.active))}.
+  if(!mine)return `<div class="selbar">${chain?'Pilha aberta · aguardando resposta de':'Aguardando'} <b>${esc(p.name)}</b> · ${roleLabel(p.role)} do ${teamLabel(teamOf(actor))}.
     <div class="push"><span class="net-status ${NET.status==='online'?'online':'warn'}">${NET.status==='online'?'sincronizado':'reconectando'}</span></div></div>`;
   if(NET.mode==='local'&&!revealed){
     return `<div class="selbar"><b>${esc(p.name)}</b>, revele sua mão para jogar.<div class="push">${endBtn}</div></div>`;
@@ -2298,7 +2653,13 @@ function selBar(){
     return `<div class="selbar"><b>${esc(w.power.name)}</b> — ${w.power.target==='lane'?'toque na arena destacada':'toque em uma unidade destacada'}.
       <div class="push"><button class="btn ghost" onclick="clearSel()">Cancelar</button>${endBtn}</div></div>`;
   }
-  return `<div class="selbar">Vez de <b>${esc(p.name)}</b> (${roleLabel(p.role)}, ${teamLabel(teamOf(G.active))}). Jogue cartas, ataque, ou encerre.
+  if(chain){
+    const top=chain.stack[chain.stack.length-1],topName=top?.kind==='attack'?'ataque declarado':CARDS[top?.cardId]?.name||'efeito';
+    const order=chain.order.map(seat=>G.players[seat].name).join(' → ');
+    return `<div class="selbar attack"><b>Prioridade de ${esc(p.name)}</b> — ${chain.stack.length} efeito(s) na pilha; topo: <b>${esc(topName)}</b>. Jogue uma Magia Rápida ou passe. ${chain.passes}/${chain.order.length} passaram · ordem: ${esc(order)}.
+      <div class="push">${endBtn}</div></div>`;
+  }
+  return `<div class="selbar">Vez de <b>${esc(p.name)}</b> (${roleLabel(p.role)}, ${teamLabel(teamOf(actor))}). Jogue cartas, ataque, ou encerre.
     <div class="push">${powerBtn}${inspireBtn}${endBtn}</div></div>`;
 }
 
@@ -2315,12 +2676,13 @@ function handWrap(){
     const affordable=myTurn&&(c.targetUnit?validCardTargetUids(G,p.seat,c).some(uid=>canPlay(G,p.seat,entry.uid,undefined,uid)):c.global?canPlay(G,p.seat,entry.uid):G.lanes.some((_,l)=>canPlay(G,p.seat,entry.uid,l)));
     const isSel = sel && (sel.mode==='card'||sel.mode==='cardTarget') && sel.cardUid===entry.uid;
     const stats = c.type==='unit' ? `<div class="cstats"><b class="a">⚔${c.atk}</b><b class="d">❤${c.hp}</b></div>` : '';
+    const shownCost=effectiveCardCost(G,p.seat,c);
     return `<button class="hand-card ${c.f} ${isSel?'selected':''} ${affordable?'':'locked'}" data-card-uid="${entry.uid}" aria-disabled="${!affordable}" aria-describedby="card-preview"
       onmouseenter="showCardPreview('${cardIdOf(entry)}',this)" onmouseleave="hideCardPreview()" onfocus="showCardPreview('${cardIdOf(entry)}',this)" onblur="hideCardPreview()"
       onpointerdown="beginCardDrag(event,'${entry.uid}')" onclick="onCard('${entry.uid}')" aria-label="${esc(c.name+', custo '+c.cost+'. '+c.text)}">
-      <span class="cost">${c.cost}</span>
+      <span class="cost">${shownCost}</span>
       <div class="art">${c.icon}</div>${stats}
-      <div class="ctype">${c.type==='unit'?'Unidade':'Tática'}</div>
+      <div class="ctype">${c.type==='unit'?'Unidade':c.speed==='fast'?'Magia Rápida':'Magia Lenta'}</div>
       <div class="cname">${esc(c.name)}</div>
       <div class="ctext">${esc(c.text)}</div>
     </button>`;
@@ -2356,6 +2718,7 @@ function historyPanel(){
 
 function renderBoard(){
   const p = G.players[G.active];
+  const priorityPlayer=G.players[currentActorSeat(G)];
   const me=NET.mode==='local'?null:G.players[NET.localSeat];
   const viewTeam=viewTeamForClient(),farTeam=1-viewTeam;
   return `<div class="shell">
@@ -2365,6 +2728,7 @@ function renderBoard(){
       <span class="chip">Arena única · ${LANE_CAP} espaços/time</span>
       <span class="chip">Catch-up: ${G.doubleCoin?'calibrado':'original'}</span>
       <span class="chip turn" role="status" aria-live="polite">▶ ${esc(p.name)} — ${roleLabel(p.role)} · ${teamLabel(teamOf(G.active))}</span>
+      ${G.chain?`<span class="chip turn">⚡ Prioridade: ${esc(priorityPlayer.name)} · pilha ${G.chain.stack.length}</span>`:''}
       ${me?`<span class="net-status ${NET.status==='online'?'online':'warn'}">Sala ${esc(NET.roomCode)} · Você: ${esc(me.name)} · ${teamLabel(teamOf(me.seat))} ${roleLabel(me.role)}</span>`:''}
       <span class="spacer"></span>
       <button class="btn ghost" onclick="toggleSound()" aria-label="${soundOn?'Desligar':'Ligar'} sons">${soundOn?'🔊':'🔇'}</button>
@@ -2385,8 +2749,9 @@ function dismissNotice(){lobbyMessage='';render();}
 function clearSel(){ sel=null; render(); }
 function explainCardBlock(p,entry){
   const c=CARDS[cardIdOf(entry)];
-  if(!isMyTurn())return 'Aguarde a sua vez para jogar cartas.';
-  if(c.cost>p.mana)return `Faltam ${c.cost-p.mana} de Mana para ${c.name}.`;
+  if(!isMyTurn())return 'Aguarde sua vez ou a prioridade para jogar cartas.';
+  if(G.chain&&(c.type!=='tactic'||c.speed!=='fast'))return 'Durante uma resposta, somente Magias Rápidas podem entrar na pilha.';
+  const cost=effectiveCardCost(G,p.seat,c);if(cost>p.mana)return `Faltam ${cost-p.mana} de Mana para ${c.name}.`;
   if(c.global)return c.onPlay?.k==='ratomanocu'?'Não há unidades para o Ratomanocu eliminar.':'Essa carta não pode ser usada agora.';
   if(c.type==='unit'&&G.lanes.every((_,l)=>G.units.filter(u=>u.lane===l&&teamOf(u.owner)===teamOf(p.seat)).length>=LANE_CAP))return `Seu time ocupou os ${LANE_CAP} espaços da arena.`;
   if(c.type==='tactic')return 'A arena não tem um alvo válido para esta tática.';
@@ -2454,7 +2819,7 @@ function onInspire(){
   dispatchGameAction({type:'inspire'});
 }
 function onEnd(){
-  hideCardPreview(true);if(NET.mode==='local')revealed=false;dispatchGameAction({type:'end'});
+  hideCardPreview(true);if(NET.mode==='local')revealed=false;dispatchGameAction({type:G.chain?'pass':'end'});
 }
 function confirmNew(){
   const question=NET.mode==='host'?'Fechar a sala para todos e voltar ao menu?':NET.mode==='guest'?'Sair desta sala? Seu time perderá por desistência.':'Reiniciar a mesa e voltar à seleção?';
@@ -2474,12 +2839,12 @@ function networkPauseGate(){
     <div style="margin-top:12px"><span class="net-status warn">aguardando reconexão</span></div></div></div>`;
 }
 function passGate(){
-  const p = G.players[G.active]; const w = WARLORDS[p.warlordId];
+  const actor=currentActorSeat(G),p = G.players[actor]; const w = WARLORDS[p.warlordId];
   return `<div class="gate"><div class="gate-card">
     <div class="gate-emblem">${w.icon}</div>
-    <h2>Vez de ${esc(p.name)}</h2>
-    <span class="role-badge ${p.role}">${roleLabel(p.role)} · ${teamLabel(teamOf(G.active))}</span>
-    <p>Passe o aparelho para ${esc(p.name)}. Ninguém mais deve ver a mão.</p>
+    <h2>${G.chain?'Prioridade de':'Vez de'} ${esc(p.name)}</h2>
+    <span class="role-badge ${p.role}">${roleLabel(p.role)} · ${teamLabel(teamOf(actor))}</span>
+    <p>Passe o aparelho para ${esc(p.name)}. ${G.chain?'Ele pode responder com uma Magia Rápida ou passar.':'Ninguém mais deve ver a mão.'}</p>
     <div style="margin-top:16px"><button class="btn primary" style="font-size:15px;padding:12px 20px" onclick="revealTurn()">Sou ${esc(p.name)} — revelar mão</button></div>
   </div></div>`;
 }
